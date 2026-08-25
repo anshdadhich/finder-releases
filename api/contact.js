@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return res.status(500).json({ error: "RESEND_API_KEY not set" });
 
-  const to = process.env.TO_EMAIL || "anshdadhich@gmail.com";
+  const to = process.env.TO_EMAIL || "anshdadhichmm@gmail.com";
 
   try {
     const r = await fetch("https://api.resend.com/emails", {
