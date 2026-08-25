@@ -1,1 +1,390 @@
-<!doctype html><html><head><meta charset=utf-8><title>Finder Download</title><style>body{font-family:system-ui;max-width:720px;margin:40px auto;padding:0 20px} .btn{display:inline-block;padding:12px 24px;background:#007aff;color:#fff;border-radius:8px;text-decoration:none}</style></head><body><h1>Finder</h1><p>Download the latest installer:</p><a class="btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/latest.json">Check updates</a><p><a href="https://github.com/anshdadhich/finder-releases/releases">All releases</a></p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finder — Instant launcher for Windows</title>
+<meta name="description" content="Finder is a fast, keyboard-driven launcher for Windows. Search apps, files, folders — plus a calculator. No mouse needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0c;
+  --bg-soft:#121214;
+  --card:rgba(28,28,30,0.82);
+  --card-strong:#1a1a1e;
+  --border:rgba(255,255,255,0.08);
+  --border-2:rgba(255,255,255,0.14);
+  --text:#ffffff;
+  --muted:rgba(235,235,245,0.62);
+  --muted2:rgba(235,235,245,0.38);
+  --accent:#007aff;
+  --accent2:#0a84ff;
+  --accent-rgb:0,122,255;
+  --radius:16px;
+  --radius-lg:20px;
+  --shadow:0 20px 60px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Instrument Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
+a{color:inherit}
+/* subtle grid + glow */
+.bg{
+  position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(700px 400px at 20% 0%, rgba(0,122,255,0.16), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(120,90,255,0.10), transparent 60%),
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size:auto,auto,32px 32px,32px 32px;
+}
+.nav{
+  position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(16px) saturate(1.4);
+  background:rgba(10,10,12,0.7);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1160px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-0.02em}
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--accent);
+  display:grid;place-items:center;
+  font-family:"Sora",sans-serif;font-weight:800;font-size:14px;
+}
+.nav-links{display:flex;gap:18px;align-items:center;font-size:13px}
+.nav-links a{opacity:0.7;text-decoration:none}
+.nav-links a:hover{opacity:1}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:10px;
+  background:var(--accent);color:#fff;
+  font-weight:600;font-size:13px;text-decoration:none;
+  border:1px solid transparent;
+  transition:transform .12s, background .12s, box-shadow .12s;
+}
+.btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,122,255,0.35)}
+.btn-ghost{
+  background:rgba(255,255,255,0.08);border-color:var(--border);
+}
+.btn-ghost:hover{background:rgba(255,255,255,0.12)}
+.hero{
+  max-width:1160px;margin:0 auto;padding:48px 24px 24px;
+  display:grid;grid-template-columns:1.05fr 1.15fr;gap:40px;align-items:center;
+}
+@media (max-width:980px){ .hero{grid-template-columns:1fr} }
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--muted);
+  border:1px solid var(--border);padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,0.04);
+}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;box-shadow:0 0 10px var(--accent)}
+.h1{
+  font-family:"Sora",sans-serif;
+  font-size:52px;line-height:0.95;letter-spacing:-0.03em;margin:16px 0 14px;
+  font-weight:800;
+}
+@media (max-width:600px){ .h1{font-size:38px} }
+.h1 span{background:linear-gradient(180deg,#fff 30%, rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--muted);font-size:16px;line-height:1.6;max-width:520px}
+.hero-ctas{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.micro{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted2);margin-top:10px}
+.kbd{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;
+  border:1px solid var(--border);border-bottom-width:2px;
+  padding:3px 7px;border-radius:6px;background:rgba(255,255,255,0.06);
+}
+/* Finder mock */
+.mock-wrap{
+  position:relative;
+  padding:24px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border:1px solid var(--border);border-radius:22px;
+  box-shadow:var(--shadow);
+}
+.mock-glow{
+  position:absolute;inset:-1px;border-radius:22px;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.12), transparent 40%);
+  mask:linear-gradient(#000, transparent 70%);
+}
+.finder{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border-2);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,0.5);
+  backdrop-filter:blur(20px) saturate(1.6);
+}
+.finder-head{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.finder-head input{
+  flex:1;background:transparent;border:0;outline:0;
+  color:var(--text);font-size:14px;font-family:inherit;
+}
+.finder-head input::placeholder{color:var(--muted2)}
+.finder-body{display:flex;min-height:340px;max-height:380px}
+.results{
+  flex:1.2;min-width:0;
+  padding:8px;overflow:auto;
+  border-right:1px solid var(--border);
+}
+.results::-webkit-scrollbar{width:5px}
+.results::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:10px}
+.group{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted2);padding:6px 8px 4px}
+.row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:10px;
+  cursor:pointer;transition:background .12s;
+}
+.row:hover{background:rgba(255,255,255,0.06)}
+.row.selected{background:rgba(var(--accent-rgb),0.95);color:#fff}
+.row .icon{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:12px;flex:none;background:rgba(255,255,255,0.08)}
+.row.selected .icon{background:rgba(255,255,255,0.18)}
+.row .meta{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10px;opacity:0.6}
+.row.selected .meta{opacity:0.9}
+.preview{
+  flex:0.9;min-width:180px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:rgba(255,255,255,0.02);
+}
+.preview-icon{width:72px;height:72px;border-radius:14px;display:grid;place-items:center;font-size:32px;background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));border:1px solid var(--border)}
+.preview h4{margin:4px 0 0;font-size:14px}
+.preview p{margin:0;font-size:12px;color:var(--muted);text-align:center;line-height:1.4}
+.preview .where{width:100%;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted2);word-break:break-all;text-align:left}
+.calc{
+  margin:8px;padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  display:none;
+}
+.calc.on{display:block}
+.calc .expr{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted)}
+.calc .ans{font-family:"Sora",sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.02em}
+.features{
+  max-width:1160px;margin:36px auto;padding:0 24px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+@media (max-width:900px){ .features{grid-template-columns:1fr} }
+.feat{
+  padding:18px 18px 16px;border-radius:16px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+}
+.feat h3{margin:8px 0 6px;font-family:"Sora",sans-serif;font-size:14px}
+.feat p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.feat .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(0,122,255,0.15);border:1px solid rgba(0,122,255,0.25)}
+.download{
+  max-width:1160px;margin:28px auto;padding:24px;
+  display:grid;grid-template-columns:1.1fr 0.9fr;gap:18px;align-items:center;
+  background:linear-gradient(180deg, rgba(0,122,255,0.10), rgba(255,255,255,0.03));
+  border:1px solid var(--border);border-radius:20px;
+}
+@media (max-width:900px){ .download{grid-template-columns:1fr} }
+.faq{max-width:1160px;margin:24px auto;padding:0 24px}
+.faq h2{font-family:"Sora",sans-serif}
+.faq details{border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:10px 0;background:rgba(255,255,255,0.03)}
+.faq summary{cursor:pointer;font-weight:600}
+.footer{max-width:1160px;margin:32px auto;padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted2);font-size:12px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><div class="brand-mark">F</div> Finder</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Releases</a>
+      <a class="btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download for Windows</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow"><i></i> v0.2.3 • Windows 10 / 11 • x64</div>
+    <h1 class="h1">Your Windows,<br><span>instant.</span></h1>
+    <p class="lead">Finder is a keyboard-first launcher. Hit <span class="kbd">Ctrl</span> <span class="kbd">Space</span>, type, and launch apps, files, and folders — with a calculator built in. No mouse, no hunting.</p>
+    <div class="hero-ctas">
+      <a class="btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">⬇ Download installer</a>
+      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">Portable ZIP</a>
+    </div>
+    <div class="micro">2.7 MB installer • Auto-updates • Try the live mock →</div>
+  </div>
+
+  <div class="mock-wrap">
+    <div class="mock-glow"></div>
+    <div class="finder" id="finderMock">
+      <div class="finder-head">
+        <span style="opacity:0.5">⌕</span>
+        <input id="mockInput" placeholder="Search apps, files, folders..." autocomplete="off" spellcheck="false">
+        <span style="font-size:11px;opacity:0.4">⚙</span>
+      </div>
+      <div class="calc" id="calcBox"><div class="expr" id="calcExpr"></div><div class="ans" id="calcAns"></div></div>
+      <div class="finder-body">
+        <div class="results" id="mockResults"></div>
+        <div class="preview" id="mockPreview">
+          <div class="preview-icon" id="pvIcon">A</div>
+          <h4 id="pvTitle">Access</h4>
+          <p id="pvSub">Application</p>
+          <div class="where" id="pvWhere">aumid:Microsoft.Office.MSACCESS.EXE.15</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="feat"><div class="ic">⚡</div><h3>Instant app launch</h3><p>All apps indexed locally. Every keystroke ranks instantly — no waiting on the file system.</p></div>
+  <div class="feat"><div class="ic">🗂</div><h3>NTFS file search</h3><p>Direct MFT scan, ranked and paginated. Finds files before Explorer finishes thinking.</p></div>
+  <div class="feat"><div class="ic">🧮</div><h3>Calculator built in</h3><p>Type <code>12*7</code> or <code>(3+4)*9</code> — result appears as the top result, no mode switch.</p></div>
+  <div class="feat"><div class="ic">👁</div><h3>Preview &amp; quick actions</h3><p>See icon, type, and path at a glance. Open, show in folder, or copy path.</p></div>
+  <div class="feat"><div class="ic">🔍</div><h3>Keyboard-first</h3><p>Arrows, Enter, Esc. Your hands never leave the keyboard. Summon with Ctrl+Space.</p></div>
+  <div class="feat"><div class="ic">🎨</div><h3>Feels native</h3><p>Frosted glass, correct icons, dark/light themes, and Windows accent color.</p></div>
+</section>
+
+<section class="download" id="download">
+  <div>
+    <h3 style="margin:0 0 6px;font-family:Sora">Download Finder</h3>
+    <p style="margin:0;color:var(--muted);line-height:1.6">Free for Windows 10/11 (x64). Installer is signed, portable ZIP available, and updates are automatic.</p>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <a class="btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download setup.exe</a>
+      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases">View all releases</a>
+    </div>
+    <div class="micro">SHA256 is published on the release page • Requires no admin for portable</div>
+  </div>
+  <div style="font-family:IBM Plex Mono,monospace;font-size:12px;line-height:1.6;color:var(--muted);border:1px dashed var(--border);border-radius:12px;padding:14px;background:rgba(255,255,255,0.03)">
+    <div style="color:#fff;font-weight:600;margin-bottom:6px">Quick start</div>
+    1. Install &amp; launch<br>
+    2. Press <span class="kbd">Ctrl</span> <span class="kbd">Space</span><br>
+    3. Type to search — Enter to launch<br>
+    <span style="opacity:0.6">Tip: type a math expression to calculate.</span>
+  </div>
+</section>
+
+<section class="faq">
+  <h2>FAQ</h2>
+  <details><summary>Is my data private?</summary><p class="lead" style="font-size:13px">Yes. Finder runs locally, indexes on-device, and never sends your file list anywhere. The source is private; only installers are public.</p></details>
+  <details><summary>Does it need admin?</summary><p class="lead" style="font-size:13px">Installer can run per-user without admin. For fastest file indexing it will prompt once for admin to read the NTFS journal.</p></details>
+  <details><summary>How do updates work?</summary><p class="lead" style="font-size:13px">The app checks the public releases feed. When a new version is available you’ll see an in-app banner.</p></details>
+</section>
+
+<footer class="footer">
+  <span>© 2026 Finder • Built for Windows</span>
+  <span><a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Releases</a> • Private source • Public downloads</span>
+</footer>
+
+<script>
+const mockApps = [
+  {name:"Access", path:"aumid:Microsoft.Office.MSACCESS.EXE.15", kind:"app", icon:"A"},
+  {name:"Administrative Tools", path:"Administrative Tools.lnk", kind:"app", icon:"⚙"},
+  {name:"Antigravity", path:"Antigravity", kind:"app", icon:"A"},
+  {name:"Calculator", path:"Calculator", kind:"app", icon:"🧮"},
+  {name:"Calendar", path:"Calendar", kind:"app", icon:"📅"},
+  {name:"Camera", path:"Camera", kind:"app", icon:"📷"},
+  {name:"Chrome", path:"chrome.exe", kind:"app", icon:"🌐"},
+  {name:"Code", path:"Code.exe", kind:"app", icon:"💻"},
+  {name:"Control Panel", path:"Control Panel", kind:"app", icon:"🎛"},
+  {name:"Downloads", path:"C:\\Users\\you\\Downloads", kind:"dir", icon:"📁"},
+  {name:"Documents", path:"C:\\Users\\you\\Documents", kind:"dir", icon:"📁"},
+  {name:"whatsapp.py", path:"C:\\Projects\\whatsapp.py", kind:"file", icon:"📄"},
+  {name:"whats-new.md", path:"C:\\Docs\\whats-new.md", kind:"file", icon:"📄"},
+];
+const input = document.getElementById('mockInput');
+const results = document.getElementById('mockResults');
+const pvIcon = document.getElementById('pvIcon');
+const pvTitle = document.getElementById('pvTitle');
+const pvSub = document.getElementById('pvSub');
+const pvWhere = document.getElementById('pvWhere');
+const calcBox = document.getElementById('calcBox');
+const calcExpr = document.getElementById('calcExpr');
+const calcAns = document.getElementById('calcAns');
+let selected = 0;
+function tryCalc(q){
+  if(!q) return null;
+  if(!/^[\d\s\.\+\-\*\/\%\(\)\^,]+$/.test(q)) return null;
+  try{
+    const s = q.replace(/\^/g,'**').replace(/,/g,'');
+    if(!s.trim()) return null;
+    const v = Function('"use strict";return ('+s+')')();
+    if(typeof v !== 'number' || !isFinite(v)) return null;
+    return {expr:q, value:String(v)};
+  }catch{ return null }
+}
+function render(){
+  const q = input.value.trim();
+  const calc = tryCalc(q);
+  if(calc){
+    calcBox.classList.add('on');
+    calcExpr.textContent = calc.expr + ' =';
+    calcAns.textContent = Number(calc.value).toLocaleString();
+  } else calcBox.classList.remove('on');
+  const ql = q.toLowerCase();
+  let items = mockApps.filter(a => !ql || a.name.toLowerCase().includes(ql) || a.path.toLowerCase().includes(ql));
+  if(!ql) items = mockApps.slice(0,8);
+  // group
+  results.innerHTML = '';
+  if(!items.length){
+    results.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted2);font-size:13px">No results</div>';
+    return;
+  }
+  const header = document.createElement('div'); header.className='group'; header.textContent = q ? 'Results' : 'Applications';
+  results.appendChild(header);
+  items.forEach((it,i)=>{
+    const row = document.createElement('div'); row.className='row'+(i===selected?' selected':'');
+    row.innerHTML = `<div class="icon">${it.icon}</div><div style="min-width:0"><div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}</div><div style="font-size:11px;opacity:0.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.path}</div></div><span class="meta">${it.kind==='app'?'App':it.kind==='dir'?'Folder':'File'}</span>`;
+    row.addEventListener('mouseenter',()=>{selected=i; updateSel()});
+    row.addEventListener('click',()=>{selected=i; updateSel()});
+    results.appendChild(row);
+  });
+  // clamp
+  if(selected>=items.length) selected = 0;
+  updatePreview(items[selected]);
+}
+function updateSel(){
+  const rows = results.querySelectorAll('.row');
+  rows.forEach((r,i)=>r.classList.toggle('selected', i===selected));
+  const q = input.value.trim();
+  const calc = tryCalc(q);
+  let items = mockApps.filter(a=> !q || a.name.toLowerCase().includes(q.toLowerCase()) || a.path.toLowerCase().includes(q.toLowerCase()));
+  if(!q) items = mockApps.slice(0,8);
+  if(items[selected]) updatePreview(items[selected]);
+  else if(calc) updatePreview({name:calc.value, path:calc.expr, kind:'calc', icon:'🧮'});
+}
+function updatePreview(it){
+  if(!it) return;
+  pvIcon.textContent = it.icon || it.name[0];
+  pvTitle.textContent = it.name;
+  pvSub.textContent = it.kind==='app'?'Application':it.kind==='dir'?'Folder':it.kind==='file'?'File':'Result';
+  pvWhere.textContent = it.path;
+}
+input.addEventListener('input', ()=>{ selected=0; render(); });
+input.addEventListener('keydown', (e)=>{
+  const count = results.querySelectorAll('.row').length;
+  if(e.key==='ArrowDown'){ selected=Math.min(count-1, selected+1); updateSel(); e.preventDefault(); }
+  if(e.key==='ArrowUp'){ selected=Math.max(0, selected-1); updateSel(); e.preventDefault(); }
+});
+render();
+input.focus();
+// detect latest version for badge
+fetch('https://api.github.com/repos/anshdadhich/finder-releases/releases/latest').then(r=>r.json()).then(j=>{
+  if(j.tag_name){
+    document.querySelectorAll('.eyebrow').forEach(el=> el.innerHTML = '<i></i> '+j.tag_name+' • Windows 10 / 11 • x64');
+  }
+}).catch(()=>{});
+</script>
+</body>
+</html>
