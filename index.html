@@ -86,7 +86,7 @@
     .hero {
       width: 100%;
       max-width: 680px;
-      padding: 120px 0 60px;
+      padding: 72px 0 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -173,7 +173,7 @@
       color: var(--text-dim);
     }
 
-    /* demo video block */
+    /* demo video block + custom controls */
     .demo-block {
       width: 100%;
       max-width: 680px;
@@ -183,9 +183,62 @@
       overflow: hidden;
       display: none;
       background: var(--surface);
+      position: relative;
     }
 
     .demo-block video { width: 100%; display: block; }
+
+    .vc {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+    }
+
+    .vc button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 0;
+      transition: background 0.1s ease;
+    }
+
+    .vc button:hover { background: rgba(255, 255, 255, 0.14); }
+
+    .vc .track {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .vc .track .fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0%;
+      border-radius: 2px;
+      background: #fff;
+    }
+
+    .vc .time {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: #fff;
+      opacity: 0.9;
+      min-width: 78px;
+      text-align: center;
+    }
 
     /* contact */
     .contact {
@@ -421,7 +474,22 @@
     <div class="meta">v0.2.4 • Windows 10/11 x64 • Signed Installer</div>
 
     <div class="demo-block" id="demoBlock">
-      <video id="demoVideo" controls muted loop playsinline autoplay></video>
+      <video id="demoVideo" muted loop playsinline autoplay></video>
+      <div class="vc">
+        <button id="vcPlay" aria-label="Play / Pause">
+          <svg id="vcPauseIco" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
+          <svg id="vcPlayIco" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
+        </button>
+        <div class="track" id="vcTrack"><div class="fill" id="vcFill"></div></div>
+        <span class="time" id="vcTime">0:00 / 0:00</span>
+        <button id="vcMute" aria-label="Mute / Unmute">
+          <svg id="vcVolIco" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <svg id="vcMuteIco" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+        </button>
+        <button id="vcFull" aria-label="Fullscreen">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+      </div>
     </div>
   </main>
 
@@ -501,7 +569,7 @@
     }
     syncThemeIcons();
 
-    /* Video loader fallback */
+    /* Video loader fallback + custom controls */
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
@@ -522,6 +590,47 @@
         video.addEventListener('error', tryNext, { once: true });
         video.load();
       }
+
+      /* custom controls */
+      const playBtn = document.getElementById('vcPlay');
+      const playIco = document.getElementById('vcPlayIco');
+      const pauseIco = document.getElementById('vcPauseIco');
+      const track = document.getElementById('vcTrack');
+      const fill = document.getElementById('vcFill');
+      const timeEl = document.getElementById('vcTime');
+      const muteBtn = document.getElementById('vcMute');
+      const volIco = document.getElementById('vcVolIco');
+      const muteIco = document.getElementById('vcMuteIco');
+      const fullBtn = document.getElementById('vcFull');
+
+      const fmt = (s) => {
+        s = Math.max(0, Math.floor(s || 0));
+        return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+      };
+      function syncPlayIco() {
+        playIco.style.display = video.paused ? 'none' : 'block';
+        pauseIco.style.display = video.paused ? 'block' : 'none';
+      }
+      playBtn.addEventListener('click', () => video.paused ? video.play() : video.pause());
+      video.addEventListener('play', syncPlayIco);
+      video.addEventListener('pause', syncPlayIco);
+      video.addEventListener('timeupdate', () => {
+        if (video.duration) fill.style.width = (video.currentTime / video.duration * 100) + '%';
+        timeEl.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
+      });
+      track.addEventListener('click', (e) => {
+        const r = track.getBoundingClientRect();
+        if (video.duration) video.currentTime = (e.clientX - r.left) / r.width * video.duration;
+      });
+      muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        volIco.style.display = video.muted ? 'none' : 'block';
+        muteIco.style.display = video.muted ? 'block' : 'none';
+      });
+      fullBtn.addEventListener('click', () => {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else block.requestFullscreen().catch(() => {});
+      });
       tryNext();
     })();
 
@@ -575,6 +684,35 @@
         }
       }
 
+      // 1) Same-origin serverless function (Vercel deployment) — key stays
+      //    in Vercel env vars, never in the page.
+      try {
+        const r = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message })
+        });
+        if (r.ok) {
+          form.style.display = 'none';
+          successView.style.display = 'flex';
+          return;
+        }
+        if (r.status !== 404) {
+          // Function exists but rejected (bad fields, key missing, resend down)
+          let detail = '';
+          try { detail = (await r.json()).detail || ''; } catch (_) {}
+          statusEl.textContent = detail
+            ? 'Could not send: ' + detail
+            : 'Could not send — please try again later.';
+          statusEl.className = 'form-status err';
+          return;
+        }
+        // 404 → no function on this host (e.g. GitHub Pages) → try config.js
+      } catch (_) {
+        // network-level failure → try config.js fallback below
+      }
+
+      // 2) Local fallback: direct Resend call via gitignored config.js
       if (!CFG.RESEND_API_KEY) {
         statusEl.textContent = 'Form is not configured yet.';
         statusEl.className = 'form-status err';
