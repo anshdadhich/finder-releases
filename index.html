@@ -79,6 +79,7 @@
     .theme-toggle:hover { color: var(--text); border-color: var(--border-focus); }
 
     .hero {
+      position: relative;
       width: 100%;
       max-width: 720px;
       padding: 96px 0 40px;
@@ -88,6 +89,8 @@
       text-align: center;
       gap: 22px;
     }
+
+    .hero > *:not(.squiggles) { position: relative; z-index: 1; }
 
     .logo-heading img {
       width: 76px;
@@ -276,52 +279,83 @@
     .success-view b { font-size: 14px; }
     .success-view span { font-size: 12px; color: var(--text-muted); }
 
-    /* footer — big gradient wordmark */
+    /* footer — full blue gradient block (logo-matched), white content */
     .footer {
       width: 100%;
       max-width: 900px;
       margin-top: 64px;
+      border-radius: 14px;
+      padding: 40px 28px 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 28px;
+      gap: 24px;
       text-align: center;
+      background: linear-gradient(135deg, #2f7cf6 0%, #0a55e2 100%);
+      box-shadow: 0 20px 60px rgba(10, 85, 226, 0.25);
     }
 
     .footer-word {
-      font-size: clamp(72px, 16vw, 160px);
+      font-size: clamp(64px, 13vw, 130px);
       font-weight: 800;
-      letter-spacing: 6px;
+      letter-spacing: 2px;
       line-height: 0.9;
-      transform: scaleX(1.06);
-      background: linear-gradient(180deg, #ffffff 0%, #cfe4ff 45%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #ffffff;
       user-select: none;
     }
 
     .footer-links {
       display: flex;
-      gap: 24px;
+      gap: 26px;
       flex-wrap: wrap;
       justify-content: center;
       font-size: 13px;
     }
 
     .footer-links a {
-      color: var(--text-muted);
+      color: rgba(255, 255, 255, 0.85);
       text-decoration: none;
       transition: color 0.1s;
     }
 
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover { color: #fff; }
 
     .footer-bottom {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-dim);
-      padding-bottom: 40px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    /* animated squiggles — tiny logo waves drifting behind the hero */
+    .squiggles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .squiggles svg {
+      position: absolute;
+      color: #ffffff;
+      opacity: 0.05;
+      animation: squiggle-float 9s ease-in-out infinite alternate;
+    }
+
+    html[data-site-theme="light"] .squiggles svg { color: var(--accent); opacity: 0.08; }
+
+    .squiggles svg:nth-child(1) { top: 6%;  left: 4%;  width: 120px; animation-duration: 8s; }
+    .squiggles svg:nth-child(2) { top: 14%; right: 6%; width: 90px;  animation-duration: 11s; animation-delay: -3s; }
+    .squiggles svg:nth-child(3) { bottom: 18%; left: 12%; width: 70px; animation-duration: 10s; animation-delay: -5s; }
+    .squiggles svg:nth-child(4) { bottom: 8%; right: 16%; width: 140px; animation-duration: 12s; animation-delay: -7s; }
+    .squiggles svg:nth-child(5) { top: 44%; left: 45%; width: 60px; opacity: 0.04; animation-duration: 9s; animation-delay: -2s; }
+
+    @keyframes squiggle-float {
+      from { transform: translateY(-8px) rotate(-5deg); }
+      to   { transform: translateY(10px) rotate(4deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .squiggles svg { animation: none; }
     }
 
     .toast {
@@ -353,6 +387,14 @@
   </button>
 
   <main class="hero">
+    <div class="squiggles" aria-hidden="true">
+      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
+    </div>
+
     <div class="logo-heading">
       <img src="logo.png" alt="Finder logo">
     </div>
