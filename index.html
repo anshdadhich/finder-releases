@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -13,10 +13,8 @@ body{
   margin:0;background:#08080a;color:#f2f2f3;
   font-family:"Geist Mono",ui-monospace,monospace;
   border-top:3px solid #007aff;
-  text-wrap:pretty;
 }
 a{color:inherit}
-/* — subtle atmospheric depth, not a gradient blob — */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
   background:
@@ -44,16 +42,11 @@ body::after{
   display:grid;grid-template-columns:1.15fr 0.95fr;gap:48px;align-items:start;
 }
 @media(max-width:920px){.hero{grid-template-columns:1fr}}
-.kicker{
-  display:inline-block;
-  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
-  color:#8a8a90;border:1px solid #1e1e22;padding:5px 9px;
-}
+.kicker{display:inline-block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#8a8a90;border:1px solid #1e1e22;padding:5px 9px}
 .h1{
   font-family:"Instrument Serif",Georgia,serif;
   font-size:62px;line-height:0.88;letter-spacing:-0.03em;
-  margin:14px 0 12px;font-weight:400;
-  text-wrap:balance;
+  margin:14px 0 12px;font-weight:400;text-wrap:balance;
 }
 .h1 i{font-style:italic;color:#007aff}
 @media(max-width:600px){.h1{font-size:44px}}
@@ -105,7 +98,6 @@ body::after{
 .calc.on{display:block}
 .calc .e{font-size:11px;color:#8a8a90}
 .calc .a{font-family:"Instrument Serif",serif;font-size:26px}
-/* — anti-slop: definition list, not 3 equal cards — */
 .specs{margin-top:28px;border-top:1px solid #1a1a1e}
 .spec{
   display:grid;grid-template-columns:160px 1fr;gap:24px;
@@ -167,9 +159,9 @@ body::after{
   </section>
 
   <section class="specs" aria-label="Features">
-    <div class="spec"><b>App launch — instant</b><span>Every app indexed locally. Fuzzy ranking on every keystroke, no IPC wait — the list you see is filtered in the browser, just like the real app.</span></div>
-    <div class="spec"><b>File search — NTFS</b><span>Direct MFT scan, ranked and paginated. 500 shown, 3000 fetched. Finds files before Explorer finishes thinking.</span></div>
-    <div class="spec"><b>Calculator — built in</b><span>Type <code>12*7</code> or <code>(3+4)*9</code>. Answer is the top result. No mode switch, no extra UI.</span></div>
+    <div class="spec"><b>App launch — instant</b><span>Every app indexed locally. Fuzzy ranking on every keystroke, no IPC wait.</span></div>
+    <div class="spec"><b>File search — NTFS</b><span>Direct MFT scan, ranked and paginated. Finds files before Explorer finishes thinking.</span></div>
+    <div class="spec"><b>Calculator — built in</b><span>Type <code>12*7</code>. Answer is the top result. No mode switch, no extra UI.</span></div>
   </section>
 
   <section class="download" id="download">
@@ -183,7 +175,7 @@ body::after{
     </div>
     <div class="dl-side">
       <div style="color:#fff">Quick start</div>
-      1. Install & launch<br>
+      1. Install &amp; launch<br>
       2. <span style="color:#fff">Ctrl + Space</span><br>
       3. Type — Enter to launch<br>
       <span style="opacity:0.6">Private source. Public downloads only.</span>
