@@ -6,10 +6,15 @@
   <title>Finder — Instant launcher for Windows</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Your private runtime config (Resend key, inbox). Never commit config.js —
-       copy config.example.js → config.js and fill it in. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Runtime config (Resend key). Copy config.example.js → config.js — gitignored. -->
   <script src="./config.js"></script>
+
+  <script>
+    // Apply saved theme before first paint (no flash)
+    const saved = localStorage.getItem('fs-site-theme');
+    if (saved) document.documentElement.setAttribute('data-site-theme', saved);
+  </script>
 
   <style>
     :root {
@@ -26,6 +31,17 @@
       --font-mono: 'JetBrains Mono', monospace;
     }
 
+    html[data-site-theme="light"] {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --surface-subtle: #f4f4f5;
+      --border: #e4e4e7;
+      --border-focus: #d4d4d8;
+      --text: #18181b;
+      --text-muted: #52525b;
+      --text-dim: #a1a1aa;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
     body {
@@ -37,119 +53,130 @@
       flex-direction: column;
       align-items: center;
       padding: 0 24px;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.5;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
-    header {
-      width: 100%;
-      max-width: 900px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #fff; text-decoration: none; }
-    .brand img { width: 22px; height: 22px; border-radius: 5px; display: block; }
-
-    .version-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
+    /* theme toggle — fixed, out of the way */
+    .theme-toggle {
+      position: fixed;
+      top: 18px;
+      right: 20px;
+      z-index: 10;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       border: 1px solid var(--border);
-      padding: 1px 6px;
-      border-radius: 4px;
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.12s ease;
     }
 
-    .nav-links { display: flex; gap: 16px; align-items: center; }
-    .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.1s; }
-    .nav-link:hover { color: var(--text); }
+    .theme-toggle:hover { color: var(--text); border-color: var(--border-focus); }
 
     .hero {
       width: 100%;
-      max-width: 900px;
-      padding: 64px 0 40px;
+      max-width: 720px;
+      padding: 96px 0 40px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      align-items: center;
+      text-align: center;
+      gap: 22px;
     }
 
-    .logo-heading { display: flex; align-items: center; gap: 18px; }
-    .logo-heading img { width: 64px; height: 64px; border-radius: 14px; display: block; box-shadow: 0 12px 32px rgba(0, 122, 255, 0.25); }
-    h1 { font-size: 42px; font-weight: 700; letter-spacing: -1.2px; color: #fff; }
+    .logo-heading img {
+      width: 76px;
+      height: 76px;
+      border-radius: 16px;
+      display: block;
+      box-shadow: 0 16px 40px rgba(0, 122, 255, 0.3);
+    }
+
+    h1 {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--text);
+    }
 
     p.subtitle {
-      font-size: 15px;
+      font-size: 16px;
       color: var(--text-muted);
-      max-width: 580px;
-      line-height: 1.6;
+      max-width: 520px;
+      line-height: 1.65;
+      margin-top: -8px;
     }
 
-    .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      height: 40px;
-      padding: 0 18px;
-      font-size: 13px;
+      height: 42px;
+      padding: 0 20px;
+      font-size: 13.5px;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.12s ease;
       font-family: var(--font-sans);
     }
 
-    .btn-primary { background: #fafafa; color: #09090b; border: 1px solid #fafafa; }
-    .btn-primary:hover { background: #e4e4e7; border-color: #e4e4e7; }
+    .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
+    .btn-primary:hover { opacity: 0.85; }
     .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { border-color: var(--border-focus); }
 
     .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
 
-    /* ── Contact ─────────────────────────────────────────────── */
-    .contact {
+    /* demo video block — only rendered when demo.mp4/demo.webm exists */
+    .demo-block {
       width: 100%;
-      max-width: 900px;
-      border-top: 1px solid var(--border);
-      padding: 56px 0 8px;
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 48px;
+      max-width: 760px;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+      display: none;
     }
 
-    @media (max-width: 760px) { .contact { grid-template-columns: 1fr; gap: 28px; } }
+    .demo-block video { width: 100%; display: block; background: #000; }
 
-    .contact-info .section-label {
+    /* contact */
+    .contact {
+      width: 100%;
+      max-width: 560px;
+      border-top: 1px solid var(--border);
+      padding: 56px 0 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .contact .section-label {
       font-family: var(--font-mono);
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       color: var(--text-dim);
-      margin-bottom: 14px;
     }
 
-    .contact-info h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; color: #fff; margin-bottom: 10px; }
+    .contact h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
 
-    .contact-info p { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 360px; }
-
-    .contact-points { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-
-    .contact-points div {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .contact-points svg { flex-shrink: 0; margin-top: 1px; color: #34d399; }
+    .contact p.contact-sub { font-size: 14px; color: var(--text-muted); margin-top: -12px; }
 
     .form-card {
+      width: 100%;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -157,10 +184,11 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      text-align: left;
     }
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
 
     .field label {
       display: block;
@@ -245,66 +273,55 @@
       color: #34d399;
     }
 
-    .success-view b { font-size: 14px; color: #fff; }
+    .success-view b { font-size: 14px; }
     .success-view span { font-size: 12px; color: var(--text-muted); }
 
-    /* ── Footer ──────────────────────────────────────────────── */
-    footer {
+    /* footer — big gradient wordmark */
+    .footer {
       width: 100%;
       max-width: 900px;
-      border-top: 1px solid var(--border);
-      margin-top: 56px;
+      margin-top: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      text-align: center;
     }
 
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      gap: 32px;
-      padding: 32px 0;
+    .footer-word {
+      font-size: clamp(72px, 16vw, 160px);
+      font-weight: 800;
+      letter-spacing: -4px;
+      line-height: 0.9;
+      background: linear-gradient(180deg, var(--text) 20%, var(--text-dim) 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      user-select: none;
     }
 
-    @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
-
-    .footer-brand { display: flex; flex-direction: column; gap: 10px; }
-    .footer-brand .row { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff; }
-    .footer-brand .row img { width: 20px; height: 20px; border-radius: 5px; }
-    .footer-brand p { font-size: 12px; color: var(--text-dim); max-width: 260px; line-height: 1.6; }
-
-    .footer-col b {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      margin-bottom: 10px;
-    }
-
-    .footer-col a {
-      display: block;
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
       font-size: 13px;
+    }
+
+    .footer-links a {
       color: var(--text-muted);
       text-decoration: none;
-      margin-bottom: 7px;
       transition: color 0.1s;
     }
 
-    .footer-col a:hover { color: var(--text); }
+    .footer-links a:hover { color: var(--text); }
 
     .footer-bottom {
-      border-top: 1px solid var(--border);
-      padding: 16px 0 28px;
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
+      padding-bottom: 40px;
     }
-
-    .footer-bottom a { color: var(--text-muted); text-decoration: none; }
-    .footer-bottom a:hover { color: var(--text); }
 
     .toast {
       position: fixed;
@@ -312,7 +329,7 @@
       right: 20px;
       background: var(--surface-subtle);
       border: 1px solid var(--border-focus);
-      color: #fff;
+      color: var(--text);
       font-size: 12px;
       padding: 8px 14px;
       border-radius: 6px;
@@ -329,25 +346,18 @@
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <img src="logo.png" alt="Finder logo">
-      <span>Finder</span>
-    </div>
-    <span class="version-tag">v0.2.4</span>
-    <div class="nav-links">
-      <a href="https://github.com/anshdadhich/finder-releases/releases" class="nav-link" target="_blank" rel="noreferrer">Releases</a>
-    </div>
-  </header>
+  <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+    <svg id="iconMoon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg id="iconSun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
 
   <main class="hero">
     <div class="logo-heading">
       <img src="logo.png" alt="Finder logo">
-      <h1>Finder</h1>
     </div>
-
+    <h1>Finder</h1>
     <p class="subtitle">
-      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web. No mouse required.
+      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13.5px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web. No mouse required.
     </p>
 
     <div class="action-row">
@@ -365,29 +375,18 @@
     </div>
 
     <div class="meta">v0.2.4 • Windows 10/11 x64 • signed installer • auto-updates</div>
+
+    <!-- Demo video: rendered only if demo.mp4 / demo.webm exists next to this page -->
+    <div class="demo-block" id="demoBlock">
+      <video id="demoVideo" controls muted loop playsinline></video>
+    </div>
   </main>
 
   <!-- Contact -->
   <section class="contact" id="contact">
-    <div class="contact-info">
-      <div class="section-label">Contact</div>
-      <h2>Get in touch.</h2>
-      <p>Bugs, feature ideas, or just to say it's useful — messages land directly in the developer's inbox.</p>
-      <div class="contact-points">
-        <div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Goes straight to the inbox — no accounts, no forms elsewhere
-        </div>
-        <div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Zero spam — your email is only used to reply
-        </div>
-        <div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Usually answered within a day
-        </div>
-      </div>
-    </div>
+    <div class="section-label">Contact</div>
+    <h2>Send a message</h2>
+    <p class="contact-sub">Bugs, ideas, or feedback — straight to the developer's inbox.</p>
 
     <div class="form-card">
       <form id="contactForm" novalidate>
@@ -408,10 +407,7 @@
         </div>
         <div class="send-row">
           <div class="form-status" id="c-status"></div>
-          <button type="submit" class="send-btn" id="c-send">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send message
-          </button>
+          <button type="submit" class="send-btn" id="c-send">Send message</button>
         </div>
       </form>
       <div class="success-view" id="successView" style="display:none">
@@ -424,55 +420,78 @@
     </div>
   </section>
 
-  <footer>
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="row"><img src="logo.png" alt=""> Finder</div>
-        <p>Instant launcher for Windows. Private source, public downloads.</p>
-      </div>
-      <div class="footer-col">
-        <b>Download</b>
-        <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">Installer</a>
-        <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">Portable ZIP</a>
-        <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">All releases</a>
-      </div>
-      <div class="footer-col">
-        <b>Contact</b>
-        <a href="#contact">Send a message</a>
-        <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Report a bug</a>
-      </div>
+  <footer class="footer">
+    <div class="footer-word">Finder</div>
+    <div class="footer-links">
+      <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">Download</a>
+      <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">Portable ZIP</a>
+      <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">All releases</a>
+      <a href="#contact">Contact</a>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 Finder • Built for Windows</span>
-      <span>v0.2.4</span>
-    </div>
+    <div class="footer-bottom">Windows 10/11 x64 • signed installer • auto-updates</div>
   </footer>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // Runtime config lives in config.js (gitignored):
-    //   window.FINDER_CONFIG = { RESEND_API_KEY: "re_...", TO_EMAIL: "you@..." };
-    // Copy config.example.js → config.js and fill it in.
-    const CFG = window.FINDER_CONFIG || {};
+    /* theme */
+    const themeToggle = document.getElementById('themeToggle');
+    const iconMoon = document.getElementById('iconMoon');
+    const iconSun = document.getElementById('iconSun');
+    function siteTheme() { return document.documentElement.getAttribute('data-site-theme') || 'dark'; }
+    function syncThemeIcons() {
+      const light = siteTheme() === 'light';
+      iconMoon.style.display = light ? 'none' : 'block';
+      iconSun.style.display = light ? 'block' : 'none';
+    }
+    themeToggle.addEventListener('click', () => {
+      const next = siteTheme() === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-site-theme', next);
+      localStorage.setItem('fs-site-theme', next);
+      syncThemeIcons();
+    });
+    if (!saved) {
+      // no saved choice → follow system
+      document.documentElement.setAttribute('data-site-theme',
+        matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    }
+    syncThemeIcons();
 
-    const sendBtn = document.getElementById('c-send');
-    const statusEl = document.getElementById('c-status');
-    const form = document.getElementById('contactForm');
-    const successView = document.getElementById('successView');
-    const msgField = document.getElementById('c-message');
-    const counter = document.getElementById('c-count');
+    /* demo video — show the block only if demo.mp4/demo.webm exists */
+    (function () {
+      const block = document.getElementById('demoBlock');
+      const video = document.getElementById('demoVideo');
+      const sources = ['demo.mp4', 'demo.webm'];
+      let i = 0;
+      function tryNext() {
+        if (i >= sources.length) { block.style.display = 'none'; return; }
+        const src = sources[i++];
+        video.src = src;
+        video.addEventListener('loadeddata', () => { block.style.display = 'block'; }, { once: true });
+        video.addEventListener('error', tryNext, { once: true });
+        video.load();
+      }
+      tryNext();
+    })();
+
+    /* toast */
     const toast = document.getElementById('toast');
-
     function showToast(text) {
       toast.innerText = text;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    msgField.addEventListener('input', () => {
-      counter.textContent = msgField.value.length;
-    });
+    /* contact form (Resend via config.js) */
+    const CFG = window.FINDER_CONFIG || {};
+    const sendBtn = document.getElementById('c-send');
+    const statusEl = document.getElementById('c-status');
+    const form = document.getElementById('contactForm');
+    const successView = document.getElementById('successView');
+    const msgField = document.getElementById('c-message');
+    const counter = document.getElementById('c-count');
+
+    msgField.addEventListener('input', () => { counter.textContent = msgField.value.length; });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
