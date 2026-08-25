@@ -6,7 +6,7 @@
 <title>Finder — Instant launcher for Windows</title>
 <meta name="description" content="Finder is a keyboard launcher for Windows. Ctrl+Space, type, launch. Apps, files, folders, calculator — no mouse.">
 <style>
-/* — Finder's exact design tokens (tauri-ui/styles.css) — */
+/* — Exact tokens from Finder tauri-ui/styles.css — */
 :root{
   --font-mac:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
   --font-mono:"Cascadia Mono",Consolas,"Courier New",monospace;
@@ -15,11 +15,12 @@
   --radius-window:16px;
   --radius-item:8px;
   --radius-badge:5px;
+  --bg-body:#121214;
   --bg-window:rgba(28,28,30,0.82);
-  --bg-preview:rgba(22,23,26,0.77);
   --bg-card:rgba(255,255,255,0.08);
   --bg-hover:rgba(255,255,255,0.08);
   --bg-selected:rgba(0,122,255,0.3);
+  --track:rgba(255,255,255,0.08);
   --border-window:rgba(255,255,255,0.14);
   --border-subtle:rgba(255,255,255,0.08);
   --glass-border:rgba(0,0,0,0.37);
@@ -35,162 +36,129 @@ body{
   margin:0;
   font-family:var(--font-mac);
   color:var(--text-primary);
-  background:#0a0a0c;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg-body);
+  display:flex;flex-direction:column;align-items:center;
   min-height:100vh;
   overflow-x:hidden;
   position:relative;
 }
-/* desktop-wallpaper feel behind the window */
-.desk{
-  position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(900px 500px at 78% 82%, rgba(88,86,214,0.16), transparent 60%),
-    radial-gradient(700px 420px at 12% 18%, rgba(0,122,255,0.10), transparent 60%),
-    linear-gradient(160deg,#0d0d10 0%,#0a0a0c 55%,#101014 100%);
-}
-.desk::after{
-  content:"";position:absolute;inset:0;
-  backdrop-filter:blur(0px);
-}
-.stage{
-  position:relative;z-index:1;
-  display:flex;flex-direction:column;align-items:center;
-  padding:48px 20px 28px;
-}
-/* — the Finder window, same to same — */
+/* faint desktop context behind the window — flat, no gradients */
+.desk{position:fixed;inset:0;z-index:0;background:#0d0d10}
+.stage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:56px 20px 28px}
+
+/* window */
 .launcher{
   width:760px;max-width:calc(100vw - 32px);
   background:var(--bg-window);
   border:1px solid var(--border-window);
   border-radius:var(--radius-window);
-  box-shadow:var(--shadow-mac), 0 30px 80px rgba(0,0,0,0.5);
+  box-shadow:var(--shadow-mac),0 30px 80px rgba(0,0,0,0.5);
   backdrop-filter:blur(24px) saturate(1.6);
   overflow:hidden;
 }
-.search-header{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 18px;
-  border-bottom:1px solid var(--border-subtle);
-}
-.search-header svg{flex:none;opacity:0.55}
-#q{
-  flex:1;background:transparent;border:0;outline:0;
-  color:var(--text-primary);
-  font-family:var(--font-mac);font-size:15px;
-}
+/* search header — 14px 18px, input 18px/-0.2px */
+.search-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border-subtle)}
+.search-icon{width:20px;height:20px;flex:none;fill:var(--text-secondary)}
+#q{flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:var(--font-mac);font-size:18px;font-weight:400;color:var(--text-primary);letter-spacing:-0.2px}
 #q::placeholder{color:var(--text-tertiary)}
-.gear{opacity:0.55;display:flex}
-.body{display:flex;min-height:380px}
-.results{
-  flex:1.25;min-width:0;
-  padding:8px;
-  overflow-y:auto;max-height:420px;
-  border-right:1px solid var(--border-subtle);
+.gear-btn{background:transparent;border:none;border-radius:6px;padding:4px;cursor:pointer;color:var(--text-tertiary);display:flex;align-items:center;justify-content:center}
+.gear-btn .btn-icon{width:15px;height:15px;fill:currentColor}
+.gear-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+/* body: results + preview */
+.body-container{display:flex;overflow:hidden;min-height:0;position:relative}
+#results{flex:1;min-width:0;padding:8px;overflow-y:auto;max-height:420px;border-right:1px solid var(--border-subtle)}
+#results::-webkit-scrollbar{width:5px}
+#results::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:10px}
+.group-label{font-size:10.5px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.6px;padding:8px 10px 4px}
+.result{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:7px 10px;margin-bottom:2px;
+  border-radius:var(--radius-item);cursor:pointer;
+  transition:background 0.08s ease;
 }
-.results::-webkit-scrollbar{width:5px}
-.results::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:10px}
-.group-label{
-  font-family:var(--font-mono);
-  font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--text-tertiary);
-  padding:6px 8px 4px;
-}
-.row{
-  display:flex;align-items:center;gap:12px;
-  padding:8px 10px;
-  border-radius:var(--radius-item);
-  cursor:default;
-}
-.row:hover{background:var(--bg-hover)}
-.row.sel{background:var(--bg-selected);box-shadow:inset 0 0 0 1px rgba(0,122,255,0.55)}
+.result:hover{background:var(--bg-hover)}
+.result.selected{background:var(--bg-selected);box-shadow:inset 0 0 0 1px rgba(var(--accent-blue-rgb),0.4)}
 .chip{
-  width:30px;height:30px;flex:none;
-  display:grid;place-items:center;
-  border-radius:7px;
-  font-size:13px;font-weight:600;color:#fff;
-  background:linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.05));
+  display:flex;align-items:center;justify-content:center;
+  width:26px;height:26px;flex:0 0 auto;border-radius:6px;
+  font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);
+  background:hsl(var(--chip-hue,210) 28% 30%);
   border:1px solid var(--border-subtle);
 }
-.row .txt{min-width:0;flex:1}
-.row .name{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .path{
-  font-family:var(--font-mono);font-size:10.5px;
-  color:var(--text-tertiary);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.result .text{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.result .name{font-size:13px;font-weight:500;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)}
+.result.selected .name{color:#fff}
+.result .path{font-size:11px;margin-top:1px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
+.result.selected .path{color:var(--path-on-selected)}
+.result .tag{
+  flex:0 0 auto;margin-left:auto;
+  font-size:10.5px;font-weight:500;color:var(--text-secondary);
+  background:var(--bg-card);padding:2px 7px;
+  border-radius:var(--radius-badge);border:0.5px solid var(--border-window);
+  white-space:nowrap;
 }
-.row.sel .path{color:var(--path-on-selected)}
-.badge{
-  flex:none;
-  font-size:11px;color:var(--text-secondary);
-  background:var(--bg-card);
-  border-radius:var(--radius-badge);
-  padding:2px 8px;
-}
-.row.sel .badge{background:rgba(255,255,255,0.16);color:#fff}
-/* preview pane */
-.preview{
-  width:300px;flex:none;
-  background:var(--bg-preview);
-  display:flex;flex-direction:column;align-items:center;
-  padding:26px 18px 12px;
-  text-align:center;
-}
-.p-icon{
-  width:88px;height:88px;
-  display:grid;place-items:center;
-  border-radius:14px;
-  font-size:34px;font-weight:600;color:#fff;
-  background:linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05));
-  border:1px solid var(--border-subtle);
-}
-.p-name{margin-top:14px;font-size:14px;font-weight:600}
-.p-kind{margin-top:2px;font-size:12px;color:var(--text-secondary)}
-.p-sec{
-  width:100%;margin-top:16px;padding-top:12px;
-  border-top:1px solid var(--border-subtle);
-  display:flex;flex-direction:column;gap:2px;text-align:left;
-}
-.p-where-l{font-size:11px;color:var(--text-tertiary);padding:0 8px}
-.p-where{
-  font-family:var(--font-mono);font-size:10.5px;
-  color:var(--text-secondary);
-  padding:2px 8px 6px;
-  word-break:break-all;
-}
-.p-act{
-  font-size:13px;color:var(--text-primary);
-  padding:9px 8px;border-radius:var(--radius-item);
-}
-.p-act:hover{background:var(--bg-hover)}
-/* calculator row (matches app math hero) */
-.calc{
-  margin:8px;
+/* calculator hero — exact app structure */
+.result.calc-hero-row{display:block;padding:0;margin-bottom:2px}
+.result.calc-hero-row.selected{background:transparent;box-shadow:none}
+.calc-hero{
   background:var(--bg-card);
   border:1px solid var(--border-subtle);
   border-radius:12px;
-  padding:14px 18px;
-  display:none;
+  padding:16px 20px;
+  display:flex;flex-direction:column;gap:10px;
 }
-.calc.on{display:block}
-.calc .e{font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)}
-.calc .a{font-size:30px;font-weight:700;letter-spacing:-0.02em;margin-top:4px}
-/* below-window: download, styled like the app */
+.calc-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.calc-tokens{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:14px;font-weight:500;min-width:0}
+.tag-num{background:var(--track);padding:2px 8px;border-radius:6px;color:var(--text-primary);font-family:var(--font-mono);white-space:nowrap}
+.tag-op{color:#ff453a;font-weight:700}
+.calc-badge{background:var(--track);border:1px solid var(--border-subtle);color:var(--text-secondary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;flex-shrink:0}
+.calc-result{font-size:34px;font-weight:700;letter-spacing:-0.8px;line-height:1.1;color:var(--text-primary);max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+/* preview pane — 310px, transparent, border-left */
+.preview-pane{
+  flex:0 0 auto;width:310px;padding:20px 22px;
+  display:flex;flex-direction:column;
+  background:transparent;
+  border-left:1px solid var(--border-subtle);
+  overflow-y:auto;max-height:420px;
+}
+.preview-header{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding-bottom:16px;border-bottom:1px solid var(--border-subtle);
+}
+.preview-large-icon{
+  width:88px;height:88px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;
+}
+.preview-large-icon .pv-initial{font-size:44px;font-weight:500;color:var(--text-primary)}
+.preview-title{font-size:14.5px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:var(--text-primary)}
+.preview-type{font-size:11.5px;color:var(--text-secondary);margin-top:2px}
+.preview-metadata{margin-top:2px;display:flex;flex-direction:column;width:100%}
+.meta-row{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  min-height:30px;font-size:11.5px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.preview-metadata .meta-row:last-child{border-bottom:none}
+.meta-label{color:var(--text-tertiary);flex:0 0 auto}
+.meta-value{color:var(--text-primary);font-weight:500;min-width:0;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-family:var(--font-mono);font-size:11px}
+.preview-actions{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.pv-btn{
+  border:none;background:transparent;color:var(--text-primary);
+  font-family:var(--font-mac);font-size:12px;font-weight:500;
+  width:calc(100% + 44px);margin:0 -22px;padding:10px 22px;
+  border-radius:0;cursor:pointer;text-align:left;
+  transition:background 0.08s ease;
+}
+.pv-btn:hover{background:var(--bg-hover)}
+/* below-window CTA — same flat language */
 .below{
   margin-top:26px;
   display:flex;flex-direction:column;align-items:center;gap:12px;
   text-align:center;
 }
-.hint{
-  font-size:12.5px;color:var(--text-secondary);
-  display:flex;align-items:center;gap:7px;
-}
-.kbd{
-  font-family:var(--font-mono);font-size:11px;
-  border:1px solid var(--border-window);border-bottom-width:2px;
-  border-radius:5px;padding:2px 7px;
-  background:rgba(255,255,255,0.06);
-}
+.hint{font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:7px}
+.kbd{font-family:var(--font-mono);font-size:11px;border:1px solid var(--border-window);border-bottom-width:2px;border-radius:5px;padding:2px 7px;background:var(--bg-card)}
 .ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btn{
   display:inline-flex;align-items:center;gap:8px;
@@ -203,12 +171,11 @@ body{
 .btn-primary:hover{background:#2b8dff}
 .btn-ghost{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-window)}
 .btn-ghost:hover{background:rgba(255,255,255,0.12)}
-.fine{
-  font-family:var(--font-mono);font-size:10.5px;color:var(--text-tertiary);
-}
+.fine{font-family:var(--font-mono);font-size:10.5px;color:var(--text-tertiary)}
 .fine a{color:var(--text-secondary);text-decoration:none}
 @media(max-width:820px){
-  .preview{display:none}
+  .preview-pane{display:none}
+  #results{border-right-color:transparent}
   .launcher{width:100%}
 }
 </style>
@@ -219,26 +186,29 @@ body{
 <div class="stage">
   <div class="launcher">
     <div class="search-header">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <svg class="search-icon" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 015.9 12.1l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
       <input id="q" placeholder="Search apps, files, folders..." autocomplete="off" spellcheck="false">
-      <span class="gear">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </span>
+      <button class="gear-btn" aria-label="Settings">
+        <svg class="btn-icon" viewBox="0 0 24 24"><path d="M19.14 12.94a7.07 7.07 0 000-1.88l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.61-.22l-2.39.96a7.3 7.3 0 00-1.62-.94l-.36-2.54a.5.5 0 00-.5-.42h-3.84a.5.5 0 00-.5.42l-.36 2.54c-.58.24-1.12.55-1.62.94l-2.39-.96a.5.5 0 00-.61.22L2.6 8.84a.5.5 0 00.12.64l2.03 1.58a7.07 7.07 0 000 1.88L2.72 14.5a.5.5 0 00-.12.64l1.92 3.32c.13.22.39.31.61.22l2.39-.96c.5.39 1.04.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54a7.3 7.3 0 001.62-.94l2.39.96c.22.09.48 0 .61-.22l1.92-3.32a.5.5 0 00-.12-.64l-2.03-1.56zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+      </button>
     </div>
 
-    <div class="calc" id="calc"><div class="e" id="ce"></div><div class="a" id="ca"></div></div>
+    <div id="results"></div>
 
-    <div class="body">
-      <div class="results" id="list"></div>
-      <div class="preview">
-        <div class="p-icon" id="pi">A</div>
-        <div class="p-name" id="pt">Access</div>
-        <div class="p-kind" id="pk">Application</div>
-        <div class="p-sec">
-          <div class="p-where-l">Where</div>
-          <div class="p-where" id="pw">aumid:Microsoft.Office.MSACCESS.EXE.15</div>
-          <div class="p-act">Run as administrator</div>
-          <div class="p-act">Open file location</div>
+    <div class="body-container">
+      <div id="results"></div>
+      <div class="preview-pane pv-app">
+        <div class="preview-header">
+          <div class="preview-large-icon"><span class="pv-initial" id="pi">A</span></div>
+          <div class="preview-title" id="pt">Access</div>
+          <div class="preview-type" id="pk">Application</div>
+        </div>
+        <div class="preview-metadata">
+          <div class="meta-row"><span class="meta-label">Where</span><span class="meta-value" id="pw">aumid:Microsoft.Office.MSACCESS.EXE.15</span></div>
+        </div>
+        <div class="preview-actions">
+          <button class="pv-btn">Run as administrator</button>
+          <button class="pv-btn">Open file location</button>
         </div>
       </div>
     </div>
@@ -246,7 +216,7 @@ body{
 
   <div class="below">
     <div class="hint">
-      <span class="kbd">Ctrl</span><span class="kbd">Space</span> to summon — this is the real UI, try typing
+      <span class="kbd">Ctrl</span><span class="kbd">Space</span> to summon — the real UI, try typing
     </div>
     <div class="ctas">
       <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download Finder — free</a>
@@ -258,42 +228,55 @@ body{
 
 <script>
 const apps=[
-  {n:"Access",p:"aumid:Microsoft.Office.MSACCESS.EXE.15",k:"Application",t:"app",i:"A"},
-  {n:"Administrative Tools",p:"Administrative Tools.lnk",k:"Application",t:"app",i:"⚙"},
-  {n:"Antigravity",p:"Antigravity",k:"Application",t:"app",i:"A"},
-  {n:"Antigravity IDE",p:"Antigravity IDE",k:"Application",t:"app",i:"A"},
-  {n:"Calculator",p:"Calculator",k:"Application",t:"app",i:"▦"},
-  {n:"Calendar",p:"Calendar",k:"Application",t:"app",i:"◫"},
-  {n:"Camera",p:"Camera",k:"Application",t:"app",i:"◎"},
-  {n:"Chrome",p:"chrome.exe",k:"Application",t:"app",i:"○"},
-  {n:"Code",p:"Code.exe",k:"Application",t:"app",i:"⌖"},
-  {n:"Control Panel",p:"Control Panel",k:"Application",t:"app",i:"🎛"},
-  {n:"Downloads",p:"C:\\Users\\you\\Downloads",k:"Folder",t:"dir",i:"▸"},
-  {n:"Documents",p:"C:\\Users\\you\\Documents",k:"Folder",t:"dir",i:"▸"},
-  {n:"whatsapp.py",p:"C:\\Projects\\whatsapp.py",k:"File",t:"file",i:"≡"},
-  {n:"whats-new.md",p:"C:\\Docs\\whats-new.md",k:"File",t:"file",i:"≡"},
+  {n:"Access",p:"aumid:Microsoft.Office.MSACCESS.EXE.15",k:"app",t:"App",i:"A",h:348},
+  {n:"Administrative Tools",p:"Administrative Tools.lnk",k:"app",t:"App",i:"A",h:210},
+  {n:"Antigravity",p:"Antigravity",k:"app",t:"App",i:"A",h:262},
+  {n:"Antigravity IDE",p:"Antigravity IDE",k:"app",t:"App",i:"A",h:280},
+  {n:"Calculator",p:"Calculator",k:"app",t:"App",i:"C",h:160},
+  {n:"Calendar",p:"Calendar",k:"app",t:"App",i:"C",h:200},
+  {n:"Camera",p:"Camera",k:"app",t:"App",i:"C",h:32},
+  {n:"Chrome",p:"chrome.exe",k:"app",t:"App",i:"C",h:210},
+  {n:"Code",p:"Code.exe",k:"app",t:"App",i:"C",h:260},
+  {n:"Control Panel",p:"Control Panel",k:"app",t:"App",i:"C",h:180},
+  {n:"Downloads",p:"C:\\Users\\you\\Downloads",k:"dir",t:"Folder",i:"D",h:45},
+  {n:"Documents",p:"C:\\Users\\you\\Documents",k:"dir",t:"Folder",i:"D",h:45},
+  {n:"whatsapp.py",p:"C:\\Projects\\whatsapp.py",k:"file",t:"File",i:"W",h:130},
+  {n:"whats-new.md",p:"C:\\Docs\\whats-new.md",k:"file",t:"File",i:"W",h:130},
 ];
-const q=document.getElementById('q'), list=document.getElementById('list');
+const q=document.getElementById('q'), list=document.getElementById('results');
 const pi=document.getElementById('pi'), pt=document.getElementById('pt'), pk=document.getElementById('pk'), pw=document.getElementById('pw');
-const calc=document.getElementById('calc'), ce=document.getElementById('ce'), ca=document.getElementById('ca');
 let sel=0;
 function calcTry(s){
   if(!s || !/^[\d\s\.\+\-\*\/\%\(\)\^,]+$/.test(s)) return null;
-  try{const v=Function('"use strict";return ('+s.replace(/\^/g,'**')+')')(); if(typeof v==='number'&&isFinite(v)) return String(v)}catch{}
+  try{const v=Function('"use strict";return ('+s.replace(/\^/g,'**')+')')(); if(typeof v==='number'&&isFinite(v)) return v}catch{}
   return null;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function tokenHTML(v){
+  return v.split(/([+\-*/%()^,])/).map(t=>{
+    if(!t) return '';
+    if(/^[+\-*/%()^,]$/.test(t)) return '<span class="tag-op">'+esc(t)+'</span>';
+    return '<span class="tag-num">'+esc(t)+'</span>';
+  }).join('');
 }
 function render(){
   const v=q.value.trim(), ql=v.toLowerCase();
+  list.innerHTML='';
   const cv=calcTry(v);
-  if(cv!==null){ calc.classList.add('on'); ce.textContent=v+' ='; ca.textContent=Number(cv).toLocaleString(); } else calc.classList.remove('on');
+  if(cv!==null){
+    const row=document.createElement('div'); row.className='result calc-hero-row';
+    row.innerHTML='<div class="calc-hero"><div class="calc-head"><div class="calc-tokens">'+tokenHTML(v)+'</div><span class="calc-badge">Calculator Result</span></div><div class="calc-result">'+Number(cv).toLocaleString()+'</div></div>';
+    list.appendChild(row);
+    pi.textContent='🧮'; pt.textContent=Number(cv).toLocaleString(); pk.textContent='Calculator Result'; pw.textContent=v;
+    return;
+  }
   let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
   if(!ql) items=apps.slice(0,9);
-  list.innerHTML='';
-  if(!items.length){ list.innerHTML='<div style="padding:24px;text-align:center;color:rgba(235,235,245,0.4);font-size:13px">No results</div>'; return; }
+  if(!items.length){ list.innerHTML='<div class="group-label" style="padding:14px 10px">No results</div>'; return; }
   const g=document.createElement('div'); g.className='group-label'; g.textContent= v ? 'Results' : 'Applications'; list.appendChild(g);
   items.forEach((it,i)=>{
-    const r=document.createElement('div'); r.className='row'+(i===sel?' sel':'');
-    r.innerHTML=`<div class="chip">${it.i}</div><div class="txt"><div class="name">${it.n}</div><div class="path">${it.p}</div></div><span class="badge">${it.t==='app'?'App':it.t==='dir'?'Folder':'File'}</span>`;
+    const r=document.createElement('div'); r.className='result'+(i===sel?' selected':'');
+    r.innerHTML='<span class="chip" style="--chip-hue:'+it.h+'">'+it.i+'</span><div class="text"><div class="name">'+esc(it.n)+'</div><div class="path">'+esc(it.p)+'</div></div><span class="tag">'+it.t+'</span>';
     r.addEventListener('mouseenter',()=>{sel=i; sync()});
     list.appendChild(r);
   });
@@ -301,8 +284,8 @@ function render(){
   syncPreview(items[sel]);
 }
 function sync(){
-  const rows=list.querySelectorAll('.row');
-  rows.forEach((r,i)=>r.classList.toggle('sel', i===sel));
+  const rows=list.querySelectorAll('.result:not(.calc-hero-row)');
+  rows.forEach((r,i)=>r.classList.toggle('selected', i===sel));
   const v=q.value.trim(), ql=v.toLowerCase();
   let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
   if(!v) items=apps.slice(0,9);
@@ -310,11 +293,13 @@ function sync(){
 }
 function syncPreview(it){
   if(!it) return;
-  pi.textContent=it.i; pt.textContent=it.n; pk.textContent=it.k; pw.textContent=it.p;
+  pi.textContent=it.i; pt.textContent=it.n;
+  pk.textContent=it.k==='app'?'Application':it.k==='dir'?'Folder':'File';
+  pw.textContent=it.p;
 }
 q.addEventListener('input',()=>{sel=0;render()});
 q.addEventListener('keydown',e=>{
-  const n=list.querySelectorAll('.row').length;
+  const n=list.querySelectorAll('.result:not(.calc-hero-row)').length;
   if(e.key==='ArrowDown'){sel=Math.min(n-1,sel+1);sync();e.preventDefault()}
   if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);sync();e.preventDefault()}
   if(e.key==='Escape'){q.value='';sel=0;render()}
