@@ -7,6 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Your private runtime config (Resend key, inbox). Never commit config.js —
+       copy config.example.js → config.js and fill it in. -->
+  <script src="./config.js"></script>
 
   <style>
     :root {
@@ -48,7 +51,8 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff; text-decoration: none; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #fff; text-decoration: none; }
+    .brand img { width: 22px; height: 22px; border-radius: 5px; display: block; }
 
     .version-tag {
       font-family: var(--font-mono);
@@ -60,47 +64,27 @@
     }
 
     .nav-links { display: flex; gap: 16px; align-items: center; }
-
     .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.1s; }
     .nav-link:hover { color: var(--text); }
 
     .hero {
       width: 100%;
       max-width: 900px;
-      padding: 64px 0 32px;
+      padding: 64px 0 40px;
       display: flex;
       flex-direction: column;
       gap: 28px;
     }
 
-    .logo-heading { display: flex; align-items: center; gap: 16px; }
-
-    .logo-mark {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      background: var(--accent);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
-      flex-shrink: 0;
-    }
-
-    .logo-mark svg { width: 26px; height: 26px; stroke: #fff; }
-
-    h1 {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: -1px;
-      color: #fff;
-    }
+    .logo-heading { display: flex; align-items: center; gap: 18px; }
+    .logo-heading img { width: 64px; height: 64px; border-radius: 14px; display: block; box-shadow: 0 12px 32px rgba(0, 122, 255, 0.25); }
+    h1 { font-size: 42px; font-weight: 700; letter-spacing: -1.2px; color: #fff; }
 
     p.subtitle {
       font-size: 15px;
       color: var(--text-muted);
       max-width: 580px;
       line-height: 1.6;
-      margin-top: -16px;
     }
 
     .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -122,83 +106,194 @@
 
     .btn-primary { background: #fafafa; color: #09090b; border: 1px solid #fafafa; }
     .btn-primary:hover { background: #e4e4e7; border-color: #e4e4e7; }
-
     .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { border-color: var(--border-focus); }
 
     .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
 
-    /* Contact form */
+    /* ── Contact ─────────────────────────────────────────────── */
     .contact {
       width: 100%;
-      max-width: 560px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      max-width: 900px;
+      border-top: 1px solid var(--border);
+      padding: 56px 0 8px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 48px;
+    }
+
+    @media (max-width: 760px) { .contact { grid-template-columns: 1fr; gap: 28px; } }
+
+    .contact-info .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    .contact-info h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; color: #fff; margin-bottom: 10px; }
+
+    .contact-info p { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 360px; }
+
+    .contact-points { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+
+    .contact-points div {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .contact-points svg { flex-shrink: 0; margin-top: 1px; color: #34d399; }
+
+    .form-card {
       background: var(--surface);
-      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 14px;
     }
 
-    .contact h2 { font-size: 15px; font-weight: 600; color: #fff; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
 
-    .contact p.contact-sub {
-      font-size: 12px;
+    .field label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
       color: var(--text-dim);
-      margin-top: -6px;
+      margin-bottom: 6px;
     }
 
-    .contact input, .contact textarea {
+    .field input, .field textarea {
       width: 100%;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 9px 12px;
+      padding: 10px 12px;
       color: var(--text);
       font-size: 13px;
       font-family: var(--font-sans);
       outline: none;
-      transition: border-color 0.12s;
-      resize: vertical;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease;
     }
 
-    .contact input:focus, .contact textarea:focus { border-color: var(--border-focus); }
+    .field textarea { resize: vertical; min-height: 96px; }
 
-    .contact label {
-      font-size: 11px;
+    .field input:focus, .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+    }
+
+    .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+
+    .msg-counter {
       font-family: var(--font-mono);
+      font-size: 10px;
       color: var(--text-dim);
-      display: block;
-      margin-bottom: 4px;
+      text-align: right;
+      margin-top: 4px;
     }
 
-    .contact .send-btn {
-      align-self: flex-start;
-      background: var(--accent);
-      color: #fff;
-      border: 1px solid transparent;
-      font-weight: 600;
-    }
+    .send-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
-    .contact .send-btn:hover { background: #2b8dff; }
-    .contact .send-btn:disabled { opacity: 0.5; cursor: default; }
-
-    .form-status {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      min-height: 16px;
-    }
-
+    .form-status { font-family: var(--font-mono); font-size: 11px; min-height: 16px; }
     .form-status.ok { color: #34d399; }
     .form-status.err { color: #f87171; }
 
-    .page-footer {
+    .send-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 20px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: background 0.12s ease, opacity 0.12s ease;
+    }
+
+    .send-btn:hover { background: #2b8dff; }
+    .send-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .success-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 28px 10px;
+      text-align: center;
+    }
+
+    .success-view .check {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      display: grid; place-items: center;
+      color: #34d399;
+    }
+
+    .success-view b { font-size: 14px; color: #fff; }
+    .success-view span { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    footer {
       width: 100%;
       max-width: 900px;
       border-top: 1px solid var(--border);
-      padding: 18px 0 28px;
+      margin-top: 56px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 32px;
+      padding: 32px 0;
+    }
+
+    @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
+
+    .footer-brand { display: flex; flex-direction: column; gap: 10px; }
+    .footer-brand .row { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff; }
+    .footer-brand .row img { width: 20px; height: 20px; border-radius: 5px; }
+    .footer-brand p { font-size: 12px; color: var(--text-dim); max-width: 260px; line-height: 1.6; }
+
+    .footer-col b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 7px;
+      transition: color 0.1s;
+    }
+
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 16px 0 28px;
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-dim);
@@ -208,8 +303,8 @@
       gap: 8px;
     }
 
-    .page-footer a { color: var(--text-muted); text-decoration: none; }
-    .page-footer a:hover { color: var(--text); }
+    .footer-bottom a { color: var(--text-muted); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--text); }
 
     .toast {
       position: fixed;
@@ -236,12 +331,10 @@
 
   <header>
     <div class="brand">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
+      <img src="logo.png" alt="Finder logo">
       <span>Finder</span>
     </div>
+    <span class="version-tag">v0.2.4</span>
     <div class="nav-links">
       <a href="https://github.com/anshdadhich/finder-releases/releases" class="nav-link" target="_blank" rel="noreferrer">Releases</a>
     </div>
@@ -249,17 +342,12 @@
 
   <main class="hero">
     <div class="logo-heading">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </div>
+      <img src="logo.png" alt="Finder logo">
       <h1>Finder</h1>
     </div>
 
     <p class="subtitle">
-      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web.
+      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web. No mouse required.
     </p>
 
     <div class="action-row">
@@ -277,42 +365,103 @@
     </div>
 
     <div class="meta">v0.2.4 • Windows 10/11 x64 • signed installer • auto-updates</div>
-
-    <!-- Message form (Resend via worker) -->
-    <div class="contact">
-      <h2>Send a message</h2>
-      <p class="contact-sub">Questions, bugs, feature requests — straight to the developer's inbox.</p>
-      <div>
-        <label for="c-name">Name (optional)</label>
-        <input id="c-name" type="text" placeholder="Your name" maxlength="80">
-      </div>
-      <div>
-        <label for="c-email">Email</label>
-        <input id="c-email" type="email" placeholder="you@example.com" maxlength="120">
-      </div>
-      <div>
-        <label for="c-message">Message</label>
-        <textarea id="c-message" rows="4" placeholder="What's on your mind?" maxlength="2000"></textarea>
-      </div>
-      <button class="btn send-btn" id="c-send">Send message</button>
-      <div class="form-status" id="c-status"></div>
-    </div>
   </main>
 
-  <footer class="page-footer">
-    <span>Windows 10/11 x64 • signed installer • auto-updates</span>
-    <span><a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">all releases</a></span>
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="contact-info">
+      <div class="section-label">Contact</div>
+      <h2>Get in touch.</h2>
+      <p>Bugs, feature ideas, or just to say it's useful — messages land directly in the developer's inbox.</p>
+      <div class="contact-points">
+        <div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Goes straight to the inbox — no accounts, no forms elsewhere
+        </div>
+        <div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Zero spam — your email is only used to reply
+        </div>
+        <div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Usually answered within a day
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <form id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="c-name">Name</label>
+            <input id="c-name" type="text" placeholder="Your name" maxlength="80">
+          </div>
+          <div class="field">
+            <label for="c-email">Email *</label>
+            <input id="c-email" type="email" placeholder="you@example.com" maxlength="120" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="c-message">Message *</label>
+          <textarea id="c-message" rows="4" placeholder="What's on your mind?" maxlength="2000" required></textarea>
+          <div class="msg-counter"><span id="c-count">0</span>/2000</div>
+        </div>
+        <div class="send-row">
+          <div class="form-status" id="c-status"></div>
+          <button type="submit" class="send-btn" id="c-send">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send message
+          </button>
+        </div>
+      </form>
+      <div class="success-view" id="successView" style="display:none">
+        <div class="check">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <b>Message sent</b>
+        <span>I'll get back to you at your email.</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="row"><img src="logo.png" alt=""> Finder</div>
+        <p>Instant launcher for Windows. Private source, public downloads.</p>
+      </div>
+      <div class="footer-col">
+        <b>Download</b>
+        <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">Installer</a>
+        <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">Portable ZIP</a>
+        <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">All releases</a>
+      </div>
+      <div class="footer-col">
+        <b>Contact</b>
+        <a href="#contact">Send a message</a>
+        <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Report a bug</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Finder • Built for Windows</span>
+      <span>v0.2.4</span>
+    </div>
   </footer>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // Set this after deploying contact-worker.js to Cloudflare Workers
-    // (see worker.js in this repo). Leave empty to disable the form.
-    const CONTACT_ENDPOINT = "";
+    // Runtime config lives in config.js (gitignored):
+    //   window.FINDER_CONFIG = { RESEND_API_KEY: "re_...", TO_EMAIL: "you@..." };
+    // Copy config.example.js → config.js and fill it in.
+    const CFG = window.FINDER_CONFIG || {};
 
     const sendBtn = document.getElementById('c-send');
     const statusEl = document.getElementById('c-status');
+    const form = document.getElementById('contactForm');
+    const successView = document.getElementById('successView');
+    const msgField = document.getElementById('c-message');
+    const counter = document.getElementById('c-count');
     const toast = document.getElementById('toast');
 
     function showToast(text) {
@@ -321,10 +470,15 @@
       setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    sendBtn.addEventListener('click', async () => {
+    msgField.addEventListener('input', () => {
+      counter.textContent = msgField.value.length;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const name = document.getElementById('c-name').value.trim();
       const email = document.getElementById('c-email').value.trim();
-      const message = document.getElementById('c-message').value.trim();
+      const message = msgField.value.trim();
 
       if (!email || !message) {
         statusEl.textContent = 'Email and message are required.';
@@ -332,8 +486,8 @@
         return;
       }
 
-      if (!CONTACT_ENDPOINT) {
-        statusEl.textContent = 'Contact form is not configured yet — try again soon.';
+      if (!CFG.RESEND_API_KEY) {
+        statusEl.textContent = 'Form is not configured yet — try again soon.';
         statusEl.className = 'form-status err';
         return;
       }
@@ -343,15 +497,23 @@
       statusEl.className = 'form-status';
 
       try {
-        const r = await fetch(CONTACT_ENDPOINT, {
+        const r = await fetch('https://api.resend.com/emails', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, message })
+          headers: {
+            'Authorization': 'Bearer ' + CFG.RESEND_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Finder <onboarding@resend.dev>',
+            to: [CFG.TO_EMAIL || 'anshdadhich@gmail.com'],
+            reply_to: email,
+            subject: 'Finder feedback' + (name ? ' from ' + name : ''),
+            text: 'From: ' + (name || 'anonymous') + ' <' + email + '>\n\n' + message
+          })
         });
         if (!r.ok) throw new Error('send failed');
-        statusEl.textContent = 'Message sent — thanks!';
-        statusEl.className = 'form-status ok';
-        document.getElementById('c-message').value = '';
+        form.style.display = 'none';
+        successView.style.display = 'flex';
       } catch (_) {
         statusEl.textContent = 'Could not send — please try again later.';
         statusEl.className = 'form-status err';
