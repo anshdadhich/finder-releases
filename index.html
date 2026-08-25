@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
   <link rel="preload" as="image" href="logo.png">
   <!-- Runtime config (Resend key). Copy config.example.js → config.js — gitignored. -->
   <script src="./config.js"></script>
@@ -174,7 +176,7 @@
       color: var(--text-dim);
     }
 
-    /* demo video block + custom controls */
+    /* demo video block: skeleton shimmer → video + custom controls */
     .demo-block {
       width: 100%;
       max-width: 680px;
@@ -189,22 +191,80 @@
 
     .demo-block video { width: 100%; display: block; }
 
+    /* skeleton shown while the video buffers */
+    .demo-skeleton {
+      position: absolute;
+      inset: 0;
+      aspect-ratio: 16 / 9;
+      background:
+        linear-gradient(100deg,
+          rgba(255,255,255,0.04) 30%,
+          rgba(255,255,255,0.09) 50%,
+          rgba(255,255,255,0.04) 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo-skeleton { animation: none; }
+    }
+
+    .demo-block.ready .demo-skeleton { display: none; }
+
+    /* center play overlay when paused */
+    .big-play {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      border: none;
+    }
+
+    .demo-block.paused .big-play { display: grid; }
+
+    .big-play span {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: transform 0.12s ease;
+    }
+
+    .big-play:hover span { transform: scale(1.08); }
+    .big-play svg { width: 22px; height: 22px; fill: #fff; margin-left: 3px; }
+
+    /* control bar */
     .vc {
       position: absolute;
       left: 0; right: 0; bottom: 0;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 14px;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+      padding: 12px 14px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      transition: opacity 0.2s ease;
     }
+
+    .demo-block.hide-ui .vc { opacity: 0; }
+    .demo-block.hide-ui .big-play { opacity: 0; }
 
     .vc button {
       background: transparent;
       border: none;
       color: #fff;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -213,23 +273,47 @@
       transition: background 0.1s ease;
     }
 
-    .vc button:hover { background: rgba(255, 255, 255, 0.14); }
+    .vc button:hover { background: rgba(255, 255, 255, 0.16); }
+    .vc svg { display: block; }
 
     .vc .track {
       flex: 1;
-      height: 4px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.25);
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.22);
       cursor: pointer;
       position: relative;
+      transition: height 0.1s ease;
+    }
+
+    .vc .track:hover { height: 7px; }
+
+    .vc .track .buffered {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0%;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .vc .track .fill {
       position: absolute;
       left: 0; top: 0; bottom: 0;
       width: 0%;
-      border-radius: 2px;
+      border-radius: 3px;
       background: #fff;
+    }
+
+    .vc .track .knob {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
 
     .vc .time {
@@ -237,7 +321,7 @@
       font-size: 10.5px;
       color: #fff;
       opacity: 0.9;
-      min-width: 78px;
+      min-width: 82px;
       text-align: center;
     }
 
@@ -475,20 +559,28 @@
     <div class="meta">v0.2.4 • Windows 10/11 x64 • Signed Installer</div>
 
     <div class="demo-block" id="demoBlock">
+      <div class="demo-skeleton"></div>
       <video id="demoVideo" muted loop playsinline autoplay></video>
+      <button class="big-play" id="bigPlay" aria-label="Play">
+        <span><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg></span>
+      </button>
       <div class="vc">
         <button id="vcPlay" aria-label="Play / Pause">
-          <svg id="vcPauseIco" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
-          <svg id="vcPlayIco" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
+          <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
+          <svg id="vcPlayIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
         </button>
-        <div class="track" id="vcTrack"><div class="fill" id="vcFill"></div></div>
+        <div class="track" id="vcTrack">
+          <div class="buffered" id="vcBuffered"></div>
+          <div class="fill" id="vcFill"></div>
+          <div class="knob" id="vcKnob"></div>
+        </div>
         <span class="time" id="vcTime">0:00 / 0:00</span>
         <button id="vcMute" aria-label="Mute / Unmute">
-          <svg id="vcVolIco" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-          <svg id="vcMuteIco" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+          <svg id="vcVolIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <svg id="vcMuteIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
         </button>
         <button id="vcFull" aria-label="Fullscreen">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
         </button>
       </div>
     </div>
@@ -570,7 +662,7 @@
     }
     syncThemeIcons();
 
-    /* Video loader fallback + custom controls */
+    /* Video loader: skeleton shimmer → video with custom controls */
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
@@ -585,6 +677,7 @@
         const src = sources[i++];
         video.src = src;
         video.addEventListener('loadeddata', () => {
+          block.classList.add('ready'); // hides the skeleton
           block.style.display = 'block';
           video.play().catch(() => {}); // muted + playsinline → autoplay allowed
         }, { once: true });
@@ -592,12 +685,15 @@
         video.load();
       }
 
-      /* custom controls */
+      /* ── custom controls ── */
       const playBtn = document.getElementById('vcPlay');
+      const bigPlay = document.getElementById('bigPlay');
       const playIco = document.getElementById('vcPlayIco');
       const pauseIco = document.getElementById('vcPauseIco');
       const track = document.getElementById('vcTrack');
+      const bufferedEl = document.getElementById('vcBuffered');
       const fill = document.getElementById('vcFill');
+      const knob = document.getElementById('vcKnob');
       const timeEl = document.getElementById('vcTime');
       const muteBtn = document.getElementById('vcMute');
       const volIco = document.getElementById('vcVolIco');
@@ -611,18 +707,49 @@
       function syncPlayIco() {
         playIco.style.display = video.paused ? 'none' : 'block';
         pauseIco.style.display = video.paused ? 'block' : 'none';
+        block.classList.toggle('paused', video.paused);
       }
-      playBtn.addEventListener('click', () => video.paused ? video.play() : video.pause());
-      video.addEventListener('play', syncPlayIco);
-      video.addEventListener('pause', syncPlayIco);
+      function toggle() { video.paused ? video.play() : video.pause(); }
+
+      playBtn.addEventListener('click', toggle);
+      bigPlay.addEventListener('click', toggle);
+      video.addEventListener('click', toggle);
+      video.addEventListener('play', () => { syncPlayIco(); startHideTimer(); });
+      video.addEventListener('pause', () => { syncPlayIco(); showUI(); });
+
+      /* progress: buffered bar + played fill + knob, click & drag seek */
+      let dragging = false;
+      function seekTo(clientX) {
+        const r = track.getBoundingClientRect();
+        if (!video.duration) return;
+        const p = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+        video.currentTime = p * video.duration;
+        fill.style.width = knob.style.left = (p * 100) + '%';
+      }
+      track.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        track.setPointerCapture(e.pointerId);
+        seekTo(e.clientX);
+      });
+      track.addEventListener('pointermove', (e) => { if (dragging) seekTo(e.clientX); });
+      track.addEventListener('pointerup', () => { dragging = false; });
+
       video.addEventListener('timeupdate', () => {
-        if (video.duration) fill.style.width = (video.currentTime / video.duration * 100) + '%';
+        if (!dragging && video.duration) {
+          const p = video.currentTime / video.duration * 100;
+          fill.style.width = p + '%';
+          knob.style.left = p + '%';
+        }
         timeEl.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
       });
-      track.addEventListener('click', (e) => {
-        const r = track.getBoundingClientRect();
-        if (video.duration) video.currentTime = (e.clientX - r.left) / r.width * video.duration;
+      video.addEventListener('progress', () => {
+        try {
+          if (video.buffered.length && video.duration) {
+            bufferedEl.style.width = (video.buffered.end(video.buffered.length - 1) / video.duration * 100) + '%';
+          }
+        } catch {}
       });
+
       muteBtn.addEventListener('click', () => {
         video.muted = !video.muted;
         volIco.style.display = video.muted ? 'none' : 'block';
@@ -632,6 +759,22 @@
         if (document.fullscreenElement) document.exitFullscreen();
         else block.requestFullscreen().catch(() => {});
       });
+
+      /* auto-hide UI while playing; show on any movement or pause */
+      let hideTimer = null;
+      function showUI() {
+        block.classList.remove('hide-ui');
+        startHideTimer();
+      }
+      function startHideTimer() {
+        clearTimeout(hideTimer);
+        if (!video.paused) {
+          hideTimer = setTimeout(() => block.classList.add('hide-ui'), 2200);
+        }
+      }
+      block.addEventListener('mousemove', showUI);
+      block.addEventListener('mouseleave', () => { if (!video.paused) block.classList.add('hide-ui'); });
+
       tryNext();
     })();
 
@@ -651,6 +794,16 @@
     const successView = document.getElementById('successView');
     const msgField = document.getElementById('c-message');
     const counter = document.getElementById('c-count');
+
+    // After a successful send, bring the form back (cleared) so the
+    // success message doesn't sit there forever.
+    function resetForm() {
+      form.reset();
+      counter.textContent = '0';
+      successView.style.display = 'none';
+      form.style.display = '';
+      statusEl.textContent = '';
+    }
 
     msgField.addEventListener('input', () => { counter.textContent = msgField.value.length; });
 
@@ -677,6 +830,7 @@
           if (!r.ok) throw new Error('send failed');
           form.style.display = 'none';
           successView.style.display = 'flex';
+          setTimeout(resetForm, 4000);
           return;
         } catch (_) {
           statusEl.textContent = 'Could not send. Try again.';
@@ -696,6 +850,7 @@
         if (r.ok) {
           form.style.display = 'none';
           successView.style.display = 'flex';
+          setTimeout(resetForm, 4000);
           return;
         }
         if (r.status !== 404) {
