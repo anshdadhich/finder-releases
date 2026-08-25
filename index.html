@@ -502,7 +502,11 @@
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
-      const sources = ['demo.mp4', 'demo.webm'];
+      const sources = [
+        'https://github.com/anshdadhich/finder-releases/releases/latest/download/demo.mp4',
+        'demo.mp4',
+        'demo.webm'
+      ];
       let i = 0;
       function tryNext() {
         if (i >= sources.length) { block.style.display = 'none'; return; }
