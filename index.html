@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Finder — Instant launcher for Windows</title>
-<meta name="description" content="Finder is a keyboard launcher for Windows. Ctrl+Space, type, launch. Apps, files, folders, calculator — no mouse.">
+<meta name="description" content="Finder is a keyboard launcher for Windows. Ctrl+Space, type, launch. Apps, files, folders, calculator, web — no mouse.">
 <style>
 /* — Exact tokens from Finder tauri-ui/styles.css — */
 :root{
@@ -66,12 +66,15 @@ body{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   overflow-x:hidden;
   position:relative;
+  transition:background 0.2s ease,color 0.2s ease;
 }
-body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+/* desktop wallpaper behind the frost */
+.desk{
+  position:fixed;inset:0;z-index:0;
   background:
-    radial-gradient(900px 500px at 78% 82%, rgba(88,86,214,0.10), transparent 60%),
-    radial-gradient(700px 420px at 12% 18%, rgba(0,122,255,0.08), transparent 60%);
+    linear-gradient(rgba(0,0,0,0.38),rgba(0,0,0,0.45)),
+    url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2560&auto=format&fit=crop") center/cover no-repeat,
+    #0a0a0c;
 }
 .stage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:40px 20px 24px}
 
@@ -87,8 +90,11 @@ body::before{
   display:flex;flex-direction:column;
   overflow:hidden;
   zoom:0.85;
+  animation:summon 0.28s cubic-bezier(0.2,0.8,0.2,1);
 }
+@keyframes summon{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(max-width:700px){ .launcher-window{zoom:0.72;width:100%} }
+@media (prefers-reduced-motion: reduce){ .launcher-window{animation:none} }
 
 /* search header — exact */
 .search-header{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border-subtle);gap:12px;flex:0 0 auto}
@@ -100,7 +106,7 @@ input#search::placeholder{color:var(--text-tertiary)}
 .theme-toggle-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
 .theme-toggle-btn[aria-pressed="true"]{color:var(--accent-blue)}
 
-/* body: results + preview */
+/* body */
 .body-container{display:flex;flex:1;overflow:hidden;min-height:0;position:relative}
 #results{flex:1;min-width:0;padding:8px;overflow-y:auto;max-height:380px;border-right:1px solid var(--border-subtle)}
 #results::-webkit-scrollbar{width:5px}
@@ -117,11 +123,13 @@ input#search::placeholder{color:var(--text-tertiary)}
 .chip{
   display:flex;align-items:center;justify-content:center;
   width:26px;height:26px;flex:0 0 auto;border-radius:6px;
-  font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);
+  color:rgba(255,255,255,0.9);
   background:hsl(var(--chip-hue,210) 28% 30%);
   border:1px solid var(--border-subtle);
 }
+.chip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 [data-theme="light"] .chip{color:rgba(255,255,255,0.95)}
+.chip-globe{background:transparent;border-color:color-mix(in srgb,var(--accent-blue) 45%,transparent);color:var(--accent-blue)}
 .result .text{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
 .result .name{font-size:13px;font-weight:500;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)}
 .result.selected .name{color:var(--text-on-selected)}
@@ -134,12 +142,13 @@ input#search::placeholder{color:var(--text-tertiary)}
   border-radius:var(--radius-badge);border:0.5px solid var(--border-window);
   white-space:nowrap;
 }
-/* empty state */
 .empty{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text-tertiary);font-size:13px}
 .empty.visible{display:flex}
 .empty .empty-sub{font-size:11px;opacity:0.7}
-/* calculator hero — exact app structure */
-.result.calc-hero-row{display:block;padding:0;margin-bottom:2px}
+/* calculator hero */
+.result.calc-hero-row{display:block;padding:0;margin-bottom:2px;animation:fadein 0.12s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){ .result.calc-hero-row{animation:none} }
 .result.calc-hero-row.selected{background:transparent;box-shadow:none}
 .calc-hero{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
 .calc-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -150,7 +159,7 @@ input#search::placeholder{color:var(--text-tertiary)}
 .calc-result{font-size:34px;font-weight:700;letter-spacing:-0.8px;line-height:1.1;color:var(--text-primary);max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 body.math-open .preview-pane,body.math-open .settings-pane{display:none}
 body.math-open #results{border-right-color:transparent}
-/* preview pane — 310px, transparent, border-left */
+/* preview pane */
 .preview-pane{
   flex:0 0 auto;width:310px;padding:20px 22px;
   display:flex;flex-direction:column;
@@ -165,6 +174,7 @@ body.math-open #results{border-right-color:transparent}
   padding-bottom:16px;border-bottom:1px solid var(--border-subtle);
 }
 .preview-large-icon{width:88px;height:88px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;background:none;border:none}
+.preview-large-icon svg{width:44px;height:44px;stroke:var(--text-primary);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .preview-large-icon .pv-initial{font-size:44px;font-weight:500;color:var(--text-primary)}
 .preview-title{font-size:14.5px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:var(--text-primary)}
 .preview-type{font-size:11.5px;color:var(--text-secondary);margin-top:2px}
@@ -173,6 +183,7 @@ body.math-open #results{border-right-color:transparent}
 .preview-metadata .meta-row:last-child{border-bottom:none}
 .meta-label{color:var(--text-tertiary);flex:0 0 auto}
 .meta-value{color:var(--text-primary);font-weight:500;min-width:0;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-family:var(--font-mono);font-size:11px}
+.meta-snippet{max-width:100%;white-space:normal;text-align:left;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;font-family:var(--font-mac);font-size:11.5px;line-height:1.45;color:var(--text-secondary);font-weight:400}
 .preview-actions{display:flex;flex-direction:column;gap:2px;margin-top:8px}
 .pv-btn{
   border:none;background:transparent;color:var(--text-primary);
@@ -182,7 +193,7 @@ body.math-open #results{border-right-color:transparent}
   transition:background 0.08s ease;
 }
 .pv-btn:hover{background:var(--bg-hover)}
-/* settings pane — exact structure */
+/* settings pane */
 .settings-pane{
   display:none;flex:1 1 auto;min-height:0;flex-direction:column;
   overflow-x:hidden;overflow-y:auto;max-height:380px;
@@ -230,7 +241,7 @@ body.settings-open #results,body.settings-open .preview-pane{display:none}
   text-align:center;
   zoom:0.85;
 }
-.hint{font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:7px}
+.hint{font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center}
 .kbd{font-family:var(--font-mono);font-size:11px;border:1px solid var(--border-window);border-bottom-width:2px;border-radius:5px;padding:2px 7px;background:var(--bg-card)}
 .ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btn{
@@ -249,6 +260,8 @@ body.settings-open #results,body.settings-open .preview-pane{display:none}
 </style>
 </head>
 <body>
+<div class="desk"></div>
+
 <div class="stage">
   <div class="launcher-window" id="card">
     <div class="search-header">
@@ -272,8 +285,10 @@ body.settings-open #results,body.settings-open .preview-pane{display:none}
           </div>
           <div class="preview-metadata">
             <div class="meta-row meta-where"><span class="meta-label">Where</span><span id="pvPath" class="meta-value">aumid:Microsoft.Office.MSACCESS.EXE.15</span></div>
+            <div class="meta-row" id="pvAboutRow" style="display:none"><span class="meta-label">About</span><span id="pvAbout" class="meta-value meta-snippet"></span></div>
           </div>
           <div id="pvActions" class="preview-actions">
+            <button class="pv-btn" id="pvOpenWeb" style="display:none">Open in browser</button>
             <button class="pv-btn">Run as administrator</button>
             <button class="pv-btn">Open file location</button>
           </div>
@@ -335,39 +350,56 @@ body.settings-open #results,body.settings-open .preview-pane{display:none}
 
   <div class="below">
     <div class="hint">
-      <span class="kbd">Ctrl</span><span class="kbd">Space</span> to summon — the real UI, try typing
+      <span class="kbd">Ctrl</span><span class="kbd">Space</span> to summon
+      <span style="opacity:0.5">·</span> type <span class="kbd">@</span> for web search
+      <span style="opacity:0.5">·</span> math just works
     </div>
     <div class="ctas">
-      <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download Finder — free</a>
-      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">Portable ZIP</a>
+      <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download Finder</a>
+      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">Download ZIP</a>
     </div>
     <div class="fine">v0.2.3 • Windows 10/11 x64 • signed installer • auto-updates • <a href="https://github.com/anshdadhich/finder-releases/releases">all releases</a></div>
   </div>
 </div>
 
 <script>
+/* inline SVG icons (stroke icons, like real shell glyphs) */
+const IC={
+  db:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+  wrench:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3 17.6V21h3.4l5.7-5.7a4.5 4.5 0 0 0 5.6-6L14.5 12 12 9.5l2.7-3.2z"/></svg>',
+  spark:'<svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2z"/></svg>',
+  grid:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
+  cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+  cam:'<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  globe:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
+  code:'<svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>',
+  panel:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
+  folder:'<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>',
+  file:'<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+};
 const apps=[
-  {n:"Access",p:"aumid:Microsoft.Office.MSACCESS.EXE.15",k:"app",t:"App",i:"A",h:348},
-  {n:"Administrative Tools",p:"Administrative Tools.lnk",k:"app",t:"App",i:"A",h:210},
-  {n:"Antigravity",p:"Antigravity",k:"app",t:"App",i:"A",h:262},
-  {n:"Antigravity IDE",p:"Antigravity IDE",k:"app",t:"App",i:"A",h:280},
-  {n:"Calculator",p:"Calculator",k:"app",t:"App",i:"C",h:160},
-  {n:"Calendar",p:"Calendar",k:"app",t:"App",i:"C",h:200},
-  {n:"Camera",p:"Camera",k:"app",t:"App",i:"C",h:32},
-  {n:"Chrome",p:"chrome.exe",k:"app",t:"App",i:"C",h:210},
-  {n:"Code",p:"Code.exe",k:"app",t:"App",i:"C",h:260},
-  {n:"Control Panel",p:"Control Panel",k:"app",t:"App",i:"C",h:180},
-  {n:"Downloads",p:"C:\\Users\\you\\Downloads",k:"dir",t:"Folder",i:"D",h:45},
-  {n:"Documents",p:"C:\\Users\\you\\Documents",k:"dir",t:"Folder",i:"D",h:45},
-  {n:"whatsapp.py",p:"C:\\Projects\\whatsapp.py",k:"file",t:"File",i:"W",h:130},
-  {n:"whats-new.md",p:"C:\\Docs\\whats-new.md",k:"file",t:"File",i:"W",h:130},
+  {n:"Access",p:"aumid:Microsoft.Office.MSACCESS.EXE.15",k:"app",t:"App",i:IC.db,h:348},
+  {n:"Administrative Tools",p:"Administrative Tools.lnk",k:"app",t:"App",i:IC.wrench,h:210},
+  {n:"Antigravity",p:"Antigravity",k:"app",t:"App",i:IC.spark,h:262},
+  {n:"Antigravity IDE",p:"Antigravity IDE",k:"app",t:"App",i:IC.code,h:280},
+  {n:"Calculator",p:"Calculator",k:"app",t:"App",i:IC.grid,h:160},
+  {n:"Calendar",p:"Calendar",k:"app",t:"App",i:IC.cal,h:200},
+  {n:"Camera",p:"Camera",k:"app",t:"App",i:IC.cam,h:32},
+  {n:"Chrome",p:"chrome.exe",k:"app",t:"App",i:IC.globe,h:210},
+  {n:"Code",p:"Code.exe",k:"app",t:"App",i:IC.code,h:260},
+  {n:"Control Panel",p:"Control Panel",k:"app",t:"App",i:IC.panel,h:180},
+  {n:"Downloads",p:"C:\\Users\\you\\Downloads",k:"dir",t:"Folder",i:IC.folder,h:45},
+  {n:"Documents",p:"C:\\Users\\you\\Documents",k:"dir",t:"Folder",i:IC.folder,h:45},
+  {n:"whatsapp.py",p:"C:\\Projects\\whatsapp.py",k:"file",t:"File",i:IC.file,h:130},
+  {n:"whats-new.md",p:"C:\\Docs\\whats-new.md",k:"file",t:"File",i:IC.file,h:130},
 ];
 const q=document.getElementById('search'), list=document.getElementById('results');
 const emptyEl=document.getElementById('empty');
-const pvInitial=document.getElementById('pvInitial'), pvTitle=document.getElementById('pvTitle'), pvType=document.getElementById('pvType'), pvPath=document.getElementById('pvPath');
 const previewPane=document.getElementById('previewPane');
+const pvInitial=document.getElementById('pvInitial'), pvTitle=document.getElementById('pvTitle'), pvType=document.getElementById('pvType'), pvPath=document.getElementById('pvPath');
+const pvAboutRow=document.getElementById('pvAboutRow'), pvAbout=document.getElementById('pvAbout'), pvOpenWeb=document.getElementById('pvOpenWeb');
 const calc=document.getElementById('calc'), ce=document.getElementById('ce'), ca=document.getElementById('ca');
-let sel=0;
+let sel=0, webQuery=null;
 function calcTry(s){
   if(!s || !/^[\d\s\.\+\-\*\/\%\(\)\^,]+$/.test(s)) return null;
   try{const v=Function('"use strict";return ('+s.replace(/\^/g,'**')+')')(); if(typeof v==='number'&&isFinite(v)) return v}catch{}
@@ -385,14 +417,37 @@ function render(){
   const v=q.value.trim(), ql=v.toLowerCase();
   const cv=calcTry(v);
   document.body.classList.toggle('math-open', cv!==null);
+  webQuery=null;
   list.innerHTML='';
   if(cv!==null){
     const row=document.createElement('div'); row.className='result calc-hero-row';
     row.innerHTML='<div class="calc-hero"><div class="calc-head"><div class="calc-tokens">'+tokenHTML(v)+'</div><span class="calc-badge">Calculator Result</span></div><div class="calc-result">'+Number(cv).toLocaleString()+'</div></div>';
     list.appendChild(row);
-    pvInitial.textContent='🧮'; pvTitle.textContent=Number(cv).toLocaleString(); pvType.textContent='Calculator Result'; pvPath.textContent=v;
+    pvInitial.style.display='none';
+    pvIcon.querySelector('.pv-initial')&&(pvIcon.querySelector('.pv-initial').style.display='none');
+    pvIcon.innerHTML=IC.grid;
+    pvTitle.textContent=Number(cv).toLocaleString(); pvType.textContent='Calculator Result'; pvPath.textContent=v;
+    pvAboutRow.style.display='none'; pvOpenWeb.style.display='none';
     return;
   }
+  pvInitial.style.display=''; 
+  if(v.startsWith('@') && v.length>1){
+    webQuery=v.slice(1);
+    emptyEl.classList.remove('visible');
+    previewPane.classList.remove('empty-preview');
+    const g=document.createElement('div'); g.className='group-label'; g.textContent='Web'; list.appendChild(g);
+    const r=document.createElement('div'); r.className='result'+(sel===0?' selected':''); r.dataset.web='1';
+    r.innerHTML='<span class="chip chip-globe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg></span><div class="text"><div class="name">Search the web for “'+esc(webQuery)+'”</div><div class="path">bing.com</div></div><span class="tag">Web</span>';
+    r.addEventListener('click',openWeb);
+    list.appendChild(r);
+    pi_set(IC.globe);
+    pvTitle.textContent='Search the web'; pvType.textContent='Web result';
+    pvPath.textContent='bing.com/search?q='+encodeURIComponent(webQuery);
+    pvAboutRow.style.display='flex'; pvAbout.textContent='Opens “'+webQuery+'” in your default browser.';
+    pvOpenWeb.style.display='';
+    return;
+  }
+  pvAboutRow.style.display='none'; pvOpenWeb.style.display='none';
   let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
   if(!ql) items=apps.slice(0,9);
   if(!items.length){
@@ -412,27 +467,58 @@ function render(){
   if(sel>=items.length) sel=0;
   syncPreview(items[sel]);
 }
+function pi_set(svg){ pvIcon.innerHTML=svg; pvInitial.style.display='none'; }
 function sync(){
   const rows=list.querySelectorAll('.result');
   rows.forEach((r,i)=>r.classList.toggle('selected', i===sel));
   const v=q.value.trim(), ql=v.toLowerCase();
+  if(v.startsWith('@')&&v.length>1){ return; }
   let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
   if(!v) items=apps.slice(0,9);
   if(items[sel]) syncPreview(items[sel]);
 }
 function syncPreview(it){
   if(!it) return;
-  pvInitial.textContent=it.i; pvTitle.textContent=it.n;
+  if(typeof it.i==='string' && it.i.startsWith('<svg')){ pi_set(it.i); }
+  else { pvIcon.innerHTML='<span class="pv-initial">'+it.i+'</span>'; }
+  pvTitle.textContent=it.n;
   pvType.textContent=it.k==='app'?'Application':it.k==='dir'?'Folder':'File';
   pvPath.textContent=it.p;
 }
+function openWeb(){
+  if(!webQuery) return;
+  window.open('https://www.bing.com/search?q='+encodeURIComponent(webQuery),'_blank');
+}
+pvOpenWeb.addEventListener('click',openWeb);
 q.addEventListener('input',()=>{sel=0;render()});
 q.addEventListener('keydown',e=>{
   const n=list.querySelectorAll('.result').length;
   if(e.key==='ArrowDown'){sel=Math.min(n-1,sel+1);sync();e.preventDefault()}
   if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);sync();e.preventDefault()}
+  if(e.key==='Enter'){
+    if(webQuery){openWeb();e.preventDefault();return}
+  }
   if(e.key==='Escape'){q.value='';sel=0;render()}
 });
+render(); q.focus();
+/* auto-demo: shows a calculation, then a web search, then hands over */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  let userTook=false;
+  const cancel=()=>{userTook=true};
+  q.addEventListener('beforeinput',cancel,{once:true});
+  q.addEventListener('keydown',cancel,{once:true});
+  const type=async(s)=>{ for(const ch of s){ if(userTook)return false; q.value+=ch; q.dispatchEvent(new Event('input')); await sleep(85);} return true; };
+  await sleep(1100); if(userTook)return;
+  if(!await type('12*7'))return;
+  await sleep(1500); if(userTook)return;
+  q.value=''; q.dispatchEvent(new Event('input'));
+  await sleep(600); if(userTook)return;
+  if(!await type('@whatsapp web'))return;
+  await sleep(1700); if(userTook)return;
+  q.value=''; q.dispatchEvent(new Event('input'));
+})();
 /* settings */
 const settingsBtn=document.getElementById('settingsBtn');
 settingsBtn.addEventListener('click',()=>{
@@ -463,7 +549,6 @@ setRadius.addEventListener('input',()=>{
   setFill(setRadius);
 });
 [setAlpha,setBlur,setRadius].forEach(setFill);
-/* theme segmented (visual + real switch) */
 const themeSeg=document.getElementById('setTheme');
 themeSeg.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
@@ -475,7 +560,7 @@ hotkeySeg.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   hotkeySeg.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
 });
-render(); q.focus();
+render(); 
 </script>
 </body>
 </html>
