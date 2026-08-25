@@ -4,57 +4,61 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Finder — Instant launcher for Windows</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Finder is a keyboard launcher for Windows. Ctrl+Space, type, launch. Apps, files, folders, calculator — no mouse.">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0;
-  background:#08080a;
-  color:#f2f2f3;
+  margin:0;background:#08080a;color:#f2f2f3;
   font-family:"Geist Mono",ui-monospace,monospace;
   border-top:3px solid #007aff;
-  position:relative;
+  text-wrap:pretty;
 }
+a{color:inherit}
+/* — subtle atmospheric depth, not a gradient blob — */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
   background:
-    radial-gradient(800px 400px at 15% 4%, rgba(0,122,255,0.07), transparent 60%),
-    radial-gradient(600px 300px at 85% 8%, rgba(255,255,255,0.03), transparent 60%),
-    radial-gradient(900px 500px at 50% 100%, rgba(0,122,255,0.04), transparent 70%);
+    radial-gradient(700px 360px at 18% 2%, rgba(0,122,255,0.06), transparent 62%),
+    radial-gradient(520px 320px at 88% 14%, rgba(255,255,255,0.02), transparent 60%);
 }
 body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:0.03;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-a{color:inherit}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 .nav{
   height:56px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid #1e1e22;
-  font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+  border-bottom:1px solid #1c1c20;
   position:sticky;top:0;z-index:20;
-  backdrop-filter:blur(16px) saturate(1.2);
-  background:rgba(8,8,10,0.75);
+  backdrop-filter:blur(14px) saturate(1.1);
+  background:rgba(8,8,10,0.78);
+  font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
 }
-.brand{font-weight:500;letter-spacing:0.12em}
-.nav a{text-decoration:none;opacity:0.6}
+.brand{font-weight:500;letter-spacing:0.14em}
+.nav a{text-decoration:none;opacity:0.55}
 .nav a:hover{opacity:1}
 .hero{
-  padding:56px 0 32px;
-  display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:start;
+  padding:48px 0 28px;
+  display:grid;grid-template-columns:1.15fr 0.95fr;gap:48px;align-items:start;
 }
-@media(max-width:900px){.hero{grid-template-columns:1fr}}
-.kicker{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#8a8a90;border:1px solid #1e1e22;padding:6px 10px;display:inline-block}
+@media(max-width:920px){.hero{grid-template-columns:1fr}}
+.kicker{
+  display:inline-block;
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+  color:#8a8a90;border:1px solid #1e1e22;padding:5px 9px;
+}
 .h1{
   font-family:"Instrument Serif",Georgia,serif;
-  font-size:64px;line-height:0.88;letter-spacing:-0.03em;
-  margin:18px 0 14px;font-weight:400;
+  font-size:62px;line-height:0.88;letter-spacing:-0.03em;
+  margin:14px 0 12px;font-weight:400;
+  text-wrap:balance;
 }
 .h1 i{font-style:italic;color:#007aff}
 @media(max-width:600px){.h1{font-size:44px}}
-.lead{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.7;color:#9a9aa0;max-width:480px}
-.ctas{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+.lead{font-size:13px;line-height:1.7;color:#9a9aa0;max-width:480px}
+.ctas{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;
   height:40px;padding:0 18px;
@@ -63,17 +67,16 @@ a{color:inherit}
 }
 .btn:hover{background:#e8e8ea}
 .btn--ghost{background:transparent;color:#fff;border-color:#2a2a2e}
-.btn--ghost:hover{background:#141416}
-.meta{font-size:11px;color:#6a6a70;margin-top:10px;font-family:"IBM Plex Mono",monospace}
+.btn--ghost:hover{background:#111113}
+.meta{font-size:11px;color:#6a6a70;margin-top:10px}
 .mock{
-  background:#101012;
-  border:1px solid rgba(255,255,255,0.08);
-  padding:0;
+  background:#0f0f11;
+  border:1px solid #232326;
   border-radius:12px;overflow:hidden;
-  box-shadow:0 24px 64px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow:0 24px 64px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset;
 }
 .mock-head{
-  height:46px;display:flex;align-items:center;gap:10px;
+  height:44px;display:flex;align-items:center;gap:10px;
   padding:0 14px;border-bottom:1px solid #1e1e22;
   font-size:13px;color:#9a9aa0;
 }
@@ -100,18 +103,17 @@ a{color:inherit}
 .p-where{margin-top:8px;width:100%;text-align:left;font-size:10px;color:#6a6a70;word-break:break-all;border-top:1px solid #1e1e22;padding-top:10px}
 .calc{margin:6px;border:1px solid #232326;background:#0c0c0e;padding:10px 12px;display:none}
 .calc.on{display:block}
-.calc .e{font-size:11px;color:#8a8a90;font-family:"IBM Plex Mono",monospace}
+.calc .e{font-size:11px;color:#8a8a90}
 .calc .a{font-family:"Instrument Serif",serif;font-size:26px}
-.specs{
-  margin-top:28px;
-  border-top:1px solid #1a1a1e;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+/* — anti-slop: definition list, not 3 equal cards — */
+.specs{margin-top:28px;border-top:1px solid #1a1a1e}
+.spec{
+  display:grid;grid-template-columns:160px 1fr;gap:24px;
+  padding:18px 0;border-bottom:1px solid #1a1a1e;
 }
-.specs div{padding:18px 0;border-right:1px solid #1a1a1e}
-.specs div:last-child{border-right:0}
-.specs b{display:block;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
-.specs span{font-size:13px;color:#9a9aa0;line-height:1.5}
-@media(max-width:700px){.specs{grid-template-columns:1fr}.specs div{border-right:0;border-bottom:1px solid #1a1a1e}}
+@media(max-width:640px){.spec{grid-template-columns:1fr;gap:6px}}
+.spec b{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#f2f2f3}
+.spec span{font-size:13px;color:#9a9aa0;line-height:1.6}
 .download{
   margin:32px 0;
   border:1px solid #1e1e22;
@@ -142,7 +144,7 @@ a{color:inherit}
         <a class="btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download installer — 2.7 MB</a>
         <a class="btn btn--ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">Portable ZIP</a>
       </div>
-      <div class="meta">Signed • Auto-updates • No account • Try the live replica →</div>
+      <div class="meta">Signed • Auto-updates • Try the live replica →</div>
     </div>
 
     <div class="mock" id="mock">
@@ -164,10 +166,10 @@ a{color:inherit}
     </div>
   </section>
 
-  <section class="specs">
-    <div><b>App launch</b><span>Every app indexed locally. Fuzzy ranking on every keystroke — no IPC wait.</span></div>
-    <div><b>File search</b><span>Direct NTFS MFT scan. Ranked, paginated, 500 shown.</span></div>
-    <div><b>Calculator</b><span>Type <code>12*7</code> — answer is the top result. No mode.</span></div>
+  <section class="specs" aria-label="Features">
+    <div class="spec"><b>App launch — instant</b><span>Every app indexed locally. Fuzzy ranking on every keystroke, no IPC wait — the list you see is filtered in the browser, just like the real app.</span></div>
+    <div class="spec"><b>File search — NTFS</b><span>Direct MFT scan, ranked and paginated. 500 shown, 3000 fetched. Finds files before Explorer finishes thinking.</span></div>
+    <div class="spec"><b>Calculator — built in</b><span>Type <code>12*7</code> or <code>(3+4)*9</code>. Answer is the top result. No mode switch, no extra UI.</span></div>
   </section>
 
   <section class="download" id="download">
