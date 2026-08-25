@@ -6,7 +6,7 @@
   <title>Finder — Instant launcher for Windows</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Runtime config (Resend key). Copy config.example.js → config.js — gitignored. -->
   <script src="./config.js"></script>
 
@@ -18,28 +18,33 @@
 
   <style>
     :root {
-      --bg: #09090b;
-      --surface: #121215;
-      --surface-subtle: #18181b;
-      --border: #27272a;
-      --border-focus: #3f3f46;
-      --text: #fafafa;
-      --text-muted: #a1a1aa;
-      --text-dim: #71717a;
-      --accent: #007aff;
+      --bg: #050505;
+      --surface: #0d0d11;
+      --surface-hover: #14141a;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.22);
+      --text: #ededed;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --accent: #ffffff;
+      --accent-bg: #ffffff;
+      --accent-text: #000000;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
     html[data-site-theme="light"] {
-      --bg: #fafafa;
-      --surface: #ffffff;
-      --surface-subtle: #f4f4f5;
-      --border: #e4e4e7;
-      --border-focus: #d4d4d8;
-      --text: #18181b;
-      --text-muted: #52525b;
-      --text-dim: #a1a1aa;
+      --bg: #ffffff;
+      --surface: #f7f7f8;
+      --surface-hover: #efefe0;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-focus: rgba(0, 0, 0, 0.25);
+      --text: #111111;
+      --text-muted: #666666;
+      --text-dim: #999999;
+      --accent: #000000;
+      --accent-bg: #000000;
+      --accent-text: #ffffff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
@@ -55,15 +60,15 @@
       padding: 0 24px;
       font-size: 14px;
       line-height: 1.5;
-      transition: background 0.2s ease, color 0.2s ease;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
-    /* theme toggle — fixed, out of the way */
+    /* theme toggle */
     .theme-toggle {
       position: fixed;
-      top: 18px;
-      right: 20px;
-      z-index: 10;
+      top: 24px;
+      right: 24px;
+      z-index: 50;
       width: 36px;
       height: 36px;
       border-radius: 8px;
@@ -79,52 +84,68 @@
     .theme-toggle:hover { color: var(--text); border-color: var(--border-focus); }
 
     .hero {
-      position: relative;
       width: 100%;
-      max-width: 720px;
-      padding: 96px 0 40px;
+      max-width: 680px;
+      padding: 120px 0 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 22px;
     }
 
-    .hero > *:not(.squiggles) { position: relative; z-index: 1; }
-
     .logo-heading img {
-      width: 76px;
-      height: 76px;
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
       display: block;
-      box-shadow: 0 16px 40px rgba(0, 122, 255, 0.3);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
     }
 
     h1 {
-      font-size: 52px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -1.2px;
       color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 16px;
     }
 
     p.subtitle {
       font-size: 16px;
       color: var(--text-muted);
-      max-width: 520px;
-      line-height: 1.65;
-      margin-top: -8px;
+      max-width: 480px;
+      line-height: 1.6;
+      margin-bottom: 32px;
     }
 
-    .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .subtitle kbd {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
 
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      height: 42px;
-      padding: 0 20px;
+      height: 40px;
+      padding: 0 18px;
       font-size: 13.5px;
-      font-weight: 600;
+      font-weight: 500;
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
@@ -132,37 +153,49 @@
       font-family: var(--font-sans);
     }
 
-    .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
-    .btn-primary:hover { opacity: 0.85; }
-    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--border-focus); }
+    .btn-primary {
+      background: var(--accent-bg);
+      color: var(--accent-text);
+      border: 1px solid var(--accent-bg);
+    }
+    .btn-primary:hover { opacity: 0.9; }
 
-    .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface-hover); border-color: var(--border-focus); }
 
-    /* demo video block — only rendered when demo.mp4/demo.webm exists */
+    .meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* demo video block */
     .demo-block {
       width: 100%;
-      max-width: 760px;
-      margin-top: 16px;
+      max-width: 680px;
+      margin-top: 48px;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
       display: none;
+      background: var(--surface);
     }
 
-    .demo-block video { width: 100%; display: block; background: #000; }
+    .demo-block video { width: 100%; display: block; }
 
     /* contact */
     .contact {
       width: 100%;
-      max-width: 560px;
+      max-width: 540px;
       border-top: 1px solid var(--border);
-      padding: 56px 0 8px;
+      padding: 64px 0 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
       text-align: center;
     }
 
@@ -172,33 +205,46 @@
       text-transform: uppercase;
       letter-spacing: 1.2px;
       color: var(--text-dim);
+      margin-bottom: 8px;
     }
 
-    .contact h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .contact h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
 
-    .contact p.contact-sub { font-size: 14px; color: var(--text-muted); margin-top: -12px; }
+    .contact p.contact-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
 
     .form-card {
       width: 100%;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      border-radius: 12px;
+      padding: 20px;
       text-align: left;
     }
 
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
     @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
 
+    .field { display: flex; flex-direction: column; }
+
     .field label {
-      display: block;
       font-family: var(--font-mono);
       font-size: 10.5px;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
       color: var(--text-dim);
       margin-bottom: 6px;
     }
@@ -213,14 +259,13 @@
       font-size: 13px;
       font-family: var(--font-sans);
       outline: none;
-      transition: border-color 0.12s ease, box-shadow 0.12s ease;
+      transition: border-color 0.12s ease;
     }
 
-    .field textarea { resize: vertical; min-height: 96px; }
+    .field textarea { resize: vertical; min-height: 90px; }
 
     .field input:focus, .field textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+      border-color: var(--border-focus);
     }
 
     .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
@@ -233,7 +278,13 @@
       margin-top: 4px;
     }
 
-    .send-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .send-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
 
     .form-status { font-family: var(--font-mono); font-size: 11px; min-height: 16px; }
     .form-status.ok { color: #34d399; }
@@ -242,138 +293,94 @@
     .send-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      height: 38px;
-      padding: 0 20px;
-      background: var(--accent);
-      color: #fff;
+      height: 36px;
+      padding: 0 16px;
+      background: var(--accent-bg);
+      color: var(--accent-text);
       border: none;
       border-radius: 6px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 500;
       font-family: var(--font-sans);
       cursor: pointer;
-      transition: background 0.12s ease, opacity 0.12s ease;
+      transition: opacity 0.12s ease;
     }
 
-    .send-btn:hover { background: #2b8dff; }
-    .send-btn:disabled { opacity: 0.5; cursor: default; }
+    .send-btn:hover { opacity: 0.9; }
+    .send-btn:disabled { opacity: 0.4; cursor: default; }
 
     .success-view {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      padding: 28px 10px;
+      gap: 8px;
+      padding: 24px 0;
       text-align: center;
     }
 
-    .success-view .check {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(52, 211, 153, 0.12);
-      border: 1px solid rgba(52, 211, 153, 0.4);
-      display: grid; place-items: center;
-      color: #34d399;
-    }
+    .success-view b { font-size: 14px; font-weight: 600; }
+    .success-view span { font-size: 13px; color: var(--text-muted); }
 
-    .success-view b { font-size: 14px; }
-    .success-view span { font-size: 12px; color: var(--text-muted); }
-
-    /* footer — full blue gradient block (logo-matched), white content */
+    /* footer */
     .footer {
       width: 100%;
-      max-width: 900px;
-      margin-top: 64px;
-      border-radius: 14px;
-      padding: 40px 28px 22px;
+      max-width: 680px;
+      margin-top: 80px;
+      margin-bottom: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
       text-align: center;
-      background: linear-gradient(135deg, #2f7cf6 0%, #0a55e2 100%);
-      box-shadow: 0 20px 60px rgba(10, 85, 226, 0.25);
     }
 
     .footer-word {
-      font-size: clamp(64px, 13vw, 130px);
-      font-weight: 800;
-      letter-spacing: 2px;
-      line-height: 0.9;
-      color: #ffffff;
-      user-select: none;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: var(--text);
     }
 
     .footer-links {
       display: flex;
-      gap: 26px;
+      gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
       font-size: 13px;
     }
 
     .footer-links a {
-      color: rgba(255, 255, 255, 0.85);
+      color: var(--text-muted);
       text-decoration: none;
-      transition: color 0.1s;
+      transition: color 0.12s ease;
     }
 
-    .footer-links a:hover { color: #fff; }
+    .footer-links a:hover { color: var(--text); }
 
     .footer-bottom {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.65);
-    }
-
-    /* animated squiggles — tiny logo waves drifting behind the hero */
-    .squiggles {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .squiggles svg {
-      position: absolute;
-      color: #ffffff;
-      opacity: 0.05;
-      animation: squiggle-float 9s ease-in-out infinite alternate;
-    }
-
-    html[data-site-theme="light"] .squiggles svg { color: var(--accent); opacity: 0.08; }
-
-    .squiggles svg:nth-child(1) { top: 6%;  left: 4%;  width: 120px; animation-duration: 8s; }
-    .squiggles svg:nth-child(2) { top: 14%; right: 6%; width: 90px;  animation-duration: 11s; animation-delay: -3s; }
-    .squiggles svg:nth-child(3) { bottom: 18%; left: 12%; width: 70px; animation-duration: 10s; animation-delay: -5s; }
-    .squiggles svg:nth-child(4) { bottom: 8%; right: 16%; width: 140px; animation-duration: 12s; animation-delay: -7s; }
-    .squiggles svg:nth-child(5) { top: 44%; left: 45%; width: 60px; opacity: 0.04; animation-duration: 9s; animation-delay: -2s; }
-
-    @keyframes squiggle-float {
-      from { transform: translateY(-8px) rotate(-5deg); }
-      to   { transform: translateY(10px) rotate(4deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .squiggles svg { animation: none; }
+      color: var(--text-dim);
     }
 
     .toast {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: var(--surface-subtle);
+      background: var(--surface);
       border: 1px solid var(--border-focus);
       color: var(--text);
       font-size: 12px;
       padding: 8px 14px;
       border-radius: 6px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       opacity: 0;
       transform: translateY(8px);
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
       pointer-events: none;
       font-family: var(--font-mono);
+      z-index: 100;
     }
 
     .toast.show { opacity: 1; transform: translateY(0); }
@@ -382,30 +389,24 @@
 <body>
 
   <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
-    <svg id="iconMoon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    <svg id="iconSun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg id="iconMoon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg id="iconSun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   </button>
 
   <main class="hero">
-    <div class="squiggles" aria-hidden="true">
-      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
-      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
-      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
-      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
-      <svg viewBox="0 0 90 50"><path d="M8 32 C 18 10, 34 10, 45 27 S 70 44, 82 22" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>
-    </div>
-
     <div class="logo-heading">
       <img src="logo.png" alt="Finder logo">
     </div>
-    <h1>Finder</h1>
+
+    <h1>Instant launcher for Windows.</h1>
+
     <p class="subtitle">
-      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13.5px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web. No mouse required.
+      Press <kbd>Ctrl+Space</kbd> to launch apps, find files, calculate math, and search the web. Zero friction.
     </p>
 
     <div class="action-row">
       <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
           <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -417,26 +418,24 @@
       </a>
     </div>
 
-    <div class="meta">v0.2.4 • Windows 10/11 x64 • signed installer • auto-updates</div>
+    <div class="meta">v0.2.4 • Windows 10/11 x64 • Signed Installer</div>
 
-    <!-- Demo video: rendered only if demo.mp4 / demo.webm exists next to this page -->
     <div class="demo-block" id="demoBlock">
       <video id="demoVideo" controls muted loop playsinline></video>
     </div>
   </main>
 
-  <!-- Contact -->
   <section class="contact" id="contact">
     <div class="section-label">Contact</div>
-    <h2>Send a message</h2>
-    <p class="contact-sub">Bugs, ideas, or feedback — straight to the developer's inbox.</p>
+    <h2>Send feedback</h2>
+    <p class="contact-sub">Direct line to the developer for bugs or ideas.</p>
 
     <div class="form-card">
       <form id="contactForm" novalidate>
         <div class="form-row">
           <div class="field">
             <label for="c-name">Name</label>
-            <input id="c-name" type="text" placeholder="Your name" maxlength="80">
+            <input id="c-name" type="text" placeholder="Name" maxlength="80">
           </div>
           <div class="field">
             <label for="c-email">Email *</label>
@@ -445,7 +444,7 @@
         </div>
         <div class="field">
           <label for="c-message">Message *</label>
-          <textarea id="c-message" rows="4" placeholder="What's on your mind?" maxlength="2000" required></textarea>
+          <textarea id="c-message" rows="4" placeholder="Your message..." maxlength="2000" required></textarea>
           <div class="msg-counter"><span id="c-count">0</span>/2000</div>
         </div>
         <div class="send-row">
@@ -454,11 +453,8 @@
         </div>
       </form>
       <div class="success-view" id="successView" style="display:none">
-        <div class="check">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
         <b>Message sent</b>
-        <span>I'll get back to you at your email.</span>
+        <span>Thanks for the input. I'll review it shortly.</span>
       </div>
     </div>
   </section>
@@ -468,39 +464,41 @@
     <div class="footer-links">
       <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">Download</a>
       <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">Portable ZIP</a>
-      <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">All releases</a>
+      <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Releases</a>
       <a href="#contact">Contact</a>
     </div>
-    <div class="footer-bottom">Windows 10/11 x64 • signed installer • auto-updates</div>
+    <div class="footer-bottom">Windows 10/11 x64 • Auto-updates</div>
   </footer>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    /* theme */
+    /* Theme */
     const themeToggle = document.getElementById('themeToggle');
     const iconMoon = document.getElementById('iconMoon');
     const iconSun = document.getElementById('iconSun');
+    
     function siteTheme() { return document.documentElement.getAttribute('data-site-theme') || 'dark'; }
     function syncThemeIcons() {
       const light = siteTheme() === 'light';
       iconMoon.style.display = light ? 'none' : 'block';
       iconSun.style.display = light ? 'block' : 'none';
     }
+    
     themeToggle.addEventListener('click', () => {
       const next = siteTheme() === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-site-theme', next);
       localStorage.setItem('fs-site-theme', next);
       syncThemeIcons();
     });
+    
     if (!saved) {
-      // no saved choice → follow system
       document.documentElement.setAttribute('data-site-theme',
         matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     }
     syncThemeIcons();
 
-    /* demo video — show the block only if demo.mp4/demo.webm exists */
+    /* Video loader fallback */
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
@@ -517,7 +515,7 @@
       tryNext();
     })();
 
-    /* toast */
+    /* Toast */
     const toast = document.getElementById('toast');
     function showToast(text) {
       toast.innerText = text;
@@ -525,7 +523,7 @@
       setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    /* contact form (Resend via config.js) */
+    /* Resend Contact Form */
     const CFG = window.FINDER_CONFIG || {};
     const sendBtn = document.getElementById('c-send');
     const statusEl = document.getElementById('c-status');
@@ -549,7 +547,7 @@
       }
 
       if (!CFG.RESEND_API_KEY) {
-        statusEl.textContent = 'Form is not configured yet — try again soon.';
+        statusEl.textContent = 'Form is not configured yet.';
         statusEl.className = 'form-status err';
         return;
       }
@@ -577,7 +575,7 @@
         form.style.display = 'none';
         successView.style.display = 'flex';
       } catch (_) {
-        statusEl.textContent = 'Could not send — please try again later.';
+        statusEl.textContent = 'Could not send. Try again.';
         statusEl.className = 'form-status err';
       } finally {
         sendBtn.disabled = false;
