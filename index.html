@@ -23,12 +23,7 @@
       --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
     body {
       background-color: var(--bg);
@@ -43,7 +38,6 @@
       line-height: 1.5;
     }
 
-    /* Nav */
     header {
       width: 100%;
       max-width: 900px;
@@ -54,14 +48,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
-    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff; text-decoration: none; }
 
     .version-tag {
       font-family: var(--font-mono);
@@ -72,45 +59,39 @@
       border-radius: 4px;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
 
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 13px;
-      transition: color 0.1s;
-    }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.1s; }
+    .nav-link:hover { color: var(--text); }
 
-    .nav-link:hover {
-      color: var(--text);
-    }
-
-    /* Hero */
     .hero {
       width: 100%;
       max-width: 900px;
       padding: 64px 0 32px;
       display: flex;
       flex-direction: column;
-      gap: 32px;
+      gap: 28px;
     }
 
-    .hero-header {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 680px;
+    .logo-heading { display: flex; align-items: center; gap: 16px; }
+
+    .logo-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+      flex-shrink: 0;
     }
+
+    .logo-mark svg { width: 26px; height: 26px; stroke: #fff; }
 
     h1 {
-      font-size: 38px;
-      font-weight: 600;
-      letter-spacing: -0.9px;
-      line-height: 1.15;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
       color: #fff;
     }
 
@@ -119,23 +100,19 @@
       color: var(--text-muted);
       max-width: 580px;
       line-height: 1.6;
+      margin-top: -16px;
     }
 
-    .action-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      height: 38px;
-      padding: 0 16px;
+      height: 40px;
+      padding: 0 18px;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
       text-decoration: none;
@@ -143,277 +120,80 @@
       font-family: var(--font-sans);
     }
 
-    .btn-primary {
-      background: #fafafa;
-      color: #09090b;
-      border: 1px solid #fafafa;
-    }
+    .btn-primary { background: #fafafa; color: #09090b; border: 1px solid #fafafa; }
+    .btn-primary:hover { background: #e4e4e7; border-color: #e4e4e7; }
 
-    .btn-primary:hover {
-      background: #e4e4e7;
-      border-color: #e4e4e7;
-    }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--border-focus); }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
 
-    .btn-ghost:hover {
-      border-color: var(--border-focus);
-    }
-
-    /* Launcher */
-    .launcher-container {
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .launcher-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      font-weight: 600;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .kbd {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      background: var(--surface-subtle);
-      border: 1px solid var(--border);
-      padding: 2px 5px;
-      border-radius: 3px;
-      color: var(--text-muted);
-    }
-
-    .launcher {
+    /* Contact form */
+    .contact {
       width: 100%;
-      background: var(--surface);
+      max-width: 560px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      background: var(--surface);
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
-
-    .search-bar {
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      height: 48px;
-      border-bottom: 1px solid var(--border);
       gap: 12px;
+      margin-top: 8px;
     }
 
-    .search-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-size: 14px;
-      font-family: var(--font-sans);
-    }
+    .contact h2 { font-size: 15px; font-weight: 600; color: #fff; }
 
-    .search-input::placeholder {
-      color: var(--text-dim);
-    }
-
-    .launcher-body {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      min-height: 280px;
-    }
-
-    @media (max-width: 640px) {
-      .launcher-body {
-        grid-template-columns: 1fr;
-      }
-      .preview-pane {
-        display: none !important;
-      }
-    }
-
-    .results-list {
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow-y: auto;
-      max-height: 280px;
-      border-right: 1px solid var(--border);
-    }
-
-    .item-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-
-    .item-row:hover {
-      background: var(--surface-subtle);
-      color: var(--text);
-    }
-
-    .item-row.selected {
-      background: var(--surface-subtle);
-      color: #fff;
-    }
-
-    .item-main {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
-
-    .item-icon {
-      color: var(--text-dim);
-      display: flex;
-      flex-shrink: 0;
-    }
-
-    .item-row.selected .item-icon {
-      color: var(--text);
-    }
-
-    .item-name {
-      font-size: 13px;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .item-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      flex-shrink: 0;
-    }
-
-    .preview-pane {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background: rgba(0, 0, 0, 0.15);
+    .contact p.contact-sub {
       font-size: 12px;
-    }
-
-    .preview-header {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .preview-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .preview-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
       color: var(--text-dim);
+      margin-top: -6px;
     }
 
-    .preview-meta span {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      padding-bottom: 4px;
-    }
-
-    .preview-meta span b {
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-
-    .preview-snippet {
-      font-family: var(--font-mono);
+    .contact input, .contact textarea {
+      width: 100%;
       background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 8px;
-      color: var(--text-muted);
-      font-size: 11px;
-      max-height: 80px;
-      overflow: hidden;
-      white-space: pre;
-    }
-
-    .launcher-footer {
-      height: 32px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--text-dim);
-      background: var(--bg);
-    }
-
-    .shortcuts {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    /* Specs */
-    .specs-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    @media (max-width: 640px) {
-      .specs-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .spec-item {
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 14px;
-      background: var(--surface);
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-sans);
+      outline: none;
+      transition: border-color 0.12s;
+      resize: vertical;
     }
 
-    .spec-label {
+    .contact input:focus, .contact textarea:focus { border-color: var(--border-focus); }
+
+    .contact label {
       font-size: 11px;
+      font-family: var(--font-mono);
       color: var(--text-dim);
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      display: block;
       margin-bottom: 4px;
     }
 
-    .spec-val {
-      font-size: 13px;
-      color: var(--text-muted);
+    .contact .send-btn {
+      align-self: flex-start;
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid transparent;
+      font-weight: 600;
     }
 
-    /* Footer line */
+    .contact .send-btn:hover { background: #2b8dff; }
+    .contact .send-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .form-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      min-height: 16px;
+    }
+
+    .form-status.ok { color: #34d399; }
+    .form-status.err { color: #f87171; }
+
     .page-footer {
       width: 100%;
       max-width: 900px;
@@ -428,16 +208,9 @@
       gap: 8px;
     }
 
-    .page-footer a {
-      color: var(--text-muted);
-      text-decoration: none;
-    }
+    .page-footer a { color: var(--text-muted); text-decoration: none; }
+    .page-footer a:hover { color: var(--text); }
 
-    .page-footer a:hover {
-      color: var(--text);
-    }
-
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -456,177 +229,90 @@
       font-family: var(--font-mono);
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <a href="#" class="brand">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <span>Finder</span>
-      </a>
-      <span class="version-tag">v0.2.3</span>
+    <div class="brand">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>Finder</span>
     </div>
-
     <div class="nav-links">
       <a href="https://github.com/anshdadhich/finder-releases/releases" class="nav-link" target="_blank" rel="noreferrer">Releases</a>
     </div>
   </header>
 
   <main class="hero">
-    <div class="hero-header">
-      <h1>Fast system search for Windows.</h1>
-      <p class="subtitle">
-        Zero-latency app launcher, NTFS file search, and a built-in calculator. Native Rust engine with direct Windows APIs. No mouse required.
-      </p>
+    <div class="logo-heading">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <h1>Finder</h1>
     </div>
 
+    <p class="subtitle">
+      Instant launcher for Windows. <span style="font-family: var(--font-mono); font-size: 13px; color: var(--text);">Ctrl+Space</span>, type, launch — apps, files, folders, math, and the web.
+    </p>
+
     <div class="action-row">
-      <a class="btn btn-primary" id="download-btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">
+      <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
-        Download Finder
+        Download for Windows
       </a>
-
-      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">
+      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">
         Download ZIP
       </a>
-
-      <div class="cli-command" id="winget-btn" title="Click to copy">
-        <span>winget install AnshDadhich.Finder</span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-      </div>
     </div>
 
-    <!-- Interactive compact launcher -->
-    <div class="launcher-container">
-      <div class="launcher-label">
-        <span>Interactive Preview — compact mode</span>
-        <span>Summon: <span class="kbd">Ctrl</span> + <span class="kbd">Space</span></span>
+    <div class="meta">v0.2.4 • Windows 10/11 x64 • signed installer • auto-updates</div>
+
+    <!-- Message form (Resend via worker) -->
+    <div class="contact">
+      <h2>Send a message</h2>
+      <p class="contact-sub">Questions, bugs, feature requests — straight to the developer's inbox.</p>
+      <div>
+        <label for="c-name">Name (optional)</label>
+        <input id="c-name" type="text" placeholder="Your name" maxlength="80">
       </div>
-
-      <div class="launcher">
-        <div class="search-bar">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="text" id="launcher-input" class="search-input" placeholder="Type an app, file, equation (12*7), or @web search..." spellcheck="false" autocomplete="off" />
-        </div>
-
-        <div class="launcher-body">
-          <div class="results-list" id="results-list"></div>
-
-          <div class="preview-pane" id="preview-pane">
-            <div class="preview-header">
-              <div class="preview-title" id="prev-title">Access</div>
-              <div class="preview-meta">
-                <span>Type <b id="prev-type">Application</b></span>
-                <span>Path <b id="prev-path">aumid:Microsoft.Office.MSACCESS.EXE.15</b></span>
-              </div>
-            </div>
-            <div class="preview-snippet" id="prev-snippet">Run as administrator · Open file location</div>
-          </div>
-        </div>
-
-        <div class="launcher-footer">
-          <div class="shortcuts">
-            <span><span class="kbd">↑</span> <span class="kbd">↓</span> Select</span>
-            <span><span class="kbd">↵</span> Open</span>
-            <span><span class="kbd">Esc</span> Reset</span>
-          </div>
-          <span>Native Rust engine</span>
-        </div>
+      <div>
+        <label for="c-email">Email</label>
+        <input id="c-email" type="email" placeholder="you@example.com" maxlength="120">
       </div>
-
-      <div class="launcher-label" style="margin-top:2px">
-        <span>Hint</span>
-        <span style="text-transform:none;letter-spacing:0">
-          <span class="kbd">Ctrl</span> + <span class="kbd">Space</span> to summon
-          &nbsp;·&nbsp; type <span class="kbd">@</span> for web search
-          &nbsp;·&nbsp; math just works
-        </span>
+      <div>
+        <label for="c-message">Message</label>
+        <textarea id="c-message" rows="4" placeholder="What's on your mind?" maxlength="2000"></textarea>
       </div>
-
-      <!-- Specs -->
-      <div class="specs-grid">
-        <div class="spec-item">
-          <div class="spec-label">Warm Start</div>
-          <div class="spec-val">486k files indexed in &lt; 1s</div>
-        </div>
-        <div class="spec-item">
-          <div class="spec-label">Search Latency</div>
-          <div class="spec-val">&lt; 8ms USN Journal lookup</div>
-        </div>
-        <div class="spec-item">
-          <div class="spec-label">Architecture</div>
-          <div class="spec-val">Native Rust + Win32 direct calls</div>
-        </div>
-      </div>
+      <button class="btn send-btn" id="c-send">Send message</button>
+      <div class="form-status" id="c-status"></div>
     </div>
   </main>
 
   <footer class="page-footer">
-    <span>v0.2.3 • Windows 10/11 x64 • signed installer • auto-updates</span>
+    <span>Windows 10/11 x64 • signed installer • auto-updates</span>
     <span><a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">all releases</a></span>
   </footer>
 
-  <div class="toast" id="toast">Copied</div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    const IC = {
-      db: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
-      wrench: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3 17.6V21h3.4l5.7-5.7a4.5 4.5 0 0 0 5.6-6L14.5 12 12 9.5l2.7-3.2z"/></svg>',
-      spark: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2z"/></svg>',
-      code: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-      grid: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
-      cal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
-      cam: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
-      globe: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
-      panel: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
-      folder: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>',
-      file: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-      web: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
-      calc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>'
-    };
+    // Set this after deploying contact-worker.js to Cloudflare Workers
+    // (see worker.js in this repo). Leave empty to disable the form.
+    const CONTACT_ENDPOINT = "";
 
-    const items = [
-      { name: 'Access', type: 'Application', path: 'aumid:Microsoft.Office.MSACCESS.EXE.15', icon: IC.db },
-      { name: 'Administrative Tools', type: 'Application', path: 'Administrative Tools.lnk', icon: IC.wrench },
-      { name: 'Antigravity', type: 'Application', path: 'Antigravity', icon: IC.spark },
-      { name: 'Calculator', type: 'Application', path: 'Calculator', icon: IC.grid },
-      { name: 'Calendar', type: 'Application', path: 'Calendar', icon: IC.cal },
-      { name: 'Camera', type: 'Application', path: 'Camera', icon: IC.cam },
-      { name: 'Chrome', type: 'Application', path: 'chrome.exe', icon: IC.globe },
-      { name: 'Visual Studio Code', type: 'Application', path: 'C:\\Program Files\\Microsoft VS Code\\Code.exe', icon: IC.code },
-      { name: 'Control Panel', type: 'Application', path: 'Control Panel', icon: IC.panel },
-      { name: 'Downloads', type: 'Folder', path: 'C:\\Users\\you\\Downloads', icon: IC.folder },
-      { name: 'Documents', type: 'Folder', path: 'C:\\Users\\you\\Documents', icon: IC.folder },
-      { name: 'whatsapp.py', type: 'Python File', path: 'C:\\Projects\\whatsapp.py', icon: IC.file },
-      { name: 'whats-new.md', type: 'Markdown', path: 'C:\\Docs\\whats-new.md', icon: IC.file }
-    ];
-
-    let selectedIndex = 0;
-    const input = document.getElementById('launcher-input');
-    const resultsContainer = document.getElementById('results-list');
-    const prevTitle = document.getElementById('prev-title');
-    const prevType = document.getElementById('prev-type');
-    const prevPath = document.getElementById('prev-path');
-    const prevSnippet = document.getElementById('prev-snippet');
+    const sendBtn = document.getElementById('c-send');
+    const statusEl = document.getElementById('c-status');
     const toast = document.getElementById('toast');
 
     function showToast(text) {
@@ -635,152 +321,44 @@
       setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    function evaluateMath(q) {
-      const sanitized = q.replace(/[^-()\d/*+. ]/g, '');
-      if (sanitized.length >= 2 && /[\d]/.test(sanitized) && /[-+*/]/.test(sanitized)) {
-        try {
-          const res = Function(`'use strict'; return (${sanitized})`)();
-          if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
-            return {
-              name: String(res),
-              type: 'Calculator',
-              path: 'Expression: ' + sanitized,
-              icon: IC.calc,
-              action: 'copy',
-              value: String(res)
-            };
-          }
-        } catch (_) {}
-      }
-      return null;
-    }
+    sendBtn.addEventListener('click', async () => {
+      const name = document.getElementById('c-name').value.trim();
+      const email = document.getElementById('c-email').value.trim();
+      const message = document.getElementById('c-message').value.trim();
 
-    function getMatches() {
-      const q = input.value.trim();
-      const ql = q.toLowerCase();
-      let list = [];
-
-      // @ web search
-      if (q.startsWith('@') && q.length > 1) {
-        const query = q.slice(1).trim();
-        list.push({
-          name: 'Search the web for \u201C' + query + '\u201D',
-          type: 'Web',
-          path: 'bing.com/search?q=' + encodeURIComponent(query),
-          icon: IC.web,
-          action: 'web',
-          query: query
-        });
-        return list;
-      }
-
-      const math = evaluateMath(q);
-      if (math) list.push(math);
-
-      if (q === '') {
-        list = [...list, ...items];
-      } else {
-        const filtered = items.filter(i =>
-          i.name.toLowerCase().includes(ql) ||
-          i.type.toLowerCase().includes(ql) ||
-          i.path.toLowerCase().includes(ql)
-        );
-        list = [...list, ...filtered];
-      }
-      return list;
-    }
-
-    function render() {
-      const matches = getMatches();
-
-      if (matches.length === 0) {
-        resultsContainer.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-dim); font-size: 12px;">No results found — press Enter to search the web</div>';
-        prevTitle.innerText = '—';
-        prevType.innerText = '—';
-        prevPath.innerText = '—';
-        prevSnippet.innerText = '—';
+      if (!email || !message) {
+        statusEl.textContent = 'Email and message are required.';
+        statusEl.className = 'form-status err';
         return;
       }
 
-      if (selectedIndex >= matches.length) selectedIndex = 0;
+      if (!CONTACT_ENDPOINT) {
+        statusEl.textContent = 'Contact form is not configured yet — try again soon.';
+        statusEl.className = 'form-status err';
+        return;
+      }
 
-      resultsContainer.innerHTML = matches.map((item, idx) => `
-        <div class="item-row ${idx === selectedIndex ? 'selected' : ''}" data-idx="${idx}">
-          <div class="item-main">
-            <span class="item-icon">${item.icon}</span>
-            <span class="item-name">${item.name}</span>
-          </div>
-          <span class="item-badge">${item.type}</span>
-        </div>
-      `).join('');
+      sendBtn.disabled = true;
+      statusEl.textContent = 'Sending…';
+      statusEl.className = 'form-status';
 
-      const active = matches[selectedIndex];
-      prevTitle.innerText = active.name;
-      prevType.innerText = active.type;
-      prevPath.innerText = active.path;
-      prevSnippet.innerText = active.action === 'web'
-        ? 'Opens in your default browser'
-        : active.action === 'copy'
-          ? 'Press Enter to copy the result'
-          : 'Run as administrator · Open file location';
-
-      document.querySelectorAll('.item-row').forEach(row => {
-        row.addEventListener('click', () => {
-          selectedIndex = Number(row.dataset.idx);
-          render();
-          execute(matches[selectedIndex]);
+      try {
+        const r = await fetch(CONTACT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message })
         });
-      });
-    }
-
-    function execute(item) {
-      if (!item) return;
-      if (item.action === 'web') {
-        window.open('https://www.bing.com/search?q=' + encodeURIComponent(item.query), '_blank');
-        showToast('Opened web search');
-      } else if (item.action === 'copy') {
-        navigator.clipboard.writeText(item.value).then(() => showToast('Copied: ' + item.value));
-      } else {
-        showToast('Triggered: ' + item.name);
-      }
-    }
-
-    input.addEventListener('input', () => {
-      selectedIndex = 0;
-      render();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (document.activeElement === input) {
-        const matches = getMatches();
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          if (matches.length) {
-            selectedIndex = (selectedIndex + 1) % matches.length;
-            render();
-          }
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          if (matches.length) {
-            selectedIndex = (selectedIndex - 1 + matches.length) % matches.length;
-            render();
-          }
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          if (matches[selectedIndex]) execute(matches[selectedIndex]);
-        } else if (e.key === 'Escape') {
-          input.value = '';
-          render();
-        }
+        if (!r.ok) throw new Error('send failed');
+        statusEl.textContent = 'Message sent — thanks!';
+        statusEl.className = 'form-status ok';
+        document.getElementById('c-message').value = '';
+      } catch (_) {
+        statusEl.textContent = 'Could not send — please try again later.';
+        statusEl.className = 'form-status err';
+      } finally {
+        sendBtn.disabled = false;
       }
     });
-
-    document.getElementById('winget-btn').addEventListener('click', () => {
-      navigator.clipboard.writeText('winget install AnshDadhich.Finder');
-      showToast('Copied: winget install AnshDadhich.Finder');
-    });
-
-    render();
   </script>
 </body>
 </html>
