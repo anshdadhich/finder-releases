@@ -1,566 +1,786 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Finder — Instant launcher for Windows</title>
-<meta name="description" content="Finder is a keyboard launcher for Windows. Ctrl+Space, type, launch. Apps, files, folders, calculator, web — no mouse.">
-<style>
-/* — Exact tokens from Finder tauri-ui/styles.css — */
-:root{
-  --font-mac:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
-  --font-mono:"Cascadia Mono",Consolas,"Courier New",monospace;
-  --accent-blue:#007aff;
-  --accent-blue-rgb:0,122,255;
-  --radius-window:16px;
-  --radius-item:8px;
-  --radius-badge:5px;
-  --blur-px:20px;
-}
-[data-theme="dark"]{
-  color-scheme:dark;
-  --bg-body:#121214;
-  --window-alpha:0.65;
-  --bg-window:rgba(28,28,30,var(--window-alpha));
-  --bg-preview:rgba(22,23,26,calc(var(--window-alpha) - 0.05));
-  --bg-card:rgba(255,255,255,0.08);
-  --bg-hover:rgba(255,255,255,0.08);
-  --bg-selected:rgba(var(--accent-blue-rgb),0.3);
-  --track:rgba(255,255,255,0.08);
-  --border-window:rgba(255,255,255,0.14);
-  --border-subtle:rgba(255,255,255,0.08);
-  --glass-border:rgba(0,0,0,0.37);
-  --text-primary:#ffffff;
-  --text-secondary:rgba(235,235,245,0.65);
-  --text-tertiary:rgba(235,235,245,0.4);
-  --text-on-selected:#ffffff;
-  --path-on-selected:rgba(255,255,255,0.55);
-  --shadow-mac:0 0 0 1px var(--glass-border),0 2px 8px rgba(0,0,0,0.22),0 0 22px rgba(0,0,0,0.14);
-}
-[data-theme="light"]{
-  color-scheme:light;
-  --bg-body:#e7e7ea;
-  --bg-window:rgba(250,250,252,var(--window-alpha));
-  --bg-preview:rgba(243,243,246,calc(var(--window-alpha) - 0.05));
-  --bg-card:rgba(0,0,0,0.06);
-  --bg-hover:rgba(0,0,0,0.06);
-  --bg-selected:rgba(var(--accent-blue-rgb),0.2);
-  --track:rgba(0,0,0,0.08);
-  --border-window:rgba(0,0,0,0.12);
-  --border-subtle:rgba(0,0,0,0.08);
-  --glass-border:rgba(255,255,255,0.4);
-  --text-primary:#1c1c1e;
-  --text-secondary:rgba(60,60,67,0.75);
-  --text-tertiary:rgba(60,60,67,0.45);
-  --text-on-selected:#1c1c1e;
-  --path-on-selected:rgba(60,60,67,0.6);
-  --shadow-mac:0 0 0 1px var(--glass-border),0 2px 8px rgba(0,0,0,0.12),0 0 22px rgba(0,0,0,0.08);
-}
-*{box-sizing:border-box;margin:0}
-html,body{height:100%}
-body{
-  font-family:var(--font-mac);
-  color:var(--text-primary);
-  background:var(--bg-body);
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  overflow-x:hidden;
-  position:relative;
-  transition:background 0.2s ease,color 0.2s ease;
-}
-/* desktop wallpaper behind the frost */
-.desk{
-  position:fixed;inset:0;z-index:0;
-  background:
-    linear-gradient(rgba(0,0,0,0.38),rgba(0,0,0,0.45)),
-    url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2560&auto=format&fit=crop") center/cover no-repeat,
-    #0a0a0c;
-}
-.stage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:40px 20px 24px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finder — Instant launcher for Windows</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-/* the window — real .launcher-window, reduced via zoom */
-.launcher-window{
-  width:760px;height:auto;min-height:210px;max-height:520px;
-  background:var(--bg-window);
-  border:1px solid var(--glass-border);
-  border-radius:var(--radius-window);
-  box-shadow:var(--shadow-mac),0 30px 80px rgba(0,0,0,0.45);
-  backdrop-filter:blur(var(--blur-px)) saturate(1.6);
-  -webkit-backdrop-filter:blur(var(--blur-px)) saturate(1.6);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-  zoom:0.85;
-  animation:summon 0.28s cubic-bezier(0.2,0.8,0.2,1);
-}
-@keyframes summon{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@media(max-width:700px){ .launcher-window{zoom:0.72;width:100%} }
-@media (prefers-reduced-motion: reduce){ .launcher-window{animation:none} }
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121215;
+      --surface-subtle: #18181b;
+      --border: #27272a;
+      --border-focus: #3f3f46;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --accent: #007aff;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
 
-/* search header — exact */
-.search-header{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border-subtle);gap:12px;flex:0 0 auto}
-.search-icon{width:20px;height:20px;flex:0 0 auto;fill:var(--text-secondary)}
-input#search{flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:var(--font-mac);font-size:18px;font-weight:400;color:var(--text-primary);letter-spacing:-0.2px}
-input#search::placeholder{color:var(--text-tertiary)}
-.theme-toggle-btn{background:transparent;border:none;border-radius:6px;padding:4px;cursor:pointer;color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;transition:background 0.15s ease,color 0.15s ease}
-.theme-toggle-btn .btn-icon{width:15px;height:15px;fill:currentColor}
-.theme-toggle-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
-.theme-toggle-btn[aria-pressed="true"]{color:var(--accent-blue)}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* body */
-.body-container{display:flex;flex:1;overflow:hidden;min-height:0;position:relative}
-#results{flex:1;min-width:0;padding:8px;overflow-y:auto;max-height:380px;border-right:1px solid var(--border-subtle)}
-#results::-webkit-scrollbar{width:5px}
-#results::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:10px}
-.group-label{font-size:10.5px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.6px;padding:8px 10px 4px}
-.result{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:7px 10px;margin-bottom:2px;
-  border-radius:var(--radius-item);cursor:pointer;
-  transition:background 0.08s ease;
-}
-.result:hover{background:var(--bg-hover)}
-.result.selected{background:var(--bg-selected);box-shadow:inset 0 0 0 1px rgba(var(--accent-blue-rgb),0.4)}
-.chip{
-  display:flex;align-items:center;justify-content:center;
-  width:26px;height:26px;flex:0 0 auto;border-radius:6px;
-  color:rgba(255,255,255,0.9);
-  background:hsl(var(--chip-hue,210) 28% 30%);
-  border:1px solid var(--border-subtle);
-}
-.chip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-[data-theme="light"] .chip{color:rgba(255,255,255,0.95)}
-.chip-globe{background:transparent;border-color:color-mix(in srgb,var(--accent-blue) 45%,transparent);color:var(--accent-blue)}
-.result .text{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
-.result .name{font-size:13px;font-weight:500;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)}
-.result.selected .name{color:var(--text-on-selected)}
-.result .path{font-size:11px;margin-top:1px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
-.result.selected .path{color:var(--path-on-selected)}
-.result .tag{
-  flex:0 0 auto;margin-left:auto;
-  font-size:10.5px;font-weight:500;color:var(--text-secondary);
-  background:var(--bg-card);padding:2px 7px;
-  border-radius:var(--radius-badge);border:0.5px solid var(--border-window);
-  white-space:nowrap;
-}
-.empty{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text-tertiary);font-size:13px}
-.empty.visible{display:flex}
-.empty .empty-sub{font-size:11px;opacity:0.7}
-/* calculator hero */
-.result.calc-hero-row{display:block;padding:0;margin-bottom:2px;animation:fadein 0.12s ease}
-@keyframes fadein{from{opacity:0}to{opacity:1}}
-@media (prefers-reduced-motion: reduce){ .result.calc-hero-row{animation:none} }
-.result.calc-hero-row.selected{background:transparent;box-shadow:none}
-.calc-hero{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
-.calc-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.calc-tokens{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:14px;font-weight:500;min-width:0}
-.tag-num{background:var(--track);padding:2px 8px;border-radius:6px;color:var(--text-primary);font-family:var(--font-mono);white-space:nowrap}
-.tag-op{color:#ff453a;font-weight:700}
-.calc-badge{background:var(--track);border:1px solid var(--border-subtle);color:var(--text-secondary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;flex-shrink:0}
-.calc-result{font-size:34px;font-weight:700;letter-spacing:-0.8px;line-height:1.1;color:var(--text-primary);max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-body.math-open .preview-pane,body.math-open .settings-pane{display:none}
-body.math-open #results{border-right-color:transparent}
-/* preview pane */
-.preview-pane{
-  flex:0 0 auto;width:310px;padding:20px 22px;
-  display:flex;flex-direction:column;
-  background:transparent;
-  border-left:1px solid var(--border-subtle);
-  overflow-x:hidden;overflow-y:auto;max-height:380px;
-}
-.preview-inner{display:none;flex-direction:column;min-height:100%}
-.preview-pane:not(.empty-preview) .preview-inner{display:flex}
-.preview-header{
-  display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding-bottom:16px;border-bottom:1px solid var(--border-subtle);
-}
-.preview-large-icon{width:88px;height:88px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;background:none;border:none}
-.preview-large-icon svg{width:44px;height:44px;stroke:var(--text-primary);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.preview-large-icon .pv-initial{font-size:44px;font-weight:500;color:var(--text-primary)}
-.preview-title{font-size:14.5px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;color:var(--text-primary)}
-.preview-type{font-size:11.5px;color:var(--text-secondary);margin-top:2px}
-.preview-metadata{margin-top:2px;display:flex;flex-direction:column;width:100%}
-.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:30px;font-size:11.5px;border-bottom:1px solid var(--border-subtle)}
-.preview-metadata .meta-row:last-child{border-bottom:none}
-.meta-label{color:var(--text-tertiary);flex:0 0 auto}
-.meta-value{color:var(--text-primary);font-weight:500;min-width:0;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-family:var(--font-mono);font-size:11px}
-.meta-snippet{max-width:100%;white-space:normal;text-align:left;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;font-family:var(--font-mac);font-size:11.5px;line-height:1.45;color:var(--text-secondary);font-weight:400}
-.preview-actions{display:flex;flex-direction:column;gap:2px;margin-top:8px}
-.pv-btn{
-  border:none;background:transparent;color:var(--text-primary);
-  font-family:var(--font-mac);font-size:12px;font-weight:500;
-  width:calc(100% + 44px);margin:0 -22px;padding:10px 22px;
-  border-radius:0;cursor:pointer;text-align:left;
-  transition:background 0.08s ease;
-}
-.pv-btn:hover{background:var(--bg-hover)}
-/* settings pane */
-.settings-pane{
-  display:none;flex:1 1 auto;min-height:0;flex-direction:column;
-  overflow-x:hidden;overflow-y:auto;max-height:380px;
-  padding:8px 28px 32px;
-}
-body.settings-open .settings-pane{display:flex}
-body.settings-open #results,body.settings-open .preview-pane{display:none}
-.settings-inner{display:flex;flex-direction:column;min-height:100%}
-.settings-group{display:flex;flex-direction:column;margin-top:16px}
-.settings-group:first-child{margin-top:0}
-.settings-group:last-child{margin-bottom:14px}
-.settings-group-title{font-size:10px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:2px}
-.setting-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:46px;border-bottom:1px solid var(--border-subtle)}
-.settings-group:last-child .setting-row:last-child{border-bottom:none}
-.setting-info{display:flex;flex-direction:column;gap:1px}
-.setting-label{color:var(--text-primary);font-size:12.5px;flex:0 0 auto}
-.setting-desc{color:var(--text-tertiary);font-size:11px;line-height:1.35}
-.setting-value{font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);min-width:36px;text-align:right}
-.setting-control{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:200px}
-.setting-control input[type="range"]{
-  -webkit-appearance:none;appearance:none;flex:1;width:110px;min-width:0;height:4px;
-  border-radius:4px;background:var(--track);cursor:pointer;outline:none;
-}
-.setting-control input[type="range"]::-webkit-slider-runnable-track{
-  height:4px;border-radius:4px;
-  background:linear-gradient(90deg,var(--accent-blue) var(--fill,0%),var(--track) var(--fill,0%));
-}
-.setting-control input[type="range"]::-webkit-slider-thumb{
-  -webkit-appearance:none;appearance:none;
-  width:12px;height:12px;border-radius:50%;
-  background:var(--text-primary);margin-top:-4px;
-  border:none;box-shadow:0 1px 3px rgba(0,0,0,0.3);
-}
-.segmented{display:flex;gap:4px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-badge);padding:3px}
-.segmented button{border:none;background:transparent;color:var(--text-secondary);font-size:11px;font-family:var(--font-mac);padding:4px 10px;border-radius:3px;cursor:pointer;transition:background 0.15s ease,color 0.15s ease}
-.segmented button.active{background:var(--accent-blue);color:#fff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
-.switch{width:36px;height:20px;border-radius:10px;border:1px solid var(--border-window);background:var(--bg-card);position:relative;cursor:pointer;padding:0;flex:0 0 auto;transition:background 0.15s ease}
-.switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-secondary);transition:transform 0.15s ease,background 0.15s ease}
-.switch[aria-checked="true"]{background:var(--accent-blue);border-color:transparent}
-.switch[aria-checked="true"]::after{transform:translateX(16px);background:#fff}
-/* below-window CTA */
-.below{
-  margin-top:26px;
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-  text-align:center;
-  zoom:0.85;
-}
-.hint{font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center}
-.kbd{font-family:var(--font-mono);font-size:11px;border:1px solid var(--border-window);border-bottom-width:2px;border-radius:5px;padding:2px 7px;background:var(--bg-card)}
-.ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  height:38px;padding:0 18px;
-  border-radius:var(--radius-item);
-  font-family:var(--font-mac);font-size:13px;font-weight:600;
-  text-decoration:none;cursor:pointer;
-}
-.btn-primary{background:var(--accent-blue);color:#fff;border:1px solid transparent}
-.btn-primary:hover{background:#2b8dff}
-.btn-ghost{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-window)}
-.btn-ghost:hover{background:var(--bg-hover)}
-.fine{font-family:var(--font-mono);font-size:10.5px;color:var(--text-tertiary)}
-.fine a{color:var(--text-secondary);text-decoration:none}
-</style>
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Nav */
+    header {
+      width: 100%;
+      max-width: 900px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .version-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.1s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      width: 100%;
+      max-width: 900px;
+      padding: 64px 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .hero-header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 680px;
+    }
+
+    h1 {
+      font-size: 38px;
+      font-weight: 600;
+      letter-spacing: -0.9px;
+      line-height: 1.15;
+      color: #fff;
+    }
+
+    p.subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 580px;
+      line-height: 1.6;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.12s ease;
+      font-family: var(--font-sans);
+    }
+
+    .btn-primary {
+      background: #fafafa;
+      color: #09090b;
+      border: 1px solid #fafafa;
+    }
+
+    .btn-primary:hover {
+      background: #e4e4e7;
+      border-color: #e4e4e7;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-focus);
+    }
+
+    /* Launcher */
+    .launcher-container {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .launcher-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .kbd {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 2px 5px;
+      border-radius: 3px;
+      color: var(--text-muted);
+    }
+
+    .launcher {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      font-family: var(--font-sans);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .launcher-body {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      min-height: 280px;
+    }
+
+    @media (max-width: 640px) {
+      .launcher-body {
+        grid-template-columns: 1fr;
+      }
+      .preview-pane {
+        display: none !important;
+      }
+    }
+
+    .results-list {
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      max-height: 280px;
+      border-right: 1px solid var(--border);
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .item-row:hover {
+      background: var(--surface-subtle);
+      color: var(--text);
+    }
+
+    .item-row.selected {
+      background: var(--surface-subtle);
+      color: #fff;
+    }
+
+    .item-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .item-icon {
+      color: var(--text-dim);
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    .item-row.selected .item-icon {
+      color: var(--text);
+    }
+
+    .item-name {
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .preview-pane {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 12px;
+    }
+
+    .preview-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .preview-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .preview-meta span {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding-bottom: 4px;
+    }
+
+    .preview-meta span b {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .preview-snippet {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      max-height: 80px;
+      overflow: hidden;
+      white-space: pre;
+    }
+
+    .launcher-footer {
+      height: 32px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+      background: var(--bg);
+    }
+
+    .shortcuts {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Specs */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .specs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .spec-item {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      background: var(--surface);
+    }
+
+    .spec-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .spec-val {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Footer line */
+    .page-footer {
+      width: 100%;
+      max-width: 900px;
+      border-top: 1px solid var(--border);
+      padding: 18px 0 28px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .page-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .page-footer a:hover {
+      color: var(--text);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-focus);
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.15s ease;
+      pointer-events: none;
+      font-family: var(--font-mono);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-<div class="desk"></div>
 
-<div class="stage">
-  <div class="launcher-window" id="card">
-    <div class="search-header">
-      <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input id="search" autocomplete="off" spellcheck="false" placeholder="Search apps, files, folders…">
-      <button id="settingsBtn" class="theme-toggle-btn" title="Settings" aria-pressed="false">
-        <svg class="btn-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.61 3.61 0 0 1 8.4 12c0-1.98 1.62-3.6 3.6-3.6s3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      </button>
+  <header>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a href="#" class="brand">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Finder</span>
+      </a>
+      <span class="version-tag">v0.2.3</span>
     </div>
 
-    <div class="body-container">
-      <section id="results"></section>
-      <div id="empty" class="empty"><span>No results</span><span class="empty-sub">Press Enter to search the web</span></div>
+    <div class="nav-links">
+      <a href="https://github.com/anshdadhich/finder-releases/releases" class="nav-link" target="_blank" rel="noreferrer">Releases</a>
+    </div>
+  </header>
 
-      <aside id="previewPane" class="preview-pane pv-app">
-        <div class="preview-inner">
-          <div class="preview-header">
-            <div id="pvIcon" class="preview-large-icon"><span class="pv-initial" id="pvInitial">A</span></div>
-            <div id="pvTitle" class="preview-title">Access</div>
-            <div id="pvType" class="preview-type">Application</div>
-          </div>
-          <div class="preview-metadata">
-            <div class="meta-row meta-where"><span class="meta-label">Where</span><span id="pvPath" class="meta-value">aumid:Microsoft.Office.MSACCESS.EXE.15</span></div>
-            <div class="meta-row" id="pvAboutRow" style="display:none"><span class="meta-label">About</span><span id="pvAbout" class="meta-value meta-snippet"></span></div>
-          </div>
-          <div id="pvActions" class="preview-actions">
-            <button class="pv-btn" id="pvOpenWeb" style="display:none">Open in browser</button>
-            <button class="pv-btn">Run as administrator</button>
-            <button class="pv-btn">Open file location</button>
+  <main class="hero">
+    <div class="hero-header">
+      <h1>Fast system search for Windows.</h1>
+      <p class="subtitle">
+        Zero-latency app launcher, NTFS file search, and a built-in calculator. Native Rust engine with direct Windows APIs. No mouse required.
+      </p>
+    </div>
+
+    <div class="action-row">
+      <a class="btn btn-primary" id="download-btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download Finder
+      </a>
+
+      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">
+        Download ZIP
+      </a>
+
+      <div class="cli-command" id="winget-btn" title="Click to copy">
+        <span>winget install AnshDadhich.Finder</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Interactive compact launcher -->
+    <div class="launcher-container">
+      <div class="launcher-label">
+        <span>Interactive Preview — compact mode</span>
+        <span>Summon: <span class="kbd">Ctrl</span> + <span class="kbd">Space</span></span>
+      </div>
+
+      <div class="launcher">
+        <div class="search-bar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="launcher-input" class="search-input" placeholder="Type an app, file, equation (12*7), or @web search..." spellcheck="false" autocomplete="off" />
+        </div>
+
+        <div class="launcher-body">
+          <div class="results-list" id="results-list"></div>
+
+          <div class="preview-pane" id="preview-pane">
+            <div class="preview-header">
+              <div class="preview-title" id="prev-title">Access</div>
+              <div class="preview-meta">
+                <span>Type <b id="prev-type">Application</b></span>
+                <span>Path <b id="prev-path">aumid:Microsoft.Office.MSACCESS.EXE.15</b></span>
+              </div>
+            </div>
+            <div class="preview-snippet" id="prev-snippet">Run as administrator · Open file location</div>
           </div>
         </div>
-      </aside>
 
-      <aside id="settingsPane" class="settings-pane">
-        <div class="settings-inner">
-          <div class="settings-group">
-            <div class="settings-group-title">Appearance</div>
-            <div class="setting-row">
-              <div class="setting-info"><span class="setting-label">Theme</span></div>
-              <div class="setting-control">
-                <div class="segmented" id="setTheme">
-                  <button data-theme-choice="dark" class="active">Dark</button>
-                  <button data-theme-choice="light">Light</button>
-                  <button data-theme-choice="system">System</button>
-                </div>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-info"><span class="setting-label">Hotkey</span><span class="setting-desc">Summon the launcher anywhere</span></div>
-              <div class="setting-control">
-                <div class="segmented" id="setHotkey">
-                  <button data-hotkey-choice="ctrl+space" class="active">Ctrl + Space</button>
-                  <button data-hotkey-choice="alt+space">Alt + Space</button>
-                </div>
-              </div>
-            </div>
+        <div class="launcher-footer">
+          <div class="shortcuts">
+            <span><span class="kbd">↑</span> <span class="kbd">↓</span> Select</span>
+            <span><span class="kbd">↵</span> Open</span>
+            <span><span class="kbd">Esc</span> Reset</span>
           </div>
-          <div class="settings-group">
-            <div class="settings-group-title">Window</div>
-            <div class="setting-row">
-              <div class="setting-info"><span class="setting-label">Transparency</span><span class="setting-desc">Opacity of the panel</span></div>
-              <div class="setting-control">
-                <input id="setAlpha" type="range" min="0" max="100" step="1" value="35">
-                <span id="setAlphaVal" class="setting-value">35%</span>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-info"><span class="setting-label">Blur</span><span class="setting-desc">Frosted background strength</span></div>
-              <div class="setting-control">
-                <input id="setBlur" type="range" min="0" max="100" step="1" value="50">
-                <span id="setBlurVal" class="setting-value">50%</span>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-info"><span class="setting-label">Corner radius</span><span class="setting-desc">Roundness of the panel</span></div>
-              <div class="setting-control">
-                <input id="setRadius" type="range" min="4" max="24" step="1" value="16">
-                <span id="setRadiusVal" class="setting-value">16px</span>
-              </div>
-            </div>
-          </div>
+          <span>Native Rust engine</span>
         </div>
-      </aside>
-    </div>
-  </div>
+      </div>
 
-  <div class="below">
-    <div class="hint">
-      <span class="kbd">Ctrl</span><span class="kbd">Space</span> to summon
-      <span style="opacity:0.5">·</span> type <span class="kbd">@</span> for web search
-      <span style="opacity:0.5">·</span> math just works
-    </div>
-    <div class="ctas">
-      <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-setup.exe">Download Finder</a>
-      <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.3_x64-portable.zip">Download ZIP</a>
-    </div>
-    <div class="fine">v0.2.3 • Windows 10/11 x64 • signed installer • auto-updates • <a href="https://github.com/anshdadhich/finder-releases/releases">all releases</a></div>
-  </div>
-</div>
+      <div class="launcher-label" style="margin-top:2px">
+        <span>Hint</span>
+        <span style="text-transform:none;letter-spacing:0">
+          <span class="kbd">Ctrl</span> + <span class="kbd">Space</span> to summon
+          &nbsp;·&nbsp; type <span class="kbd">@</span> for web search
+          &nbsp;·&nbsp; math just works
+        </span>
+      </div>
 
-<script>
-/* inline SVG icons (stroke icons, like real shell glyphs) */
-const IC={
-  db:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
-  wrench:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3 17.6V21h3.4l5.7-5.7a4.5 4.5 0 0 0 5.6-6L14.5 12 12 9.5l2.7-3.2z"/></svg>',
-  spark:'<svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2z"/></svg>',
-  grid:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
-  cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
-  cam:'<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
-  globe:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
-  code:'<svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>',
-  panel:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
-  folder:'<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>',
-  file:'<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
-};
-const apps=[
-  {n:"Access",p:"aumid:Microsoft.Office.MSACCESS.EXE.15",k:"app",t:"App",i:IC.db,h:348},
-  {n:"Administrative Tools",p:"Administrative Tools.lnk",k:"app",t:"App",i:IC.wrench,h:210},
-  {n:"Antigravity",p:"Antigravity",k:"app",t:"App",i:IC.spark,h:262},
-  {n:"Antigravity IDE",p:"Antigravity IDE",k:"app",t:"App",i:IC.code,h:280},
-  {n:"Calculator",p:"Calculator",k:"app",t:"App",i:IC.grid,h:160},
-  {n:"Calendar",p:"Calendar",k:"app",t:"App",i:IC.cal,h:200},
-  {n:"Camera",p:"Camera",k:"app",t:"App",i:IC.cam,h:32},
-  {n:"Chrome",p:"chrome.exe",k:"app",t:"App",i:IC.globe,h:210},
-  {n:"Code",p:"Code.exe",k:"app",t:"App",i:IC.code,h:260},
-  {n:"Control Panel",p:"Control Panel",k:"app",t:"App",i:IC.panel,h:180},
-  {n:"Downloads",p:"C:\\Users\\you\\Downloads",k:"dir",t:"Folder",i:IC.folder,h:45},
-  {n:"Documents",p:"C:\\Users\\you\\Documents",k:"dir",t:"Folder",i:IC.folder,h:45},
-  {n:"whatsapp.py",p:"C:\\Projects\\whatsapp.py",k:"file",t:"File",i:IC.file,h:130},
-  {n:"whats-new.md",p:"C:\\Docs\\whats-new.md",k:"file",t:"File",i:IC.file,h:130},
-];
-const q=document.getElementById('search'), list=document.getElementById('results');
-const emptyEl=document.getElementById('empty');
-const previewPane=document.getElementById('previewPane');
-const pvInitial=document.getElementById('pvInitial'), pvTitle=document.getElementById('pvTitle'), pvType=document.getElementById('pvType'), pvPath=document.getElementById('pvPath');
-const pvAboutRow=document.getElementById('pvAboutRow'), pvAbout=document.getElementById('pvAbout'), pvOpenWeb=document.getElementById('pvOpenWeb');
-const calc=document.getElementById('calc'), ce=document.getElementById('ce'), ca=document.getElementById('ca');
-let sel=0, webQuery=null;
-function calcTry(s){
-  if(!s || !/^[\d\s\.\+\-\*\/\%\(\)\^,]+$/.test(s)) return null;
-  try{const v=Function('"use strict";return ('+s.replace(/\^/g,'**')+')')(); if(typeof v==='number'&&isFinite(v)) return v}catch{}
-  return null;
-}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
-function tokenHTML(v){
-  return v.split(/([+\-*/%()^,])/).map(t=>{
-    if(!t) return '';
-    if(/^[+\-*/%()^,]$/.test(t)) return '<span class="tag-op">'+esc(t)+'</span>';
-    return '<span class="tag-num">'+esc(t)+'</span>';
-  }).join('');
-}
-function render(){
-  const v=q.value.trim(), ql=v.toLowerCase();
-  const cv=calcTry(v);
-  document.body.classList.toggle('math-open', cv!==null);
-  webQuery=null;
-  list.innerHTML='';
-  if(cv!==null){
-    const row=document.createElement('div'); row.className='result calc-hero-row';
-    row.innerHTML='<div class="calc-hero"><div class="calc-head"><div class="calc-tokens">'+tokenHTML(v)+'</div><span class="calc-badge">Calculator Result</span></div><div class="calc-result">'+Number(cv).toLocaleString()+'</div></div>';
-    list.appendChild(row);
-    pvInitial.style.display='none';
-    pvIcon.querySelector('.pv-initial')&&(pvIcon.querySelector('.pv-initial').style.display='none');
-    pvIcon.innerHTML=IC.grid;
-    pvTitle.textContent=Number(cv).toLocaleString(); pvType.textContent='Calculator Result'; pvPath.textContent=v;
-    pvAboutRow.style.display='none'; pvOpenWeb.style.display='none';
-    return;
-  }
-  pvInitial.style.display=''; 
-  if(v.startsWith('@') && v.length>1){
-    webQuery=v.slice(1);
-    emptyEl.classList.remove('visible');
-    previewPane.classList.remove('empty-preview');
-    const g=document.createElement('div'); g.className='group-label'; g.textContent='Web'; list.appendChild(g);
-    const r=document.createElement('div'); r.className='result'+(sel===0?' selected':''); r.dataset.web='1';
-    r.innerHTML='<span class="chip chip-globe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg></span><div class="text"><div class="name">Search the web for “'+esc(webQuery)+'”</div><div class="path">bing.com</div></div><span class="tag">Web</span>';
-    r.addEventListener('click',openWeb);
-    list.appendChild(r);
-    pi_set(IC.globe);
-    pvTitle.textContent='Search the web'; pvType.textContent='Web result';
-    pvPath.textContent='bing.com/search?q='+encodeURIComponent(webQuery);
-    pvAboutRow.style.display='flex'; pvAbout.textContent='Opens “'+webQuery+'” in your default browser.';
-    pvOpenWeb.style.display='';
-    return;
-  }
-  pvAboutRow.style.display='none'; pvOpenWeb.style.display='none';
-  let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
-  if(!ql) items=apps.slice(0,9);
-  if(!items.length){
-    emptyEl.classList.add('visible');
-    previewPane.classList.add('empty-preview');
-    return;
-  }
-  emptyEl.classList.remove('visible');
-  previewPane.classList.remove('empty-preview');
-  const g=document.createElement('div'); g.className='group-label'; g.textContent= v ? 'Results' : 'Applications'; list.appendChild(g);
-  items.forEach((it,i)=>{
-    const r=document.createElement('div'); r.className='result'+(i===sel?' selected':'');
-    r.innerHTML='<span class="chip" style="--chip-hue:'+it.h+'">'+it.i+'</span><div class="text"><div class="name">'+esc(it.n)+'</div><div class="path">'+esc(it.p)+'</div></div><span class="tag">'+it.t+'</span>';
-    r.addEventListener('mouseenter',()=>{sel=i; sync()});
-    list.appendChild(r);
-  });
-  if(sel>=items.length) sel=0;
-  syncPreview(items[sel]);
-}
-function pi_set(svg){ pvIcon.innerHTML=svg; pvInitial.style.display='none'; }
-function sync(){
-  const rows=list.querySelectorAll('.result');
-  rows.forEach((r,i)=>r.classList.toggle('selected', i===sel));
-  const v=q.value.trim(), ql=v.toLowerCase();
-  if(v.startsWith('@')&&v.length>1){ return; }
-  let items=apps.filter(a=> !ql || a.n.toLowerCase().includes(ql) || a.p.toLowerCase().includes(ql));
-  if(!v) items=apps.slice(0,9);
-  if(items[sel]) syncPreview(items[sel]);
-}
-function syncPreview(it){
-  if(!it) return;
-  if(typeof it.i==='string' && it.i.startsWith('<svg')){ pi_set(it.i); }
-  else { pvIcon.innerHTML='<span class="pv-initial">'+it.i+'</span>'; }
-  pvTitle.textContent=it.n;
-  pvType.textContent=it.k==='app'?'Application':it.k==='dir'?'Folder':'File';
-  pvPath.textContent=it.p;
-}
-function openWeb(){
-  if(!webQuery) return;
-  window.open('https://www.bing.com/search?q='+encodeURIComponent(webQuery),'_blank');
-}
-pvOpenWeb.addEventListener('click',openWeb);
-q.addEventListener('input',()=>{sel=0;render()});
-q.addEventListener('keydown',e=>{
-  const n=list.querySelectorAll('.result').length;
-  if(e.key==='ArrowDown'){sel=Math.min(n-1,sel+1);sync();e.preventDefault()}
-  if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);sync();e.preventDefault()}
-  if(e.key==='Enter'){
-    if(webQuery){openWeb();e.preventDefault();return}
-  }
-  if(e.key==='Escape'){q.value='';sel=0;render()}
-});
-render(); q.focus();
-/* auto-demo: shows a calculation, then a web search, then hands over */
-(async()=>{
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  let userTook=false;
-  const cancel=()=>{userTook=true};
-  q.addEventListener('beforeinput',cancel,{once:true});
-  q.addEventListener('keydown',cancel,{once:true});
-  const type=async(s)=>{ for(const ch of s){ if(userTook)return false; q.value+=ch; q.dispatchEvent(new Event('input')); await sleep(85);} return true; };
-  await sleep(1100); if(userTook)return;
-  if(!await type('12*7'))return;
-  await sleep(1500); if(userTook)return;
-  q.value=''; q.dispatchEvent(new Event('input'));
-  await sleep(600); if(userTook)return;
-  if(!await type('@whatsapp web'))return;
-  await sleep(1700); if(userTook)return;
-  q.value=''; q.dispatchEvent(new Event('input'));
-})();
-/* settings */
-const settingsBtn=document.getElementById('settingsBtn');
-settingsBtn.addEventListener('click',()=>{
-  const open=document.body.classList.toggle('settings-open');
-  settingsBtn.setAttribute('aria-pressed', String(open));
-});
-function setFill(el){ el.style.setProperty('--fill', ((el.value-el.min)/(el.max-el.min)*100)+'%'); }
-const setAlpha=document.getElementById('setAlpha'), setAlphaVal=document.getElementById('setAlphaVal');
-setAlpha.addEventListener('input',()=>{
-  const v=Number(setAlpha.value);
-  const a=Math.max(0.12, 1 - v/100);
-  document.documentElement.style.setProperty('--window-alpha', a.toFixed(2));
-  setAlphaVal.textContent=v+'%';
-  setFill(setAlpha);
-});
-const setBlur=document.getElementById('setBlur'), setBlurVal=document.getElementById('setBlurVal');
-setBlur.addEventListener('input',()=>{
-  const v=Number(setBlur.value);
-  const px=Math.round(v/100*40);
-  document.documentElement.style.setProperty('--blur-px', px+'px');
-  setBlurVal.textContent=v+'%';
-  setFill(setBlur);
-});
-const setRadius=document.getElementById('setRadius'), setRadiusVal=document.getElementById('setRadiusVal');
-setRadius.addEventListener('input',()=>{
-  document.documentElement.style.setProperty('--radius-window', setRadius.value+'px');
-  setRadiusVal.textContent=setRadius.value+'px';
-  setFill(setRadius);
-});
-[setAlpha,setBlur,setRadius].forEach(setFill);
-const themeSeg=document.getElementById('setTheme');
-themeSeg.addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  themeSeg.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
-  document.documentElement.setAttribute('data-theme', b.dataset.themeChoice);
-});
-const hotkeySeg=document.getElementById('setHotkey');
-hotkeySeg.addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  hotkeySeg.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));
-});
-render(); 
-</script>
+      <!-- Specs -->
+      <div class="specs-grid">
+        <div class="spec-item">
+          <div class="spec-label">Warm Start</div>
+          <div class="spec-val">486k files indexed in &lt; 1s</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Search Latency</div>
+          <div class="spec-val">&lt; 8ms USN Journal lookup</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Architecture</div>
+          <div class="spec-val">Native Rust + Win32 direct calls</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span>v0.2.3 • Windows 10/11 x64 • signed installer • auto-updates</span>
+    <span><a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">all releases</a></span>
+  </footer>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+    const IC = {
+      db: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+      wrench: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3 17.6V21h3.4l5.7-5.7a4.5 4.5 0 0 0 5.6-6L14.5 12 12 9.5l2.7-3.2z"/></svg>',
+      spark: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8L12 2z"/></svg>',
+      code: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      grid: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
+      cal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+      cam: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+      globe: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
+      panel: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
+      folder: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>',
+      file: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+      web: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg>',
+      calc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>'
+    };
+
+    const items = [
+      { name: 'Access', type: 'Application', path: 'aumid:Microsoft.Office.MSACCESS.EXE.15', icon: IC.db },
+      { name: 'Administrative Tools', type: 'Application', path: 'Administrative Tools.lnk', icon: IC.wrench },
+      { name: 'Antigravity', type: 'Application', path: 'Antigravity', icon: IC.spark },
+      { name: 'Calculator', type: 'Application', path: 'Calculator', icon: IC.grid },
+      { name: 'Calendar', type: 'Application', path: 'Calendar', icon: IC.cal },
+      { name: 'Camera', type: 'Application', path: 'Camera', icon: IC.cam },
+      { name: 'Chrome', type: 'Application', path: 'chrome.exe', icon: IC.globe },
+      { name: 'Visual Studio Code', type: 'Application', path: 'C:\\Program Files\\Microsoft VS Code\\Code.exe', icon: IC.code },
+      { name: 'Control Panel', type: 'Application', path: 'Control Panel', icon: IC.panel },
+      { name: 'Downloads', type: 'Folder', path: 'C:\\Users\\you\\Downloads', icon: IC.folder },
+      { name: 'Documents', type: 'Folder', path: 'C:\\Users\\you\\Documents', icon: IC.folder },
+      { name: 'whatsapp.py', type: 'Python File', path: 'C:\\Projects\\whatsapp.py', icon: IC.file },
+      { name: 'whats-new.md', type: 'Markdown', path: 'C:\\Docs\\whats-new.md', icon: IC.file }
+    ];
+
+    let selectedIndex = 0;
+    const input = document.getElementById('launcher-input');
+    const resultsContainer = document.getElementById('results-list');
+    const prevTitle = document.getElementById('prev-title');
+    const prevType = document.getElementById('prev-type');
+    const prevPath = document.getElementById('prev-path');
+    const prevSnippet = document.getElementById('prev-snippet');
+    const toast = document.getElementById('toast');
+
+    function showToast(text) {
+      toast.innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function evaluateMath(q) {
+      const sanitized = q.replace(/[^-()\d/*+. ]/g, '');
+      if (sanitized.length >= 2 && /[\d]/.test(sanitized) && /[-+*/]/.test(sanitized)) {
+        try {
+          const res = Function(`'use strict'; return (${sanitized})`)();
+          if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+            return {
+              name: String(res),
+              type: 'Calculator',
+              path: 'Expression: ' + sanitized,
+              icon: IC.calc,
+              action: 'copy',
+              value: String(res)
+            };
+          }
+        } catch (_) {}
+      }
+      return null;
+    }
+
+    function getMatches() {
+      const q = input.value.trim();
+      const ql = q.toLowerCase();
+      let list = [];
+
+      // @ web search
+      if (q.startsWith('@') && q.length > 1) {
+        const query = q.slice(1).trim();
+        list.push({
+          name: 'Search the web for \u201C' + query + '\u201D',
+          type: 'Web',
+          path: 'bing.com/search?q=' + encodeURIComponent(query),
+          icon: IC.web,
+          action: 'web',
+          query: query
+        });
+        return list;
+      }
+
+      const math = evaluateMath(q);
+      if (math) list.push(math);
+
+      if (q === '') {
+        list = [...list, ...items];
+      } else {
+        const filtered = items.filter(i =>
+          i.name.toLowerCase().includes(ql) ||
+          i.type.toLowerCase().includes(ql) ||
+          i.path.toLowerCase().includes(ql)
+        );
+        list = [...list, ...filtered];
+      }
+      return list;
+    }
+
+    function render() {
+      const matches = getMatches();
+
+      if (matches.length === 0) {
+        resultsContainer.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-dim); font-size: 12px;">No results found — press Enter to search the web</div>';
+        prevTitle.innerText = '—';
+        prevType.innerText = '—';
+        prevPath.innerText = '—';
+        prevSnippet.innerText = '—';
+        return;
+      }
+
+      if (selectedIndex >= matches.length) selectedIndex = 0;
+
+      resultsContainer.innerHTML = matches.map((item, idx) => `
+        <div class="item-row ${idx === selectedIndex ? 'selected' : ''}" data-idx="${idx}">
+          <div class="item-main">
+            <span class="item-icon">${item.icon}</span>
+            <span class="item-name">${item.name}</span>
+          </div>
+          <span class="item-badge">${item.type}</span>
+        </div>
+      `).join('');
+
+      const active = matches[selectedIndex];
+      prevTitle.innerText = active.name;
+      prevType.innerText = active.type;
+      prevPath.innerText = active.path;
+      prevSnippet.innerText = active.action === 'web'
+        ? 'Opens in your default browser'
+        : active.action === 'copy'
+          ? 'Press Enter to copy the result'
+          : 'Run as administrator · Open file location';
+
+      document.querySelectorAll('.item-row').forEach(row => {
+        row.addEventListener('click', () => {
+          selectedIndex = Number(row.dataset.idx);
+          render();
+          execute(matches[selectedIndex]);
+        });
+      });
+    }
+
+    function execute(item) {
+      if (!item) return;
+      if (item.action === 'web') {
+        window.open('https://www.bing.com/search?q=' + encodeURIComponent(item.query), '_blank');
+        showToast('Opened web search');
+      } else if (item.action === 'copy') {
+        navigator.clipboard.writeText(item.value).then(() => showToast('Copied: ' + item.value));
+      } else {
+        showToast('Triggered: ' + item.name);
+      }
+    }
+
+    input.addEventListener('input', () => {
+      selectedIndex = 0;
+      render();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (document.activeElement === input) {
+        const matches = getMatches();
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (matches.length) {
+            selectedIndex = (selectedIndex + 1) % matches.length;
+            render();
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (matches.length) {
+            selectedIndex = (selectedIndex - 1 + matches.length) % matches.length;
+            render();
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (matches[selectedIndex]) execute(matches[selectedIndex]);
+        } else if (e.key === 'Escape') {
+          input.value = '';
+          render();
+        }
+      }
+    });
+
+    document.getElementById('winget-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText('winget install AnshDadhich.Finder');
+      showToast('Copied: winget install AnshDadhich.Finder');
+    });
+
+    render();
+  </script>
 </body>
 </html>
