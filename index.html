@@ -22,6 +22,14 @@
   </script>
 
   <style>
+    @property --ai-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    @property --ai-s1 { syntax: '<angle>'; inherits: false; initial-value: 16deg; }
+    @property --ai-s2 { syntax: '<angle>'; inherits: false; initial-value: 30deg; }
+    @property --ai-s3 { syntax: '<angle>'; inherits: false; initial-value: 43deg; }
+    @property --ai-s4 { syntax: '<angle>'; inherits: false; initial-value: 59deg; }
+    @property --ai-s5 { syntax: '<angle>'; inherits: false; initial-value: 72deg; }
+    @property --ai-s6 { syntax: '<angle>'; inherits: false; initial-value: 84deg; }
+
     :root {
       --bg: #050505;
       --surface: #0d0d11;
@@ -42,6 +50,10 @@
 
       --skel-base: #0d0d12;
       --skel-highlight: #1c1c28;
+
+      --hud-bg: #0b0b0f;
+      --hud-row-hover: rgba(255, 255, 255, 0.05);
+      --hud-border: rgba(255, 255, 255, 0.1);
     }
 
     html[data-site-theme="light"] {
@@ -61,9 +73,12 @@
 
       --skel-base: #e5e7eb;
       --skel-highlight: #f3f4f6;
+
+      --hud-bg: #ffffff;
+      --hud-row-hover: rgba(0, 0, 0, 0.04);
+      --hud-border: rgba(0, 0, 0, 0.08);
     }
 
-    /* Prevent default browser overscroll bounce */
     html, body {
       background-color: var(--bg);
       overscroll-behavior-y: none;
@@ -86,7 +101,6 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
-    /* Page container that gets pushed upwards */
     #pageWrapper {
       width: 100%;
       display: flex;
@@ -119,14 +133,8 @@
     }
 
     @keyframes motionFadeUp {
-      0% {
-        opacity: 0;
-        transform: translateY(24px) scale(0.98);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      0% { opacity: 0; transform: translateY(24px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* theme toggle */
@@ -152,9 +160,7 @@
       border-color: var(--border-focus); 
       transform: scale(1.05);
     }
-    .theme-toggle:active {
-      transform: scale(0.92);
-    }
+    .theme-toggle:active { transform: scale(0.92); }
 
     /* Hero */
     .hero {
@@ -196,23 +202,13 @@
     }
     
     @keyframes motionSquiggleIn {
-      0% {
-        opacity: 0;
-        transform: scale(0.4) translateY(30px) rotate(calc(var(--rot, 0deg) - 15deg));
-      }
-      100% {
-        opacity: var(--target-opacity, 0.85);
-        transform: scale(1) translateY(0px) rotate(var(--rot, 0deg));
-      }
+      0% { opacity: 0; transform: scale(0.4) translateY(30px) rotate(calc(var(--rot, 0deg) - 15deg)); }
+      100% { opacity: var(--target-opacity, 0.85); transform: scale(1) translateY(0px) rotate(var(--rot, 0deg)); }
     }
 
     @keyframes motionSquiggleFloat {
-      0% {
-        transform: scale(1) translateY(0px) rotate(var(--rot, 0deg));
-      }
-      100% {
-        transform: scale(1.05) translateY(-16px) rotate(calc(var(--rot, 0deg) + var(--rot-delta, 8deg)));
-      }
+      0% { transform: scale(1) translateY(0px) rotate(var(--rot, 0deg)); }
+      100% { transform: scale(1.05) translateY(-16px) rotate(calc(var(--rot, 0deg) + var(--rot-delta, 8deg))); }
     }
 
     @media (max-width: 768px) {
@@ -264,8 +260,6 @@
       margin-bottom: 18px;
     }
 
-    .privacy-tag svg { width: 11px; height: 11px; }
-
     .logo-heading img {
       width: 64px;
       height: 64px;
@@ -277,9 +271,7 @@
       transition: transform 0.3s var(--ease-spring);
     }
 
-    .logo-heading img:hover {
-      transform: scale(1.06) rotate(-2deg);
-    }
+    .logo-heading img:hover { transform: scale(1.06) rotate(-2deg); }
 
     h1 {
       font-size: 44px;
@@ -298,9 +290,9 @@
       margin-bottom: 30px;
     }
 
-    .subtitle kbd, .site-links-shortcut kbd, .feat-kbd {
+    .subtitle kbd, .site-links-shortcut kbd, .hud-kbd {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       padding: 2px 6px;
       border-radius: 4px;
       background: var(--surface);
@@ -338,13 +330,8 @@
       color: var(--accent-text);
       border: 1px solid var(--accent-bg);
     }
-    .btn-primary:hover { 
-      opacity: 0.92; 
-      transform: translateY(-1.5px) scale(1.02); 
-    }
-    .btn-primary:active { 
-      transform: translateY(0) scale(0.96); 
-    }
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1.5px) scale(1.02); }
+    .btn-primary:active { transform: translateY(0) scale(0.96); }
 
     .btn-ghost {
       background: var(--surface);
@@ -356,9 +343,7 @@
       border-color: var(--border-focus); 
       transform: translateY(-1.5px) scale(1.02); 
     }
-    .btn-ghost:active { 
-      transform: translateY(0) scale(0.96); 
-    }
+    .btn-ghost:active { transform: translateY(0) scale(0.96); }
 
     .meta {
       font-family: var(--font-mono);
@@ -395,17 +380,11 @@
       object-fit: cover;
     }
 
-    /* Skeleton shimmer */
     .demo-skeleton {
       position: absolute;
       inset: 0;
       z-index: 3;
-      background: linear-gradient(
-        90deg,
-        var(--skel-base) 0%,
-        var(--skel-highlight) 50%,
-        var(--skel-base) 100%
-      );
+      background: linear-gradient(90deg, var(--skel-base) 0%, var(--skel-highlight) 50%, var(--skel-base) 100%);
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite linear;
       transition: opacity 0.4s ease, visibility 0.4s ease;
@@ -417,10 +396,7 @@
       100% { background-position: 200% 0; }
     }
 
-    .demo-block.ready .demo-skeleton {
-      opacity: 0;
-      visibility: hidden;
-    }
+    .demo-block.ready .demo-skeleton { opacity: 0; visibility: hidden; }
 
     @media (prefers-reduced-motion: reduce) {
       .demo-skeleton { animation: none; }
@@ -458,7 +434,6 @@
     .big-play:active span { transform: scale(0.94); }
     .big-play svg { width: 22px; height: 22px; fill: #fff; margin-left: 3px; }
 
-    /* control bar */
     .vc {
       position: absolute;
       left: 0; right: 0; bottom: 0;
@@ -490,7 +465,6 @@
 
     .vc button:hover { background: rgba(255, 255, 255, 0.16); transform: scale(1.08); }
     .vc button:active { transform: scale(0.92); }
-    .vc svg { display: block; }
 
     .vc .track {
       flex: 1;
@@ -541,11 +515,13 @@
       text-align: center;
     }
 
-    /* Features Section */
-    .features {
+    /* =========================================================================
+       CLEAN NATIVE HUD MORPH SHOWCASE
+       ========================================================================= */
+    .morph-showcase {
       width: 100%;
       max-width: 980px;
-      padding: 88px 0 20px;
+      margin-top: 84px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -562,7 +538,7 @@
       margin-bottom: 8px;
     }
 
-    .features h2 {
+    .morph-showcase h2 {
       font-size: 28px;
       font-weight: 700;
       letter-spacing: -0.8px;
@@ -570,82 +546,263 @@
       text-align: center;
     }
 
-    .features p.features-sub {
+    .morph-showcase p.showcase-sub {
       font-size: 15px;
       color: var(--text-muted);
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       text-align: center;
       max-width: 520px;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 16px;
+    .morph-stage {
       width: 100%;
+      min-height: 280px;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 81, 255, 0.05) 0%, transparent 70%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 36px 16px;
     }
 
-    .feat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
+    /* The Unified Morphing Shell */
+    .morph-body {
+      position: relative;
+      background: var(--hud-bg);
+      border-radius: var(--morph-radius, 12px);
+      transition: width 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                  height 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                  border-radius 380ms cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--hud-border);
+      will-change: width, height, border-radius;
+      padding: 1px;
+    }
+
+    .morph-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: calc(var(--morph-radius, 12px) - 1px);
+      background: var(--hud-bg);
+      overflow: hidden;
+      position: relative;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      transition: border-color 0.2s ease, transform 0.2s var(--ease-spring);
     }
 
-    .feat-card:hover {
-      border-color: var(--border-focus);
-      transform: translateY(-2px);
+    .morph-content-wrap {
+      width: 100%;
+      height: 100%;
+      transition: opacity 160ms ease;
+      display: flex;
+      flex-direction: column;
     }
 
-    .feat-card.span-3 { grid-column: span 3; }
-    .feat-card.span-2 { grid-column: span 2; }
-
-    @media (max-width: 768px) {
-      .feat-card.span-3, .feat-card.span-2 { grid-column: span 6; }
+    .morph-body[data-morphing="true"] .morph-content-wrap {
+      opacity: 0;
     }
 
-    .feat-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(0, 81, 255, 0.1);
-      border: 1px solid rgba(0, 81, 255, 0.2);
+    /* Rim Glow Layers */
+    .ai-glow-layer {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      background: conic-gradient(
+        from var(--ai-angle, 0deg) at 50% 50%,
+        #0051ff 0deg,
+        #38bdf8 var(--ai-s1, 16deg),
+        #ffffff var(--ai-s2, 30deg),
+        #818cf8 var(--ai-s3, 43deg),
+        #c084fc var(--ai-s4, 59deg),
+        #0051ff var(--ai-s5, 72deg),
+        transparent var(--ai-s6, 84deg),
+        transparent 324deg,
+        #38bdf8 349deg,
+        #0051ff 360deg
+      );
+      mask-size: 100% 100%;
+      -webkit-mask-size: 100% 100%;
+    }
+
+    .morph-body[data-playing="true"] .ai-glow-layer {
+      animation: aiRimPulse 1.6s cubic-bezier(0.26, 0.94, 0.6, 1) forwards;
+    }
+
+    .morph-body[data-morphing="true"] .ai-glow-layer {
+      display: none !important;
+    }
+
+    @keyframes aiRimPulse {
+      0% {
+        opacity: 0;
+        --ai-angle: 180deg;
+        --ai-s1: 16deg;
+        --ai-s2: 30deg;
+        --ai-s3: 43deg;
+        --ai-s4: 59deg;
+        --ai-s5: 72deg;
+        --ai-s6: 84deg;
+      }
+      10% { opacity: 1; }
+      30% { opacity: 1; }
+      100% {
+        opacity: 0;
+        --ai-angle: 30deg;
+        --ai-s1: 6deg;
+        --ai-s2: 11deg;
+        --ai-s3: 17deg;
+        --ai-s4: 40deg;
+        --ai-s5: 90deg;
+        --ai-s6: 120deg;
+      }
+    }
+
+    /* Native Clean HUD Typography & Layout */
+    .hud-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hud-icon {
+      color: #3b82f6;
       display: grid;
       place-items: center;
-      color: #3b82f6;
-      margin-bottom: 4px;
+      flex-shrink: 0;
     }
 
-    .feat-card h3 {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
+    .hud-query-text {
+      font-size: 15px;
+      font-weight: 500;
       color: var(--text);
+      display: flex;
+      align-items: center;
+      flex: 1;
+      letter-spacing: -0.2px;
     }
 
-    .feat-card p {
+    .hud-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background: #3b82f6;
+      margin-left: 2px;
+      animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hud-result-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 18px;
+      background: var(--hud-row-hover);
+    }
+
+    .hud-result-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .hud-title {
       font-size: 13.5px;
-      color: var(--text-muted);
-      line-height: 1.55;
+      font-weight: 500;
+      color: var(--text);
     }
 
-    .feat-code {
+    .hud-path {
       font-family: var(--font-mono);
-      font-size: 11.5px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 6px;
-      color: var(--text);
-      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hud-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* Staggered Rising Characters */
+    .char-rise {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(1.5px);
+      animation: charIn 260ms cubic-bezier(0.66, 0, 0.34, 1) forwards;
+      animation-delay: var(--delay, 0ms);
+    }
+
+    @keyframes charIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    /* Feature Selector Tabs */
+    .morph-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .morph-tab {
       display: inline-flex;
       align-items: center;
-      width: fit-content;
       gap: 6px;
+      padding: 6px 13px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .morph-tab:hover {
+      color: var(--text);
+      border-color: var(--border-focus);
+    }
+
+    .morph-tab.active {
+      background: rgba(0, 81, 255, 0.12);
+      border-color: rgba(0, 81, 255, 0.4);
+      color: #3b82f6;
+    }
+
+    #morphProbe {
+      position: absolute;
+      top: 0; left: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: -10;
     }
 
     /* contact */
@@ -971,10 +1128,14 @@
 
   <div id="pageWrapper">
     <main class="hero">
-      <!-- Floating squiggles container -->
       <div class="hero-decorations" id="heroDecorations" aria-hidden="true"></div>
 
       <div class="hero-content">
+        <div class="privacy-tag motion-item" style="--delay: 0.02s;">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          100% Local & Private
+        </div>
+
         <div class="logo-heading motion-item" style="--delay: 0.08s;">
           <img src="logo.png" alt="Finder logo">
         </div>
@@ -1011,7 +1172,7 @@
         </button>
         <div class="vc">
           <button id="vcPlay" aria-label="Play / Pause">
-            <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/></svg>
+            <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
             <svg id="vcPlayIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
           </button>
           <div class="track" id="vcTrack">
@@ -1031,59 +1192,33 @@
       </div>
     </main>
 
-    <!-- Features Section -->
-    <section class="features motion-scroll" id="features">
+    <!-- Clean Morphing HUD Showcase Section -->
+    <section class="morph-showcase motion-scroll" id="capabilities">
       <div class="section-label">Capabilities</div>
-      <h2>Engineered for pure speed.</h2>
-      <p class="features-sub">No indexing bloat, no memory hogging. Instant response right from your keystrokes.</p>
+      <h2>One Box. Every Command.</h2>
+      <p class="showcase-sub">Watch how Finder morphs dynamically to handle apps, deep paths, calculation, and web search instantly.</p>
 
-      <div class="features-grid">
-        <!-- Feature 1 -->
-        <div class="feat-card span-3">
-          <div class="feat-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          </div>
-          <h3>Find Any App in a Second</h3>
-          <p>Press <span class="feat-kbd">Ctrl+Space</span>, type a few letters, hit Enter. No Start menu hunting or lagging animations.</p>
-          <div class="feat-code">spot → Spotify.exe</div>
-        </div>
+      <div class="morph-stage">
+        <div id="morphProbe" aria-hidden="true"></div>
 
-        <!-- Feature 2 -->
-        <div class="feat-card span-3">
-          <div class="feat-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <!-- The Single Morphing Body -->
+        <div class="morph-body" id="morphBody" data-playing="false">
+          <div id="glowLayersContainer"></div>
+          <div class="morph-inner">
+            <div class="morph-content-wrap" id="morphContent">
+              <!-- Dynamically rendered HUD content -->
+            </div>
           </div>
-          <h3>Find Any File, No Matter How Deep</h3>
-          <p>Just type the end of the path like <span class="feat-kbd">Finder\logo.png</span> and Finder locates it even if it's buried deep inside subfolders. You never need full paths.</p>
-          <div class="feat-code">Finder\logo.png</div>
         </div>
+      </div>
 
-        <!-- Feature 3 -->
-        <div class="feat-card span-2">
-          <div class="feat-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-          </div>
-          <h3>Go Anywhere Directly</h3>
-          <p>Paste full paths like <span class="feat-kbd">C:\Users\...</span>, network shares <span class="feat-kbd">\\server\share</span>, or shortcuts like <span class="feat-kbd">~</span> and <span class="feat-kbd">%TEMP%</span> to open immediately.</p>
-        </div>
-
-        <!-- Feature 4 -->
-        <div class="feat-card span-2">
-          <div class="feat-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path></svg>
-          </div>
-          <h3>Calculator Built In</h3>
-          <p>Type <span class="feat-kbd">12*7</span> or <span class="feat-kbd">(3+4)*9</span> and the calculated answer appears on top. Hit Enter to copy it to your clipboard instantly.</p>
-        </div>
-
-        <!-- Feature 5 -->
-        <div class="feat-card span-2">
-          <div class="feat-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          </div>
-          <h3>Search the Web</h3>
-          <p>Type <span class="feat-kbd">@</span> followed by your query, like <span class="feat-kbd">@weather</span>, and press Enter to instantly search Bing or your default engine.</p>
-        </div>
+      <!-- Feature Selector Tabs -->
+      <div class="morph-nav" id="morphNav">
+        <button class="morph-tab active" data-index="0">1. App Search</button>
+        <button class="morph-tab" data-index="1">2. Deep Path</button>
+        <button class="morph-tab" data-index="2">3. Direct Jump</button>
+        <button class="morph-tab" data-index="3">4. Calculator</button>
+        <button class="morph-tab" data-index="4">5. Web Query</button>
       </div>
     </section>
 
@@ -1179,7 +1314,6 @@
   <footer class="dia-overscroll-container" id="diaOverscroll" aria-hidden="true" style="transform: scaleY(0);">
     <svg class="w-full h-full" viewBox="0 0 1271 599" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Atmospheric Ambient Glow -->
         <filter id="bg_blur_depth" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="36" />
         </filter>
@@ -1319,10 +1453,8 @@
         </linearGradient>
       </defs>
 
-      <!-- Layer 1: Ambient Background Depth Field -->
       <ellipse cx="635" cy="550" rx="600" ry="250" fill="url(#aurora_ambient)" filter="url(#bg_blur_depth)" />
 
-      <!-- Layer 2: Main Gaussian Column Array -->
       <g filter="url(#filter0_finder)"><rect x="1287" y="614" width="174" height="323" transform="rotate(180 1287 614)" fill="url(#paint0_finder)"></rect></g>
       <g filter="url(#filter1_finder)"><rect x="1146" y="614" width="174" height="404" transform="rotate(180 1146 614)" fill="url(#paint1_finder)"></rect></g>
       <g filter="url(#filter2_finder)"><rect x="1005" y="614" width="174" height="478" transform="rotate(180 1005 614)" fill="url(#paint2_finder)"></rect></g>
@@ -1349,6 +1481,323 @@
     }, { threshold: 0.08 });
 
     document.querySelectorAll('.motion-scroll').forEach(el => motionObserver.observe(el));
+
+    /* Canvas mask builder for soft conic rim pulse */
+    const RIM_STOPS = [
+      { color: "#000", stop: 54 },
+      { color: "transparent", stop: 126 },
+      { color: "transparent", stop: 333 },
+      { color: "rgba(0,0,0,0.10)", stop: 347 },
+      { color: "#000", stop: 360 }
+    ];
+
+    const RIM_LAYERS = [
+      { strokeWidth: 0, blur: 0, alpha: 1, ring: 1 },
+      { strokeWidth: 4, blur: 4, alpha: 0.3 },
+      { strokeWidth: 8, blur: 8, alpha: 0.2 },
+      { strokeWidth: 16, blur: 12, alpha: 0.1 },
+      { strokeWidth: 20, blur: 20, alpha: 0.32 }
+    ];
+
+    const maskCache = new Map();
+    let scratchCanvas = null;
+
+    function buildMask(o) {
+      const key = `${Math.round(o.width)}|${Math.round(o.height)}|${Math.round(o.radius)}|${o.strokeWidth}|${o.blur}|${o.alpha || 1}|${o.ring || 0}`;
+      if (maskCache.has(key)) return maskCache.get(key);
+
+      const pad = Math.ceil(o.strokeWidth + o.blur * 3);
+      const w = Math.max(1, Math.ceil(o.width) + pad * 2);
+      const h = Math.max(1, Math.ceil(o.height) + pad * 2);
+
+      if (!scratchCanvas) scratchCanvas = document.createElement("canvas");
+      scratchCanvas.width = w;
+      scratchCanvas.height = h;
+      const ctx = scratchCanvas.getContext("2d");
+      if (!ctx) return "";
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (o.blur) {
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        ctx.filter = `blur(${isSafari ? o.blur * 0.25 : o.blur}px)`;
+      }
+
+      const g = ctx.createConicGradient(0, w / 2, h / 2);
+      for (const s of o.stops) g.addColorStop(s.stop / 360, s.color);
+      ctx.strokeStyle = g;
+      ctx.fillStyle = g;
+
+      if (o.alpha != null) ctx.globalAlpha = o.alpha;
+
+      const x = (w - o.width) / 2;
+      const y = (h - o.height) / 2;
+      ctx.beginPath();
+      const r = Math.min(o.radius, o.width / 2, o.height / 2);
+      ctx.roundRect(x, y, o.width, o.height, r);
+
+      if (o.strokeWidth) {
+        ctx.lineWidth = o.strokeWidth;
+        ctx.stroke();
+      } else {
+        ctx.fill();
+        if (o.ring) {
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.globalAlpha = 1;
+          ctx.filter = "none";
+          const r2 = Math.max(0, Math.min(o.radius - o.ring, (o.width - o.ring * 2) / 2, (o.height - o.ring * 2) / 2));
+          ctx.beginPath();
+          ctx.roundRect(x + o.ring, y + o.ring, Math.max(0, o.width - o.ring * 2), Math.max(0, o.height - o.ring * 2), r2);
+          ctx.fill();
+          ctx.globalCompositeOperation = "source-over";
+        }
+      }
+
+      const url = scratchCanvas.toDataURL("image/png");
+      if (maskCache.size >= 32) maskCache.delete(maskCache.keys().next().value);
+      maskCache.set(key, url);
+      return url;
+    }
+
+    function renderQueryChars(text) {
+      let markup = '';
+      let delay = 0;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        markup += `<span class="char-rise" style="--delay: ${delay}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+        delay += 16;
+      }
+      return markup;
+    }
+
+    /* Native Clean HUD Variants */
+    const MORPH_VARIANTS = [
+      {
+        key: "app",
+        radius: 12,
+        render: () => `
+          <div class="hud-box" style="width: 480px;">
+            <div class="hud-input-row">
+              <span class="hud-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <div class="hud-query-text">${renderQueryChars("spot")}<span class="hud-cursor"></span></div>
+              <span class="hud-kbd">App</span>
+            </div>
+            <div class="hud-result-row">
+              <div class="hud-result-left">
+                <span class="hud-title">Spotify</span>
+                <span class="hud-path">C:\\Users\\User\\AppData\\Local\\Spotify.exe</span>
+              </div>
+              <div class="hud-action"><span class="hud-kbd">Enter</span> Open</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        key: "file",
+        radius: 12,
+        render: () => `
+          <div class="hud-box" style="width: 530px;">
+            <div class="hud-input-row">
+              <span class="hud-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <div class="hud-query-text">${renderQueryChars("Finder\\logo.png")}<span class="hud-cursor"></span></div>
+              <span class="hud-kbd">File</span>
+            </div>
+            <div class="hud-result-row">
+              <div class="hud-result-left">
+                <span class="hud-title">logo.png</span>
+                <span class="hud-path">Downloads\\cline to opencode\\Finder\\logo.png</span>
+              </div>
+              <div class="hud-action"><span class="hud-kbd">Enter</span> Reveal</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        key: "path",
+        radius: 12,
+        render: () => `
+          <div class="hud-box" style="width: 440px;">
+            <div class="hud-input-row">
+              <span class="hud-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              </span>
+              <div class="hud-query-text">${renderQueryChars("%TEMP%")}<span class="hud-cursor"></span></div>
+              <span class="hud-kbd">Path</span>
+            </div>
+            <div class="hud-result-row">
+              <div class="hud-result-left">
+                <span class="hud-title">Open Folder</span>
+                <span class="hud-path">C:\\Users\\User\\AppData\\Local\\Temp</span>
+              </div>
+              <div class="hud-action"><span class="hud-kbd">Enter</span> Jump</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        key: "calc",
+        radius: 12,
+        render: () => `
+          <div class="hud-box" style="width: 410px;">
+            <div class="hud-input-row">
+              <span class="hud-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/></svg>
+              </span>
+              <div class="hud-query-text">${renderQueryChars("(3 + 4) * 9")}<span class="hud-cursor"></span></div>
+              <span class="hud-kbd">= 63</span>
+            </div>
+            <div class="hud-result-row">
+              <div class="hud-result-left">
+                <span class="hud-title">63</span>
+                <span class="hud-path">Calculated value</span>
+              </div>
+              <div class="hud-action"><span class="hud-kbd">Enter</span> Copy</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        key: "web",
+        radius: 12,
+        render: () => `
+          <div class="hud-box" style="width: 490px;">
+            <div class="hud-input-row">
+              <span class="hud-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+              </span>
+              <div class="hud-query-text">${renderQueryChars("@weather in Tokyo")}<span class="hud-cursor"></span></div>
+              <span class="hud-kbd">Web</span>
+            </div>
+            <div class="hud-result-row">
+              <div class="hud-result-left">
+                <span class="hud-title">Search Bing</span>
+                <span class="hud-path">https://bing.com/search?q=weather+in+tokyo</span>
+              </div>
+              <div class="hud-action"><span class="hud-kbd">Enter</span> Search</div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    /* Automatic Probe Measurement & Morph Controller */
+    (function () {
+      const bodyEl = document.getElementById('morphBody');
+      const contentEl = document.getElementById('morphContent');
+      const layersEl = document.getElementById('glowLayersContainer');
+      const probeEl = document.getElementById('morphProbe');
+      const navButtons = document.querySelectorAll('#morphNav .morph-tab');
+      if (!bodyEl || !contentEl || !probeEl) return;
+
+      let currentIndex = 0;
+      let cachedSizes = [];
+      let cycleTimer = null;
+      let isPaused = false;
+
+      function measureVariants() {
+        probeEl.innerHTML = '';
+        cachedSizes = MORPH_VARIANTS.map(v => {
+          const wrapper = document.createElement('div');
+          wrapper.style.display = 'inline-block';
+          wrapper.innerHTML = v.render();
+          probeEl.appendChild(wrapper);
+          const rect = wrapper.getBoundingClientRect();
+          return { w: Math.round(rect.width), h: Math.round(rect.height) };
+        });
+      }
+
+      function rebuildGlow(w, h, r) {
+        layersEl.innerHTML = '';
+        RIM_LAYERS.forEach((l, i) => {
+          const pad = Math.ceil(l.strokeWidth + l.blur * 3);
+          const maskUrl = buildMask({
+            width: w,
+            height: h,
+            radius: r,
+            strokeWidth: l.strokeWidth,
+            blur: l.blur,
+            alpha: l.alpha,
+            ring: l.ring,
+            stops: RIM_STOPS
+          });
+
+          [0, 1].forEach(side => {
+            const span = document.createElement('span');
+            span.className = 'ai-glow-layer';
+            span.style.inset = `${-pad}px`;
+            span.style.maskImage = `url(${maskUrl})`;
+            span.style.webkitMaskImage = `url(${maskUrl})`;
+            if (side === 1) span.style.transform = 'scaleX(-1)';
+            layersEl.appendChild(span);
+          });
+        });
+      }
+
+      function triggerMorph(targetIndex) {
+        if (!cachedSizes.length) measureVariants();
+        currentIndex = targetIndex;
+
+        navButtons.forEach((btn, idx) => btn.classList.toggle('active', idx === currentIndex));
+
+        const v = MORPH_VARIANTS[currentIndex];
+        const sz = cachedSizes[currentIndex] || { w: 480, h: 96 };
+        const radius = v.radius;
+
+        // Beat 1: Light pulse runs along the rim
+        bodyEl.setAttribute('data-playing', 'false');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          bodyEl.setAttribute('data-playing', 'true');
+        }));
+
+        // Beat 2: Content Fades Out
+        setTimeout(() => {
+          bodyEl.setAttribute('data-morphing', 'true');
+
+          // Beat 3: Body Morphs in the dark
+          bodyEl.style.width = `${sz.w + 2}px`;
+          bodyEl.style.height = `${sz.h + 2}px`;
+          bodyEl.style.setProperty('--morph-radius', `${radius}px`);
+
+          // Update masks after settling
+          setTimeout(() => {
+            rebuildGlow(sz.w + 2, sz.h + 2, radius);
+            contentEl.innerHTML = v.render();
+            bodyEl.removeAttribute('data-morphing');
+          }, 380);
+        }, 1200);
+      }
+
+      function next() {
+        if (isPaused) return;
+        const nextIdx = (currentIndex + 1) % MORPH_VARIANTS.length;
+        triggerMorph(nextIdx);
+      }
+
+      function startCycle() {
+        clearInterval(cycleTimer);
+        cycleTimer = setInterval(next, 4200);
+      }
+
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.index, 10);
+          isPaused = true;
+          triggerMorph(idx);
+          startCycle();
+          setTimeout(() => isPaused = false, 7000);
+        });
+      });
+
+      document.fonts.ready.then(() => {
+        measureVariants();
+        triggerMorph(0);
+        startCycle();
+      });
+    })();
 
     /* Strict Physical Push: Moves entire content block up as Dia expands from the bottom */
     (function () {
@@ -1380,7 +1829,6 @@
         const scale = Math.min(1, currentPull);
         diaOverscroll.style.transform = `scaleY(${scale.toFixed(4)})`;
 
-        // PUSH PHYSICS: Translate content up by the exact rendered height of the Dia element
         const renderedHeight = diaOverscroll.getBoundingClientRect().height * scale;
         pageWrapper.style.transform = `translateY(${-renderedHeight}px)`;
 
@@ -1397,7 +1845,6 @@
         if (!animId) animId = requestAnimationFrame(render);
       }
 
-      // Wheel / Trackpad overscroll
       window.addEventListener('wheel', (e) => {
         if (isAtBottom() && e.deltaY > 0) {
           e.preventDefault();
@@ -1409,7 +1856,6 @@
         }
       }, { passive: false });
 
-      // Mobile Touch overscroll
       let startY = 0;
       let isTouching = false;
       
@@ -1470,12 +1916,10 @@
         { top: '4%',  left: '4%',   width: 75,  rot: -35, opacity: 0.85, dur: 7.2, delay: 0, class: '' },
         { top: '6%',  right: '5%',  width: 70,  rot: 55,  opacity: 0.85, dur: 7.5, delay: 0.6, class: '' },
         { top: '35%', right: '5%',  width: 110, rot: 30,  opacity: 0.9,  dur: 8.8, delay: 0.3, class: '' },
-        
         { top: '17%', left: '13%',  width: 90,  rot: 20,  opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
         { top: '-2%', left: '26%',  width: 70,  rot: -15, opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
         { top: '32%', left: '6%',   width: 110, rot: -50, opacity: 0.9,  dur: 6.5, delay: 0.4, class: 'tablet-hide' },
         { top: '48%', left: '18%',  width: 60,  rot: -70, opacity: 0.85, dur: 7.8, delay: 0.6, class: 'mobile-hide' },
-        
         { top: '21%', right: '13%', width: 87,  rot: -30, opacity: 0.85, dur: 6.2, delay: 0.5, class: 'mobile-hide' },
         { top: '0%',  right: '26%', width: 90,  rot: 30,  opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
         { top: '52%', right: '17%', width: 65,  rot: -60, opacity: 0.85, dur: 7.0, delay: 0.4, class: 'tablet-hide' },
@@ -1486,18 +1930,15 @@
         img.src = shapeSrc;
         img.className = 'hero-shape' + (s.class ? ' ' + s.class : '');
         img.alt = '';
-        
         if (s.top) img.style.top = s.top;
         if (s.left) img.style.left = s.left;
         if (s.right) img.style.right = s.right;
-        
         img.style.width = s.width + 'px';
         img.style.setProperty('--target-opacity', s.opacity);
         img.style.setProperty('--rot', s.rot + 'deg');
         img.style.setProperty('--dur', s.dur + 's');
         img.style.setProperty('--delay', s.delay + 's');
         img.style.setProperty('--rot-delta', ((Math.random() * 12) - 6).toFixed(1) + 'deg');
-        
         container.appendChild(img);
       });
     })();
