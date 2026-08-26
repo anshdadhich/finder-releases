@@ -184,18 +184,23 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      display: none;
+      display: block;
       background: var(--surface);
       position: relative;
+      aspect-ratio: 16 / 9;
     }
 
-    .demo-block video { width: 100%; display: block; }
+    .demo-block video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
 
     /* skeleton shown while the video buffers */
     .demo-skeleton {
       position: absolute;
       inset: 0;
-      aspect-ratio: 16 / 9;
       background:
         linear-gradient(100deg,
           rgba(255,255,255,0.04) 30%,
@@ -673,12 +678,16 @@
       ];
       let i = 0;
       function tryNext() {
-        if (i >= sources.length) { block.style.display = 'none'; return; }
+        if (i >= sources.length) {
+          // all sources failed — remove the shimmer and hide the block
+          block.classList.remove('ready');
+          block.style.display = 'none';
+          return;
+        }
         const src = sources[i++];
         video.src = src;
         video.addEventListener('loadeddata', () => {
           block.classList.add('ready'); // hides the skeleton
-          block.style.display = 'block';
           video.play().catch(() => {}); // muted + playsinline → autoplay allowed
         }, { once: true });
         video.addEventListener('error', tryNext, { once: true });
