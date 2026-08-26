@@ -37,6 +37,10 @@
       --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 45%, transparent 75%);
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+      --skel-base: #0d0d12;
+      --skel-highlight: #1c1c28;
     }
 
     html[data-site-theme="light"] {
@@ -52,12 +56,20 @@
       --accent-bg: #000000;
       --accent-text: #ffffff;
       --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 45%, transparent 75%);
+
+      --skel-base: #e5e7eb;
+      --skel-highlight: #f3f4f6;
+    }
+
+    /* Prevent default browser overscroll bounce */
+    html, body {
+      background-color: var(--bg);
+      overscroll-behavior-y: none;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
     body {
-      background-color: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
       min-height: 100vh;
@@ -70,6 +82,49 @@
       position: relative;
       overflow-x: hidden;
       transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    /* Main wrapper for elastic rubber-band pull */
+    #pageWrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      will-change: transform;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* motion.div primitives */
+    .motion-item {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: motionFadeUp 0.85s var(--ease-spring) forwards;
+      animation-delay: var(--delay, 0s);
+      will-change: transform, opacity;
+    }
+
+    .motion-scroll {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+      transition: opacity 0.85s var(--ease-spring), transform 0.85s var(--ease-spring);
+      will-change: transform, opacity;
+    }
+
+    .motion-scroll.in-view {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    @keyframes motionFadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     /* theme toggle */
@@ -87,10 +142,17 @@
       cursor: pointer;
       display: grid;
       place-items: center;
-      transition: all 0.12s ease;
+      transition: all 0.2s var(--ease-spring);
     }
 
-    .theme-toggle:hover { color: var(--text); border-color: var(--border-focus); }
+    .theme-toggle:hover { 
+      color: var(--text); 
+      border-color: var(--border-focus); 
+      transform: scale(1.05);
+    }
+    .theme-toggle:active {
+      transform: scale(0.92);
+    }
 
     /* Hero */
     .hero {
@@ -102,9 +164,62 @@
       align-items: center;
       text-align: center;
       position: relative;
+      z-index: 1;
     }
 
-    /* Bell-shaped ambient gradient glow behind hero */
+    .hero-decorations {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      max-width: 1400px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .hero-shape {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 14px 28px rgba(0, 50, 255, 0.15));
+      opacity: 0;
+      transform: scale(0.4) translateY(30px) rotate(var(--rot, 0deg));
+      animation: 
+        motionSquiggleIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) forwards,
+        motionSquiggleFloat var(--dur, 7s) ease-in-out calc(var(--delay, 0s) + 0.9s) infinite alternate;
+    }
+    
+    @keyframes motionSquiggleIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.4) translateY(30px) rotate(calc(var(--rot, 0deg) - 15deg));
+      }
+      100% {
+        opacity: var(--target-opacity, 0.85);
+        transform: scale(1) translateY(0px) rotate(var(--rot, 0deg));
+      }
+    }
+
+    @keyframes motionSquiggleFloat {
+      0% {
+        transform: scale(1) translateY(0px) rotate(var(--rot, 0deg));
+      }
+      100% {
+        transform: scale(1.05) translateY(-16px) rotate(calc(var(--rot, 0deg) + var(--rot-delta, 8deg)));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero-shape {
+        opacity: 0.5;
+        transform: scale(0.65) rotate(var(--rot, 0deg)) !important;
+      }
+    }
+
     .hero::before {
       content: "";
       position: absolute;
@@ -126,6 +241,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      z-index: 2;
     }
 
     .logo-heading img {
@@ -136,6 +253,11 @@
       margin-bottom: 24px;
       border: 1px solid var(--border);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .logo-heading img:hover {
+      transform: scale(1.06) rotate(-2deg);
     }
 
     h1 {
@@ -185,8 +307,9 @@
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.12s ease;
+      transition: transform 0.18s var(--ease-spring), opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
       font-family: var(--font-sans);
+      will-change: transform;
     }
 
     .btn-primary {
@@ -194,14 +317,27 @@
       color: var(--accent-text);
       border: 1px solid var(--accent-bg);
     }
-    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:hover { 
+      opacity: 0.92; 
+      transform: translateY(-1.5px) scale(1.02); 
+    }
+    .btn-primary:active { 
+      transform: translateY(0) scale(0.96); 
+    }
 
     .btn-ghost {
       background: var(--surface);
       color: var(--text);
       border: 1px solid var(--border);
     }
-    .btn-ghost:hover { background: var(--surface-hover); border-color: var(--border-focus); }
+    .btn-ghost:hover { 
+      background: var(--surface-hover); 
+      border-color: var(--border-focus); 
+      transform: translateY(-1.5px) scale(1.02); 
+    }
+    .btn-ghost:active { 
+      transform: translateY(0) scale(0.96); 
+    }
 
     .meta {
       font-family: var(--font-mono);
@@ -209,7 +345,7 @@
       color: var(--text-dim);
     }
 
-    /* Wider demo video block */
+    /* Demo video block */
     .demo-block {
       width: 100%;
       max-width: 980px;
@@ -220,8 +356,15 @@
       display: block;
       background: var(--surface);
       position: relative;
+      z-index: 2;
       aspect-ratio: 16 / 9;
       box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .demo-block:hover {
+      border-color: var(--border-focus);
+      box-shadow: 0 28px 70px -10px rgba(0, 0, 0, 0.75);
     }
 
     .demo-block video {
@@ -231,34 +374,44 @@
       object-fit: cover;
     }
 
-    /* skeleton shown while the video buffers */
+    /* Skeleton shimmer */
     .demo-skeleton {
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(100deg,
-          rgba(255,255,255,0.04) 30%,
-          rgba(255,255,255,0.09) 50%,
-          rgba(255,255,255,0.04) 70%);
+      z-index: 3;
+      background: linear-gradient(
+        90deg,
+        var(--skel-base) 0%,
+        var(--skel-highlight) 50%,
+        var(--skel-base) 100%
+      );
       background-size: 200% 100%;
-      animation: shimmer 1.4s linear infinite;
+      animation: shimmer 1.5s infinite linear;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      pointer-events: none;
     }
 
     @keyframes shimmer {
-      from { background-position: 200% 0; }
-      to   { background-position: -200% 0; }
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .demo-block.ready .demo-skeleton {
+      opacity: 0;
+      visibility: hidden;
     }
 
     @media (prefers-reduced-motion: reduce) {
       .demo-skeleton { animation: none; }
+      .hero-shape { animation: none; }
+      .motion-item { animation: none; opacity: 1; transform: none; }
+      .motion-scroll { opacity: 1; transform: none; }
     }
 
-    .demo-block.ready .demo-skeleton { display: none; }
-
-    /* center play overlay when paused */
     .big-play {
       position: absolute;
       inset: 0;
+      z-index: 4;
       display: none;
       place-items: center;
       background: rgba(0, 0, 0, 0.25);
@@ -277,16 +430,18 @@
       background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: transform 0.12s ease;
+      transition: transform 0.2s var(--ease-spring);
     }
 
-    .big-play:hover span { transform: scale(1.08); }
+    .big-play:hover span { transform: scale(1.12); }
+    .big-play:active span { transform: scale(0.94); }
     .big-play svg { width: 22px; height: 22px; fill: #fff; margin-left: 3px; }
 
     /* control bar */
     .vc {
       position: absolute;
       left: 0; right: 0; bottom: 0;
+      z-index: 5;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -309,10 +464,11 @@
       cursor: pointer;
       border-radius: 6px;
       padding: 0;
-      transition: background 0.1s ease;
+      transition: background 0.15s ease, transform 0.15s var(--ease-spring);
     }
 
-    .vc button:hover { background: rgba(255, 255, 255, 0.16); }
+    .vc button:hover { background: rgba(255, 255, 255, 0.16); transform: scale(1.08); }
+    .vc button:active { transform: scale(0.92); }
     .vc svg { display: block; }
 
     .vc .track {
@@ -368,12 +524,13 @@
     .contact {
       width: 100%;
       max-width: 540px;
-      border-top: 1px solid var(--border);
       padding: 64px 0 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      position: relative;
+      z-index: 2;
     }
 
     .contact .section-label {
@@ -405,6 +562,12 @@
       border-radius: 12px;
       padding: 20px;
       text-align: left;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-card:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     }
 
     .form-row {
@@ -436,13 +599,14 @@
       font-size: 13px;
       font-family: var(--font-sans);
       outline: none;
-      transition: border-color 0.12s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .field textarea { resize: vertical; min-height: 90px; }
 
     .field input:focus, .field textarea:focus {
       border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
     }
 
     .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
@@ -480,11 +644,12 @@
       font-weight: 500;
       font-family: var(--font-sans);
       cursor: pointer;
-      transition: opacity 0.12s ease;
+      transition: transform 0.15s var(--ease-spring), opacity 0.12s ease;
     }
 
-    .send-btn:hover { opacity: 0.9; }
-    .send-btn:disabled { opacity: 0.4; cursor: default; }
+    .send-btn:hover { opacity: 0.9; transform: scale(1.03); }
+    .send-btn:active { transform: scale(0.95); }
+    .send-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
 
     .success-view {
       display: flex;
@@ -493,22 +658,26 @@
       gap: 8px;
       padding: 24px 0;
       text-align: center;
+      animation: motionFadeUp 0.5s var(--ease-spring) forwards;
     }
 
     .success-view b { font-size: 14px; font-weight: 600; }
     .success-view span { font-size: 13px; color: var(--text-muted); }
 
-    /* Redesigned Footer */
+    /* Footer */
     .footer {
       width: 100%;
       max-width: 980px;
       margin-top: 96px;
-      margin-bottom: 32px;
-      border-top: 1px solid var(--border);
+      margin-bottom: 0px;
+      border-top: none;
       padding-top: 40px;
+      padding-bottom: 52px;
       display: flex;
       flex-direction: column;
       gap: 32px;
+      position: relative;
+      z-index: 2;
     }
 
     .footer-top {
@@ -597,7 +766,7 @@
       color: var(--text-muted);
       font-size: 13px;
       text-decoration: none;
-      transition: color 0.12s ease;
+      transition: color 0.15s ease, transform 0.15s var(--ease-spring);
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -605,10 +774,11 @@
 
     .footer-col a:hover {
       color: var(--text);
+      transform: translateX(2px);
     }
 
     .footer-bottom {
-      border-top: 1px solid var(--border);
+      border-top: none;
       padding-top: 20px;
       display: flex;
       justify-content: space-between;
@@ -623,10 +793,41 @@
     .footer-bottom a {
       color: var(--text-muted);
       text-decoration: none;
+      transition: color 0.15s ease;
     }
 
     .footer-bottom a:hover {
       color: var(--text);
+    }
+
+    /* Fixed Dia Overscroll Floor (Rises from the floor beneath everything) */
+    .dia-overscroll-floor {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) scaleY(0);
+      transform-origin: bottom center;
+      width: 100vw;
+      max-width: 1380px;
+      height: 400px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      will-change: transform, opacity;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    html[data-site-theme="light"] .dia-overscroll-floor {
+      opacity: 0.55;
+    }
+
+    .dia-overscroll-floor svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .toast {
@@ -640,14 +841,14 @@
       padding: 8px 14px;
       border-radius: 6px;
       opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.12s ease;
+      transform: translateY(8px) scale(0.95);
+      transition: all 0.2s var(--ease-spring);
       pointer-events: none;
       font-family: var(--font-mono);
       z-index: 100;
     }
 
-    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
   </style>
 </head>
 <body>
@@ -657,148 +858,286 @@
     <svg id="iconSun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   </button>
 
-  <main class="hero">
-    <div class="hero-content">
-      <div class="logo-heading">
-        <img src="logo.png" alt="Finder logo">
-      </div>
+  <div id="pageWrapper">
+    <main class="hero">
+      <!-- Decorative floating scattered squiggles -->
+      <div class="hero-decorations" id="heroDecorations" aria-hidden="true"></div>
 
-      <h1>Search everything.<br>Instantly.</h1>
-
-      <p class="subtitle">
-        Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web.
-      </p>
-
-      <div class="action-row">
-        <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Download for Windows
-        </a>
-        <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">
-          Download ZIP
-        </a>
-      </div>
-
-      <div class="meta">v0.2.4 • Windows 10/11 </div>
-    </div>
-
-    <!-- Expanded Video Block -->
-    <div class="demo-block" id="demoBlock">
-      <div class="demo-skeleton"></div>
-      <video id="demoVideo" muted loop playsinline autoplay></video>
-      <button class="big-play" id="bigPlay" aria-label="Play">
-        <span><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg></span>
-      </button>
-      <div class="vc">
-        <button id="vcPlay" aria-label="Play / Pause">
-          <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
-          <svg id="vcPlayIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
-        </button>
-        <div class="track" id="vcTrack">
-          <div class="buffered" id="vcBuffered"></div>
-          <div class="fill" id="vcFill"></div>
-          <div class="knob" id="vcKnob"></div>
+      <div class="hero-content">
+        <div class="logo-heading motion-item" style="--delay: 0.05s;">
+          <img src="logo.png" alt="Finder logo">
         </div>
-        <span class="time" id="vcTime">0:00 / 0:00</span>
-        <button id="vcMute" aria-label="Mute / Unmute">
-          <svg id="vcVolIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-          <svg id="vcMuteIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
-        </button>
-        <button id="vcFull" aria-label="Fullscreen">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-        </button>
+
+        <h1 class="motion-item" style="--delay: 0.15s;">Search everything.<br>Instantly.</h1>
+
+        <p class="subtitle motion-item" style="--delay: 0.25s;">
+          Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web.
+        </p>
+
+        <div class="action-row motion-item" style="--delay: 0.35s;">
+          <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download for Windows
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">
+            Download ZIP
+          </a>
+        </div>
+
+        <div class="meta motion-item" style="--delay: 0.45s;">v0.2.4 • Windows 10/11 </div>
       </div>
-    </div>
-  </main>
 
-  <section class="contact" id="contact">
-    <div class="section-label">Feedback</div>
-    <h2>Help us make Finder better.</h2>
-    <p class="contact-sub">Found a bug? Want a feature? Feel Free to reach out.</p>
+      <!-- Video Block with active skeleton shimmer -->
+      <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.55s;">
+        <div class="demo-skeleton"></div>
+        <video id="demoVideo" muted loop playsinline autoplay></video>
+        <button class="big-play" id="bigPlay" aria-label="Play">
+          <span><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg></span>
+        </button>
+        <div class="vc">
+          <button id="vcPlay" aria-label="Play / Pause">
+            <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
+            <svg id="vcPlayIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
+          </button>
+          <div class="track" id="vcTrack">
+            <div class="buffered" id="vcBuffered"></div>
+            <div class="fill" id="vcFill"></div>
+            <div class="knob" id="vcKnob"></div>
+          </div>
+          <span class="time" id="vcTime">0:00 / 0:00</span>
+          <button id="vcMute" aria-label="Mute / Unmute">
+            <svg id="vcVolIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <svg id="vcMuteIco" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 19 11 19" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+          </button>
+          <button id="vcFull" aria-label="Fullscreen">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
 
-    <div class="form-card">
-      <form id="contactForm" novalidate>
-        <div class="form-row">
-          <div class="field">
-            <label for="c-name">Name</label>
-            <input id="c-name" type="text" placeholder="Name" maxlength="80">
+    <section class="contact motion-scroll" id="contact">
+      <div class="section-label">Feedback</div>
+      <h2>Help us make Finder better.</h2>
+      <p class="contact-sub">Found a bug? Want a feature? Feel Free to reach out.</p>
+
+      <div class="form-card">
+        <form id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="field">
+              <label for="c-name">Name</label>
+              <input id="c-name" type="text" placeholder="Name" maxlength="80">
+            </div>
+            <div class="field">
+              <label for="c-email">Email *</label>
+              <input id="c-email" type="email" placeholder="you@example.com" maxlength="120" required>
+            </div>
           </div>
           <div class="field">
-            <label for="c-email">Email *</label>
-            <input id="c-email" type="email" placeholder="you@example.com" maxlength="120" required>
+            <label for="c-message">Message *</label>
+            <textarea id="c-message" rows="4" placeholder="Your message..." maxlength="2000" required></textarea>
+            <div class="msg-counter"><span id="c-count">0</span>/2000</div>
           </div>
-        </div>
-        <div class="field">
-          <label for="c-message">Message *</label>
-          <textarea id="c-message" rows="4" placeholder="Your message..." maxlength="2000" required></textarea>
-          <div class="msg-counter"><span id="c-count">0</span>/2000</div>
-        </div>
-        <div class="send-row">
-          <div class="form-status" id="c-status"></div>
-          <button type="submit" class="send-btn" id="c-send">Send message</button>
-        </div>
-      </form>
-      <div class="success-view" id="successView" style="display:none">
-        <b>Message sent</b>
-        <span>Thanks for the input. I'll review it shortly.</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Enhanced Multi-column Modern Footer -->
-  <footer class="footer">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-brand-title">
-          <img src="logo.png" alt="Finder icon">
-          <span>Finder</span>
-        </div>
-        
-        <div class="footer-badge">
-          <span class="footer-badge-dot"></span>
-          <span>v0.2.4 Latest Release</span>
+          <div class="send-row">
+            <div class="form-status" id="c-status"></div>
+            <button type="submit" class="send-btn" id="c-send">Send message</button>
+          </div>
+        </form>
+        <div class="success-view" id="successView" style="display:none">
+          <b>Message sent</b>
+          <span>Thanks for the input. I'll review it shortly.</span>
         </div>
       </div>
+    </section>
 
-      <div class="footer-nav">
-        <div class="footer-col">
-          <div class="footer-col-title">Downloads</div>
-          <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Windows Installer
-          </a>
-          <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            Portable ZIP
-          </a>
-          <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Release Notes</a>
-        </div>
-
-        <div class="footer-col">
-          <div class="footer-col-title">Community</div>
+    <!-- Modern Footer -->
+    <footer class="footer motion-scroll" id="footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand-title">
+            <img src="logo.png" alt="Finder icon">
+            <span>Finder</span>
+          </div>
           
-          <a href="https://x.com/Rokieee__" target="_blank" rel="noreferrer">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            Follow @Rokieee__
-          </a>
-          <a href="#contact">Send Feedback</a>
+          <div class="footer-badge">
+            <span class="footer-badge-dot"></span>
+            <span>v0.2.4 Latest Release</span>
+          </div>
+        </div>
+
+        <div class="footer-nav">
+          <div class="footer-col">
+            <div class="footer-col-title">Downloads</div>
+            <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Windows Installer
+            </a>
+            <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-portable.zip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              Portable ZIP
+            </a>
+            <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Release Notes</a>
+          </div>
+
+          <div class="footer-col">
+            <div class="footer-col-title">Community</div>
+            
+            <a href="https://x.com/Rokieee__" target="_blank" rel="noreferrer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Follow @Rokieee__
+            </a>
+            <a href="#contact">Send Feedback</a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="footer-bottom">
-      <span>© 2026 Finder. Built for speed.</span>
-      <span class="footer-shortcut">Shortcut: <kbd>Ctrl+Space</kbd></span>
-    </div>
-  </footer>
+      <div class="footer-bottom">
+        <span>© 2026 Finder. Built for speed.</span>
+        <span class="footer-shortcut">Shortcut: <kbd>Ctrl+Space</kbd></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dia Signature Overscroll Floor Aurora (Finder Rich Spectrum) -->
+  <div class="dia-overscroll-floor" id="diaFloor" aria-hidden="true">
+    <svg viewBox="0 0 1271 599" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Finder Rich Signature Aurora Palette -->
+        <linearGradient id="finder-dia-grad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#030712" />
+          <stop offset="14%" stop-color="#0f172a" />
+          <stop offset="28%" stop-color="#1e1b4b" />
+          <stop offset="42%" stop-color="#1d4ed8" />
+          <stop offset="56%" stop-color="#0284c7" />
+          <stop offset="70%" stop-color="#00f0ff" />
+          <stop offset="82%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+        <filter id="finder-dia-blur" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="22" />
+        </filter>
+      </defs>
+
+      <!-- Symmetrically Fitted Gaussian-Melted Columns -->
+      <g filter="url(#finder-dia-blur)">
+        <rect x="0" y="270" width="170" height="329" fill="url(#finder-dia-grad)" />
+        <rect x="138" y="195" width="170" height="404" fill="url(#finder-dia-grad)" />
+        <rect x="276" y="125" width="170" height="474" fill="url(#finder-dia-grad)" />
+        <rect x="414" y="60"  width="170" height="539" fill="url(#finder-dia-grad)" />
+        <rect x="552" y="12"  width="170" height="587" fill="url(#finder-dia-grad)" />
+        <rect x="690" y="60"  width="170" height="539" fill="url(#finder-dia-grad)" />
+        <rect x="828" y="125" width="170" height="474" fill="url(#finder-dia-grad)" />
+        <rect x="966" y="195" width="170" height="404" fill="url(#finder-dia-grad)" />
+        <rect x="1104" y="270" width="170" height="329" fill="url(#finder-dia-grad)" />
+      </g>
+    </svg>
+  </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
+    /* Viewport scroll observer */
+    const motionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          motionObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.motion-scroll').forEach(el => motionObserver.observe(el));
+
+    /* Accurate Overscroll Boundary Engine */
+    (function () {
+      const diaFloor = document.getElementById('diaFloor');
+      const pageWrapper = document.getElementById('pageWrapper');
+      if (!diaFloor || !pageWrapper) return;
+
+      let currentPull = 0;
+      let targetPull = 0;
+      let animId = null;
+
+      function isAtBottom() {
+        const scroller = document.scrollingElement || document.documentElement;
+        return (scroller.scrollTop + window.innerHeight) >= (scroller.scrollHeight - 6);
+      }
+
+      function render() {
+        // Elastic spring physics back to resting 0
+        currentPull += (targetPull - currentPull) * 0.18;
+
+        if (Math.abs(currentPull) < 0.001 && targetPull === 0) {
+          currentPull = 0;
+          pageWrapper.style.transform = '';
+          diaFloor.style.transform = 'translateX(-50%) scaleY(0)';
+          diaFloor.style.opacity = '0';
+          cancelAnimationFrame(animId);
+          animId = null;
+          return;
+        }
+
+        const scaleY = Math.min(1.25, currentPull * 0.007);
+        const translateY = -Math.min(220, currentPull * 0.6);
+
+        pageWrapper.style.transform = `translateY(${translateY.toFixed(1)}px)`;
+        diaFloor.style.transform = `translateX(-50%) scaleY(${scaleY.toFixed(3)})`;
+        diaFloor.style.opacity = `${Math.min(1, scaleY * 1.6).toFixed(2)}`;
+
+        animId = requestAnimationFrame(render);
+      }
+
+      function addPull(delta) {
+        targetPull = Math.min(300, targetPull + delta * 0.42);
+        if (!animId) animId = requestAnimationFrame(render);
+      }
+
+      function releasePull() {
+        targetPull = 0;
+        if (!animId) animId = requestAnimationFrame(render);
+      }
+
+      // Wheel / Trackpad overscroll
+      window.addEventListener('wheel', (e) => {
+        if (isAtBottom() && e.deltaY > 0) {
+          addPull(e.deltaY);
+          clearTimeout(window._wheelResetTimer);
+          window._wheelResetTimer = setTimeout(releasePull, 160);
+        } else if (e.deltaY < 0 && targetPull > 0) {
+          releasePull();
+        }
+      }, { passive: true });
+
+      // Mobile Touch overscroll
+      let startY = 0;
+      window.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (isAtBottom()) {
+          const diff = startY - e.touches[0].clientY;
+          if (diff > 0) {
+            addPull(diff * 0.4);
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', releasePull, { passive: true });
+    })();
+
     /* Theme */
     const themeToggle = document.getElementById('themeToggle');
     const iconMoon = document.getElementById('iconMoon');
@@ -824,7 +1163,49 @@
     }
     syncThemeIcons();
 
-    /* Video loader: skeleton shimmer → video with custom controls */
+    /* Wide, well-spaced floating squiggles */
+    (function () {
+      const container = document.getElementById('heroDecorations');
+      if (!container) return;
+
+      const shapeSrc = 'squiggle.png';
+
+      const shapes = [
+        { top: '4%',  left: '4%',  width: 75,  rot: -35, opacity: 0.85, dur: 7.2, delay: 0 },
+        { top: '17%', left: '13%', width: 90,  rot: 20,  opacity: 0.85, dur: 8.0, delay: 0.5 },
+        { top: '-2%', left: '26%', width: 70,  rot: -15, opacity: 0.85, dur: 8.0, delay: 0.5 },
+        { top: '32%', left: '6%',  width: 110, rot: -50, opacity: 0.9,  dur: 6.5, delay: 0.4 },
+        { top: '48%', left: '18%', width: 60,  rot: -70, opacity: 0.85, dur: 7.8, delay: 0.6 },
+
+        { top: '6%',  right: '5%',  width: 70,  rot: 55,  opacity: 0.85, dur: 7.5, delay: 0.6 },
+        { top: '21%', right: '13%', width: 87,  rot: -30, opacity: 0.85, dur: 6.2, delay: 0.5 },
+        { top: '0%',  right: '26%', width: 90,  rot: 30,  opacity: 0.85, dur: 8.0, delay: 0.5 },
+        { top: '35%', right: '5%',  width: 115, rot: 30,  opacity: 0.9,  dur: 8.8, delay: 0.3 },
+        { top: '52%', right: '17%', width: 65,  rot: -60, opacity: 0.85, dur: 7.0, delay: 0.4 },
+      ];
+
+      shapes.forEach(s => {
+        const img = document.createElement('img');
+        img.src = shapeSrc;
+        img.className = 'hero-shape';
+        img.alt = '';
+        
+        if (s.top) img.style.top = s.top;
+        if (s.left) img.style.left = s.left;
+        if (s.right) img.style.right = s.right;
+        
+        img.style.width = s.width + 'px';
+        img.style.setProperty('--target-opacity', s.opacity);
+        img.style.setProperty('--rot', s.rot + 'deg');
+        img.style.setProperty('--dur', s.dur + 's');
+        img.style.setProperty('--delay', s.delay + 's');
+        img.style.setProperty('--rot-delta', ((Math.random() * 12) - 6).toFixed(1) + 'deg');
+        
+        container.appendChild(img);
+      });
+    })();
+
+    /* Video loader: Shimmer skeleton until genuine video loaded */
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
@@ -834,6 +1215,12 @@
         'demo.webm'
       ];
       let i = 0;
+
+      function onReady() {
+        block.classList.add('ready');
+        video.play().catch(() => {});
+      }
+
       function tryNext() {
         if (i >= sources.length) {
           block.classList.remove('ready');
@@ -842,10 +1229,9 @@
         }
         const src = sources[i++];
         video.src = src;
-        video.addEventListener('loadeddata', () => {
-          block.classList.add('ready');
-          video.play().catch(() => {});
-        }, { once: true });
+
+        video.addEventListener('loadeddata', onReady, { once: true });
+        video.addEventListener('canplay', onReady, { once: true });
         video.addEventListener('error', tryNext, { once: true });
         video.load();
       }
