@@ -34,7 +34,8 @@
       --accent: #ffffff;
       --accent-bg: #ffffff;
       --accent-text: #000000;
-      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 45%, transparent 75%);
+      --brand-blue: #0051ff;
+      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 81, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 75%);
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -55,7 +56,8 @@
       --accent: #000000;
       --accent-bg: #000000;
       --accent-text: #ffffff;
-      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 45%, transparent 75%);
+      --brand-blue: #004ce6;
+      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 76, 230, 0.08) 0%, rgba(0, 0, 0, 0.02) 45%, transparent 75%);
 
       --skel-base: #e5e7eb;
       --skel-highlight: #f3f4f6;
@@ -84,18 +86,18 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
-    /* Main wrapper for elastic rubber-band pull */
+    /* Page container that gets pushed upwards */
     #pageWrapper {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      will-change: transform;
       position: relative;
       z-index: 2;
+      will-change: transform;
     }
 
-    /* motion.div primitives */
+    /* motion primitives */
     .motion-item {
       opacity: 0;
       transform: translateY(24px);
@@ -158,7 +160,7 @@
     .hero {
       width: 100%;
       max-width: 1020px;
-      padding: 72px 0 60px;
+      padding: 72px 0 48px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -185,7 +187,7 @@
       pointer-events: none;
       user-select: none;
       will-change: transform, opacity;
-      filter: drop-shadow(0 14px 28px rgba(0, 50, 255, 0.15));
+      filter: drop-shadow(0 14px 28px rgba(0, 81, 255, 0.2));
       opacity: 0;
       transform: scale(0.4) translateY(30px) rotate(var(--rot, 0deg));
       animation: 
@@ -213,11 +215,14 @@
       }
     }
 
-    @media (max-width: 900px) {
-      .hero-shape {
-        opacity: 0.5;
-        transform: scale(0.65) rotate(var(--rot, 0deg)) !important;
-      }
+    @media (max-width: 768px) {
+      .hero-shape.tablet-hide { display: none !important; }
+      .hero-shape { transform: scale(0.7) rotate(var(--rot, 0deg)) !important; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-shape.mobile-hide { display: none !important; }
+      .hero-shape { transform: scale(0.55) rotate(var(--rot, 0deg)) !important; }
     }
 
     .hero::before {
@@ -245,14 +250,30 @@
       z-index: 2;
     }
 
+    .privacy-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    .privacy-tag svg { width: 11px; height: 11px; }
+
     .logo-heading img {
       width: 64px;
       height: 64px;
-      border-radius: 14px;
+      border-radius: 16px;
       display: block;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       border: 1px solid var(--border);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 8px 24px rgba(0, 81, 255, 0.25);
       transition: transform 0.3s var(--ease-spring);
     }
 
@@ -272,12 +293,12 @@
     p.subtitle {
       font-size: 16px;
       color: var(--text-muted);
-      max-width: 480px;
+      max-width: 500px;
       line-height: 1.6;
-      margin-bottom: 32px;
+      margin-bottom: 30px;
     }
 
-    .subtitle kbd, .footer-shortcut kbd {
+    .subtitle kbd, .site-links-shortcut kbd, .feat-kbd {
       font-family: var(--font-mono);
       font-size: 12px;
       padding: 2px 6px;
@@ -349,7 +370,7 @@
     .demo-block {
       width: 100%;
       max-width: 980px;
-      margin-top: 52px;
+      margin-top: 48px;
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
@@ -520,26 +541,124 @@
       text-align: center;
     }
 
+    /* Features Section */
+    .features {
+      width: 100%;
+      max-width: 980px;
+      padding: 88px 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #3b82f6;
+      margin-bottom: 8px;
+    }
+
+    .features h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .features p.features-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      text-align: center;
+      max-width: 520px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      width: 100%;
+    }
+
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s ease, transform 0.2s var(--ease-spring);
+    }
+
+    .feat-card:hover {
+      border-color: var(--border-focus);
+      transform: translateY(-2px);
+    }
+
+    .feat-card.span-3 { grid-column: span 3; }
+    .feat-card.span-2 { grid-column: span 2; }
+
+    @media (max-width: 768px) {
+      .feat-card.span-3, .feat-card.span-2 { grid-column: span 6; }
+    }
+
+    .feat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(0, 81, 255, 0.1);
+      border: 1px solid rgba(0, 81, 255, 0.2);
+      display: grid;
+      place-items: center;
+      color: #3b82f6;
+      margin-bottom: 4px;
+    }
+
+    .feat-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .feat-card p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .feat-code {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: var(--text);
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: 6px;
+    }
+
     /* contact */
     .contact {
       width: 100%;
       max-width: 540px;
-      padding: 64px 0 0;
+      padding: 72px 0 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       position: relative;
       z-index: 2;
-    }
-
-    .contact .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--text-dim);
-      margin-bottom: 8px;
     }
 
     .contact h2 {
@@ -664,15 +783,14 @@
     .success-view b { font-size: 14px; font-weight: 600; }
     .success-view span { font-size: 13px; color: var(--text-muted); }
 
-    /* Footer */
-    .footer {
+    /* Links Section (Previously Footer) */
+    .site-links-section {
       width: 100%;
       max-width: 980px;
       margin-top: 96px;
       margin-bottom: 0px;
-      border-top: none;
       padding-top: 40px;
-      padding-bottom: 52px;
+      padding-bottom: 56px;
       display: flex;
       flex-direction: column;
       gap: 32px;
@@ -680,7 +798,7 @@
       z-index: 2;
     }
 
-    .footer-top {
+    .site-links-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -688,7 +806,7 @@
       flex-wrap: wrap;
     }
 
-    .footer-brand {
+    .site-links-brand {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -697,7 +815,7 @@
       text-align: left;
     }
 
-    .footer-brand-title {
+    .site-links-brand-title {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -707,19 +825,19 @@
       color: var(--text);
     }
 
-    .footer-brand-title img {
+    .site-links-brand-title img {
       width: 20px;
       height: 20px;
       border-radius: 5px;
     }
 
-    .footer-brand p {
+    .site-links-brand p {
       font-size: 13px;
       color: var(--text-muted);
       line-height: 1.5;
     }
 
-    .footer-badge {
+    .site-links-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -732,27 +850,27 @@
       border: 1px solid var(--border);
     }
 
-    .footer-badge-dot {
+    .site-links-badge-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: #34d399;
     }
 
-    .footer-nav {
+    .site-links-nav {
       display: flex;
       gap: 48px;
       flex-wrap: wrap;
     }
 
-    .footer-col {
+    .site-links-col {
       display: flex;
       flex-direction: column;
       gap: 10px;
       text-align: left;
     }
 
-    .footer-col-title {
+    .site-links-col-title {
       font-family: var(--font-mono);
       font-size: 11px;
       text-transform: uppercase;
@@ -762,7 +880,7 @@
       margin-bottom: 2px;
     }
 
-    .footer-col a {
+    .site-links-col a {
       color: var(--text-muted);
       font-size: 13px;
       text-decoration: none;
@@ -772,14 +890,14 @@
       gap: 6px;
     }
 
-    .footer-col a:hover {
+    .site-links-col a:hover {
       color: var(--text);
       transform: translateX(2px);
     }
 
-    .footer-bottom {
+    .site-links-bottom {
       border-top: none;
-      padding-top: 20px;
+      padding-top: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -790,41 +908,34 @@
       color: var(--text-dim);
     }
 
-    .footer-bottom a {
+    .site-links-bottom a {
       color: var(--text-muted);
       text-decoration: none;
       transition: color 0.15s ease;
     }
 
-    .footer-bottom a:hover {
+    .site-links-bottom a:hover {
       color: var(--text);
     }
 
-    /* Fixed Dia Overscroll Floor (Rises from the floor beneath everything) */
-    .dia-overscroll-floor {
+    /* Fixed Dia Footer: Pushes whole content and rises up */
+    .dia-overscroll-container {
       position: fixed;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) scaleY(0);
-      transform-origin: bottom center;
-      width: 100vw;
-      max-width: 1380px;
-      height: 400px;
-      pointer-events: none;
+      left: 0;
+      right: 0;
       z-index: 1;
-      opacity: 0;
-      will-change: transform, opacity;
-      overflow: hidden;
+      pointer-events: none;
+      transform-origin: bottom;
       display: flex;
       align-items: flex-end;
-      justify-content: center;
+      margin-bottom: -2vh;
+      height: 65vh;
+      transform: scaleY(0);
+      will-change: transform;
     }
 
-    html[data-site-theme="light"] .dia-overscroll-floor {
-      opacity: 0.55;
-    }
-
-    .dia-overscroll-floor svg {
+    .dia-overscroll-container svg {
       width: 100%;
       height: 100%;
       display: block;
@@ -860,21 +971,21 @@
 
   <div id="pageWrapper">
     <main class="hero">
-      <!-- Decorative floating scattered squiggles -->
+      <!-- Floating squiggles container -->
       <div class="hero-decorations" id="heroDecorations" aria-hidden="true"></div>
 
       <div class="hero-content">
-        <div class="logo-heading motion-item" style="--delay: 0.05s;">
+        <div class="logo-heading motion-item" style="--delay: 0.08s;">
           <img src="logo.png" alt="Finder logo">
         </div>
 
-        <h1 class="motion-item" style="--delay: 0.15s;">Search everything.<br>Instantly.</h1>
+        <h1 class="motion-item" style="--delay: 0.16s;">Search everything.<br>Instantly.</h1>
 
-        <p class="subtitle motion-item" style="--delay: 0.25s;">
-          Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web.
+        <p class="subtitle motion-item" style="--delay: 0.24s;">
+          Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web. Completely offline, native, and private.
         </p>
 
-        <div class="action-row motion-item" style="--delay: 0.35s;">
+        <div class="action-row motion-item" style="--delay: 0.32s;">
           <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -888,11 +999,11 @@
           </a>
         </div>
 
-        <div class="meta motion-item" style="--delay: 0.45s;">v0.2.4 • Windows 10/11 </div>
+        <div class="meta motion-item" style="--delay: 0.40s;">v0.2.4 • Windows 10/11 </div>
       </div>
 
-      <!-- Video Block with active skeleton shimmer -->
-      <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.55s;">
+      <!-- Video Block -->
+      <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.50s;">
         <div class="demo-skeleton"></div>
         <video id="demoVideo" muted loop playsinline autoplay></video>
         <button class="big-play" id="bigPlay" aria-label="Play">
@@ -900,7 +1011,7 @@
         </button>
         <div class="vc">
           <button id="vcPlay" aria-label="Play / Pause">
-            <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
+            <svg id="vcPauseIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/></svg>
             <svg id="vcPlayIco" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><polygon points="6 4 20 12 6 20"/></svg>
           </button>
           <div class="track" id="vcTrack">
@@ -920,6 +1031,63 @@
       </div>
     </main>
 
+    <!-- Features Section -->
+    <section class="features motion-scroll" id="features">
+      <div class="section-label">Capabilities</div>
+      <h2>Engineered for pure speed.</h2>
+      <p class="features-sub">No indexing bloat, no memory hogging. Instant response right from your keystrokes.</p>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feat-card span-3">
+          <div class="feat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </div>
+          <h3>Find Any App in a Second</h3>
+          <p>Press <span class="feat-kbd">Ctrl+Space</span>, type a few letters, hit Enter. No Start menu hunting or lagging animations.</p>
+          <div class="feat-code">spot → Spotify.exe</div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feat-card span-3">
+          <div class="feat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <h3>Find Any File, No Matter How Deep</h3>
+          <p>Just type the end of the path like <span class="feat-kbd">Finder\logo.png</span> and Finder locates it even if it's buried deep inside subfolders. You never need full paths.</p>
+          <div class="feat-code">Finder\logo.png</div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feat-card span-2">
+          <div class="feat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          </div>
+          <h3>Go Anywhere Directly</h3>
+          <p>Paste full paths like <span class="feat-kbd">C:\Users\...</span>, network shares <span class="feat-kbd">\\server\share</span>, or shortcuts like <span class="feat-kbd">~</span> and <span class="feat-kbd">%TEMP%</span> to open immediately.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feat-card span-2">
+          <div class="feat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path></svg>
+          </div>
+          <h3>Calculator Built In</h3>
+          <p>Type <span class="feat-kbd">12*7</span> or <span class="feat-kbd">(3+4)*9</span> and the calculated answer appears on top. Hit Enter to copy it to your clipboard instantly.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feat-card span-2">
+          <div class="feat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </div>
+          <h3>Search the Web</h3>
+          <p>Type <span class="feat-kbd">@</span> followed by your query, like <span class="feat-kbd">@weather</span>, and press Enter to instantly search Bing or your default engine.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feedback Section -->
     <section class="contact motion-scroll" id="contact">
       <div class="section-label">Feedback</div>
       <h2>Help us make Finder better.</h2>
@@ -954,24 +1122,24 @@
       </div>
     </section>
 
-    <!-- Modern Footer -->
-    <footer class="footer motion-scroll" id="footer">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-brand-title">
+    <!-- Links Section -->
+    <div class="site-links-section motion-scroll" id="siteLinks">
+      <div class="site-links-top">
+        <div class="site-links-brand">
+          <div class="site-links-brand-title">
             <img src="logo.png" alt="Finder icon">
             <span>Finder</span>
           </div>
           
-          <div class="footer-badge">
-            <span class="footer-badge-dot"></span>
+          <div class="site-links-badge">
+            <span class="site-links-badge-dot"></span>
             <span>v0.2.4 Latest Release</span>
           </div>
         </div>
 
-        <div class="footer-nav">
-          <div class="footer-col">
-            <div class="footer-col-title">Downloads</div>
+        <div class="site-links-nav">
+          <div class="site-links-col">
+            <div class="site-links-col-title">Downloads</div>
             <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -989,9 +1157,8 @@
             <a href="https://github.com/anshdadhich/finder-releases/releases" target="_blank" rel="noreferrer">Release Notes</a>
           </div>
 
-          <div class="footer-col">
-            <div class="footer-col-title">Community</div>
-            
+          <div class="site-links-col">
+            <div class="site-links-col-title">Community</div>
             <a href="https://x.com/Rokieee__" target="_blank" rel="noreferrer">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               Follow @Rokieee__
@@ -1001,49 +1168,172 @@
         </div>
       </div>
 
-      <div class="footer-bottom">
+      <div class="site-links-bottom">
         <span>© 2026 Finder. Built for speed.</span>
-        <span class="footer-shortcut">Shortcut: <kbd>Ctrl+Space</kbd></span>
+        <span class="site-links-shortcut">Shortcut: <kbd>Ctrl+Space</kbd></span>
       </div>
-    </footer>
+    </div>
   </div>
 
-  <!-- Dia Signature Overscroll Floor Aurora (Finder Rich Spectrum) -->
-  <div class="dia-overscroll-floor" id="diaFloor" aria-hidden="true">
-    <svg viewBox="0 0 1271 599" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- High-Depth Rich Color-Matched Dia Aurora Footer -->
+  <footer class="dia-overscroll-container" id="diaOverscroll" aria-hidden="true" style="transform: scaleY(0);">
+    <svg class="w-full h-full" viewBox="0 0 1271 599" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Finder Rich Signature Aurora Palette -->
-        <linearGradient id="finder-dia-grad" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stop-color="#030712" />
-          <stop offset="14%" stop-color="#0f172a" />
-          <stop offset="28%" stop-color="#1e1b4b" />
-          <stop offset="42%" stop-color="#1d4ed8" />
-          <stop offset="56%" stop-color="#0284c7" />
-          <stop offset="70%" stop-color="#00f0ff" />
-          <stop offset="82%" stop-color="#818cf8" />
+        <!-- Atmospheric Ambient Glow -->
+        <filter id="bg_blur_depth" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="36" />
+        </filter>
+        <radialGradient id="aurora_ambient" cx="50%" cy="100%" r="70%">
+          <stop offset="0%" stop-color="#0051ff" stop-opacity="0.8" />
+          <stop offset="40%" stop-color="#00c8ff" stop-opacity="0.4" />
+          <stop offset="80%" stop-color="#7c3aed" stop-opacity="0.15" />
+          <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+        </radialGradient>
+
+        <filter id="filter0_finder" x="1083" y="261" width="234" height="383" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter1_finder" x="942" y="180" width="234" height="464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter2_finder" x="801" y="106" width="234" height="538" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter3_finder" x="-46" y="261" width="234" height="383" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter4_finder" x="95" y="180" width="234" height="464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter5_finder" x="236" y="106" width="234" height="538" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter6_finder" x="377" y="54" width="235" height="590" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter7_finder" x="659" y="54" width="235" height="590" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+        <filter id="filter8_finder" x="519" y="0" width="233" height="644" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur stdDeviation="16" result="effect1"></feGaussianBlur></filter>
+
+        <!-- Signature High-Depth Chromatic Gradients -->
+        <linearGradient id="paint0_finder" x1="1374" y1="614" x2="1374" y2="937" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
           <stop offset="92%" stop-color="#c084fc" />
           <stop offset="98%" stop-color="#ffffff" />
           <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
         </linearGradient>
-        <filter id="finder-dia-blur" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="22" />
-        </filter>
+
+        <linearGradient id="paint1_finder" x1="1233" y1="614" x2="1233" y2="1018" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint2_finder" x1="1092" y1="614" x2="1092" y2="1092" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint3_finder" x1="87.0001" y1="0" x2="87.0001" y2="323" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint4_finder" x1="87.0001" y1="0" x2="87.0001" y2="404" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint5_finder" x1="87.0001" y1="0" x2="87.0001" y2="478" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint6_finder" x1="87.5002" y1="0" x2="87.5002" y2="530" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint7_finder" x1="951.5" y1="614" x2="951.5" y2="1144" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="paint8_finder" x1="86.5002" y1="0" x2="86.5002" y2="584" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#010314" />
+          <stop offset="12%" stop-color="#071038" />
+          <stop offset="26%" stop-color="#0038ff" />
+          <stop offset="42%" stop-color="#0066ff" />
+          <stop offset="58%" stop-color="#00d4ff" />
+          <stop offset="72%" stop-color="#38bdf8" />
+          <stop offset="84%" stop-color="#818cf8" />
+          <stop offset="92%" stop-color="#c084fc" />
+          <stop offset="98%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
       </defs>
 
-      <!-- Symmetrically Fitted Gaussian-Melted Columns -->
-      <g filter="url(#finder-dia-blur)">
-        <rect x="0" y="270" width="170" height="329" fill="url(#finder-dia-grad)" />
-        <rect x="138" y="195" width="170" height="404" fill="url(#finder-dia-grad)" />
-        <rect x="276" y="125" width="170" height="474" fill="url(#finder-dia-grad)" />
-        <rect x="414" y="60"  width="170" height="539" fill="url(#finder-dia-grad)" />
-        <rect x="552" y="12"  width="170" height="587" fill="url(#finder-dia-grad)" />
-        <rect x="690" y="60"  width="170" height="539" fill="url(#finder-dia-grad)" />
-        <rect x="828" y="125" width="170" height="474" fill="url(#finder-dia-grad)" />
-        <rect x="966" y="195" width="170" height="404" fill="url(#finder-dia-grad)" />
-        <rect x="1104" y="270" width="170" height="329" fill="url(#finder-dia-grad)" />
-      </g>
+      <!-- Layer 1: Ambient Background Depth Field -->
+      <ellipse cx="635" cy="550" rx="600" ry="250" fill="url(#aurora_ambient)" filter="url(#bg_blur_depth)" />
+
+      <!-- Layer 2: Main Gaussian Column Array -->
+      <g filter="url(#filter0_finder)"><rect x="1287" y="614" width="174" height="323" transform="rotate(180 1287 614)" fill="url(#paint0_finder)"></rect></g>
+      <g filter="url(#filter1_finder)"><rect x="1146" y="614" width="174" height="404" transform="rotate(180 1146 614)" fill="url(#paint1_finder)"></rect></g>
+      <g filter="url(#filter2_finder)"><rect x="1005" y="614" width="174" height="478" transform="rotate(180 1005 614)" fill="url(#paint2_finder)"></rect></g>
+      <g filter="url(#filter3_finder)"><rect width="174" height="323" transform="matrix(1 0 -5.78527e-07 -1 -16 614)" fill="url(#paint3_finder)"></rect></g>
+      <g filter="url(#filter4_finder)"><rect width="174" height="404" transform="matrix(1 0 -6.17385e-07 -1 125 614)" fill="url(#paint4_finder)"></rect></g>
+      <g filter="url(#filter5_finder)"><rect width="174" height="478" transform="matrix(1 0 -6.17385e-07 -1 266 614)" fill="url(#paint5_finder)"></rect></g>
+      <g filter="url(#filter6_finder)"><rect width="175" height="530" transform="matrix(1 0 -6.17385e-07 -1 407 614)" fill="url(#paint6_finder)"></rect></g>
+      <g filter="url(#filter7_finder)"><rect x="864" y="614" width="175" height="530" transform="rotate(180 864 614)" fill="url(#paint7_finder)"></rect></g>
+      <g filter="url(#filter8_finder)"><rect width="173" height="584" transform="matrix(1 0 -6.17385e-07 -1 549 614)" fill="url(#paint8_finder)"></rect></g>
     </svg>
-  </div>
+  </footer>
 
   <div class="toast" id="toast"></div>
 
@@ -1060,11 +1350,11 @@
 
     document.querySelectorAll('.motion-scroll').forEach(el => motionObserver.observe(el));
 
-    /* Accurate Overscroll Boundary Engine */
+    /* Strict Physical Push: Moves entire content block up as Dia expands from the bottom */
     (function () {
-      const diaFloor = document.getElementById('diaFloor');
+      const diaOverscroll = document.getElementById('diaOverscroll');
       const pageWrapper = document.getElementById('pageWrapper');
-      if (!diaFloor || !pageWrapper) return;
+      if (!diaOverscroll || !pageWrapper) return;
 
       let currentPull = 0;
       let targetPull = 0;
@@ -1072,35 +1362,33 @@
 
       function isAtBottom() {
         const scroller = document.scrollingElement || document.documentElement;
-        return (scroller.scrollTop + window.innerHeight) >= (scroller.scrollHeight - 6);
+        return (scroller.scrollTop + window.innerHeight) >= (scroller.scrollHeight - 3);
       }
 
       function render() {
-        // Elastic spring physics back to resting 0
         currentPull += (targetPull - currentPull) * 0.18;
 
-        if (Math.abs(currentPull) < 0.001 && targetPull === 0) {
+        if (Math.abs(currentPull) < 0.002 && targetPull === 0) {
           currentPull = 0;
+          diaOverscroll.style.transform = 'scaleY(0)';
           pageWrapper.style.transform = '';
-          diaFloor.style.transform = 'translateX(-50%) scaleY(0)';
-          diaFloor.style.opacity = '0';
           cancelAnimationFrame(animId);
           animId = null;
           return;
         }
 
-        const scaleY = Math.min(1.25, currentPull * 0.007);
-        const translateY = -Math.min(220, currentPull * 0.6);
+        const scale = Math.min(1, currentPull);
+        diaOverscroll.style.transform = `scaleY(${scale.toFixed(4)})`;
 
-        pageWrapper.style.transform = `translateY(${translateY.toFixed(1)}px)`;
-        diaFloor.style.transform = `translateX(-50%) scaleY(${scaleY.toFixed(3)})`;
-        diaFloor.style.opacity = `${Math.min(1, scaleY * 1.6).toFixed(2)}`;
+        // PUSH PHYSICS: Translate content up by the exact rendered height of the Dia element
+        const renderedHeight = diaOverscroll.getBoundingClientRect().height * scale;
+        pageWrapper.style.transform = `translateY(${-renderedHeight}px)`;
 
         animId = requestAnimationFrame(render);
       }
 
       function addPull(delta) {
-        targetPull = Math.min(300, targetPull + delta * 0.42);
+        targetPull = Math.min(1, targetPull + (delta / 320));
         if (!animId) animId = requestAnimationFrame(render);
       }
 
@@ -1112,30 +1400,38 @@
       // Wheel / Trackpad overscroll
       window.addEventListener('wheel', (e) => {
         if (isAtBottom() && e.deltaY > 0) {
+          e.preventDefault();
           addPull(e.deltaY);
           clearTimeout(window._wheelResetTimer);
-          window._wheelResetTimer = setTimeout(releasePull, 160);
+          window._wheelResetTimer = setTimeout(releasePull, 140);
         } else if (e.deltaY < 0 && targetPull > 0) {
           releasePull();
         }
-      }, { passive: true });
+      }, { passive: false });
 
       // Mobile Touch overscroll
       let startY = 0;
+      let isTouching = false;
+      
       window.addEventListener('touchstart', (e) => {
         startY = e.touches[0].clientY;
+        isTouching = true;
       }, { passive: true });
 
       window.addEventListener('touchmove', (e) => {
-        if (isAtBottom()) {
+        if (isAtBottom() && isTouching) {
           const diff = startY - e.touches[0].clientY;
           if (diff > 0) {
-            addPull(diff * 0.4);
+            e.preventDefault();
+            addPull(diff * 0.5);
           }
         }
-      }, { passive: true });
+      }, { passive: false });
 
-      window.addEventListener('touchend', releasePull, { passive: true });
+      window.addEventListener('touchend', () => {
+        isTouching = false;
+        releasePull();
+      }, { passive: true });
     })();
 
     /* Theme */
@@ -1163,7 +1459,7 @@
     }
     syncThemeIcons();
 
-    /* Wide, well-spaced floating squiggles */
+    /* Responsive Squiggles */
     (function () {
       const container = document.getElementById('heroDecorations');
       if (!container) return;
@@ -1171,23 +1467,24 @@
       const shapeSrc = 'squiggle.png';
 
       const shapes = [
-        { top: '4%',  left: '4%',  width: 75,  rot: -35, opacity: 0.85, dur: 7.2, delay: 0 },
-        { top: '17%', left: '13%', width: 90,  rot: 20,  opacity: 0.85, dur: 8.0, delay: 0.5 },
-        { top: '-2%', left: '26%', width: 70,  rot: -15, opacity: 0.85, dur: 8.0, delay: 0.5 },
-        { top: '32%', left: '6%',  width: 110, rot: -50, opacity: 0.9,  dur: 6.5, delay: 0.4 },
-        { top: '48%', left: '18%', width: 60,  rot: -70, opacity: 0.85, dur: 7.8, delay: 0.6 },
-
-        { top: '6%',  right: '5%',  width: 70,  rot: 55,  opacity: 0.85, dur: 7.5, delay: 0.6 },
-        { top: '21%', right: '13%', width: 87,  rot: -30, opacity: 0.85, dur: 6.2, delay: 0.5 },
-        { top: '0%',  right: '26%', width: 90,  rot: 30,  opacity: 0.85, dur: 8.0, delay: 0.5 },
-        { top: '35%', right: '5%',  width: 115, rot: 30,  opacity: 0.9,  dur: 8.8, delay: 0.3 },
-        { top: '52%', right: '17%', width: 65,  rot: -60, opacity: 0.85, dur: 7.0, delay: 0.4 },
+        { top: '4%',  left: '4%',   width: 75,  rot: -35, opacity: 0.85, dur: 7.2, delay: 0, class: '' },
+        { top: '6%',  right: '5%',  width: 70,  rot: 55,  opacity: 0.85, dur: 7.5, delay: 0.6, class: '' },
+        { top: '35%', right: '5%',  width: 110, rot: 30,  opacity: 0.9,  dur: 8.8, delay: 0.3, class: '' },
+        
+        { top: '17%', left: '13%',  width: 90,  rot: 20,  opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
+        { top: '-2%', left: '26%',  width: 70,  rot: -15, opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
+        { top: '32%', left: '6%',   width: 110, rot: -50, opacity: 0.9,  dur: 6.5, delay: 0.4, class: 'tablet-hide' },
+        { top: '48%', left: '18%',  width: 60,  rot: -70, opacity: 0.85, dur: 7.8, delay: 0.6, class: 'mobile-hide' },
+        
+        { top: '21%', right: '13%', width: 87,  rot: -30, opacity: 0.85, dur: 6.2, delay: 0.5, class: 'mobile-hide' },
+        { top: '0%',  right: '26%', width: 90,  rot: 30,  opacity: 0.85, dur: 8.0, delay: 0.5, class: 'mobile-hide' },
+        { top: '52%', right: '17%', width: 65,  rot: -60, opacity: 0.85, dur: 7.0, delay: 0.4, class: 'tablet-hide' },
       ];
 
       shapes.forEach(s => {
         const img = document.createElement('img');
         img.src = shapeSrc;
-        img.className = 'hero-shape';
+        img.className = 'hero-shape' + (s.class ? ' ' + s.class : '');
         img.alt = '';
         
         if (s.top) img.style.top = s.top;
@@ -1205,7 +1502,7 @@
       });
     })();
 
-    /* Video loader: Shimmer skeleton until genuine video loaded */
+    /* Video Player */
     (function () {
       const block = document.getElementById('demoBlock');
       const video = document.getElementById('demoVideo');
@@ -1236,7 +1533,6 @@
         video.load();
       }
 
-      /* controls */
       const playBtn = document.getElementById('vcPlay');
       const bigPlay = document.getElementById('bigPlay');
       const playIco = document.getElementById('vcPlayIco');
@@ -1335,7 +1631,7 @@
       setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    /* Resend Contact Form */
+    /* Contact Form */
     const CFG = window.FINDER_CONFIG || {};
     const sendBtn = document.getElementById('c-send');
     const statusEl = document.getElementById('c-status');
