@@ -6,7 +6,7 @@
   <title>Finder — Instant launcher for Windows</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="preload" as="image" href="logo.png">
@@ -22,6 +22,14 @@
   </script>
 
   <style>
+    @font-face {
+      font-family: 'Exposure Variable';
+      src: local('Exposure Variable'), local('ExposureVariable'), local('Exposure-Variable');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     @property --ai-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
     @property --ai-s1 { syntax: '<angle>'; inherits: false; initial-value: 16deg; }
     @property --ai-s2 { syntax: '<angle>'; inherits: false; initial-value: 30deg; }
@@ -32,18 +40,20 @@
 
     :root {
       --bg: #050505;
-      --surface: #0d0d11;
-      --surface-hover: #14141a;
+      --surface: #0c0c10;
+      --surface-hover: #13131a;
       --border: rgba(255, 255, 255, 0.08);
       --border-focus: rgba(255, 255, 255, 0.22);
       --text: #ededed;
-      --text-muted: #888888;
-      --text-dim: #555555;
+      --text-muted: #8c8c94;
+      --text-dim: #55555c;
       --accent: #ffffff;
       --accent-bg: #ffffff;
       --accent-text: #000000;
       --brand-blue: #0051ff;
-      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 81, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 75%);
+      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 81, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 75%);
+      
+      --font-serif: 'Exposure Variable', 'Exposure', 'Instrument Serif', 'Newsreader', serif;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -51,31 +61,31 @@
       --skel-base: #0d0d12;
       --skel-highlight: #1c1c28;
 
-      --hud-bg: #0b0b0f;
-      --hud-row-hover: rgba(255, 255, 255, 0.05);
+      --hud-bg: #0d0d12;
+      --hud-row-hover: rgba(255, 255, 255, 0.04);
       --hud-border: rgba(255, 255, 255, 0.1);
     }
 
     html[data-site-theme="light"] {
       --bg: #ffffff;
-      --surface: #f7f7f8;
-      --surface-hover: #efefe0;
+      --surface: #f7f7f9;
+      --surface-hover: #eeeeee;
       --border: rgba(0, 0, 0, 0.08);
       --border-focus: rgba(0, 0, 0, 0.25);
-      --text: #111111;
-      --text-muted: #666666;
-      --text-dim: #999999;
+      --text: #111114;
+      --text-muted: #666670;
+      --text-dim: #9999a0;
       --accent: #000000;
       --accent-bg: #000000;
       --accent-text: #ffffff;
       --brand-blue: #004ce6;
-      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 76, 230, 0.08) 0%, rgba(0, 0, 0, 0.02) 45%, transparent 75%);
+      --hero-glow: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0, 76, 230, 0.09) 0%, rgba(0, 0, 0, 0.02) 45%, transparent 75%);
 
       --skel-base: #e5e7eb;
       --skel-highlight: #f3f4f6;
 
       --hud-bg: #ffffff;
-      --hud-row-hover: rgba(0, 0, 0, 0.04);
+      --hud-row-hover: rgba(0, 0, 0, 0.03);
       --hud-border: rgba(0, 0, 0, 0.08);
     }
 
@@ -101,6 +111,36 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
+    @media (max-width: 600px) {
+      body { padding: 0 16px; }
+    }
+
+    /* Preloader */
+    #siteLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #siteLoader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #loaderCanvas {
+      width: 100%;
+      max-width: 680px;
+      height: 380px;
+      display: block;
+    }
+
     #pageWrapper {
       width: 100%;
       display: flex;
@@ -111,7 +151,7 @@
       will-change: transform;
     }
 
-    /* motion primitives */
+    /* Motion primitives */
     .motion-item {
       opacity: 0;
       transform: translateY(24px);
@@ -137,7 +177,7 @@
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* theme toggle */
+    /* Theme Toggle */
     .theme-toggle {
       position: fixed;
       top: 24px;
@@ -166,7 +206,7 @@
     .hero {
       width: 100%;
       max-width: 1020px;
-      padding: 72px 0 48px;
+      padding: 84px 0 48px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -246,26 +286,12 @@
       z-index: 2;
     }
 
-    .privacy-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: #3b82f6;
-      background: rgba(59, 130, 246, 0.08);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-bottom: 18px;
-    }
-
     .logo-heading img {
       width: 64px;
       height: 64px;
       border-radius: 16px;
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       border: 1px solid var(--border);
       box-shadow: 0 8px 24px rgba(0, 81, 255, 0.25);
       transition: transform 0.3s var(--ease-spring);
@@ -274,12 +300,17 @@
     .logo-heading img:hover { transform: scale(1.06) rotate(-2deg); }
 
     h1 {
-      font-size: 44px;
-      font-weight: 700;
-      letter-spacing: -1.2px;
+      font-family: var(--font-serif);
+      font-size: 58px;
+      font-weight: 400;
+      letter-spacing: -0.8px;
       color: var(--text);
-      line-height: 1.1;
-      margin-bottom: 16px;
+      line-height: 1.05;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 42px; letter-spacing: -0.5px; }
     }
 
     p.subtitle {
@@ -516,12 +547,12 @@
     }
 
     /* =========================================================================
-       CLEAN NATIVE HUD MORPH SHOWCASE
+       CAPABILITIES CONSOLE WITH NOISE & GRADIENT
        ========================================================================= */
     .morph-showcase {
       width: 100%;
       max-width: 980px;
-      margin-top: 84px;
+      margin-top: 96px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -539,9 +570,10 @@
     }
 
     .morph-showcase h2 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.8px;
+      font-family: var(--font-serif);
+      font-size: 42px;
+      font-weight: 400;
+      letter-spacing: -0.4px;
       margin-bottom: 8px;
       text-align: center;
     }
@@ -554,21 +586,132 @@
       max-width: 520px;
     }
 
-    .morph-stage {
+    .capabilities-console {
       width: 100%;
-      min-height: 280px;
-      background: radial-gradient(circle at 50% 50%, rgba(0, 81, 255, 0.05) 0%, transparent 70%);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      overflow: hidden;
+      box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (max-width: 820px) {
+      .capabilities-console {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .console-nav {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.01);
+      padding: 12px;
+      gap: 4px;
+    }
+
+    @media (max-width: 820px) {
+      .console-nav {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 8px;
+        scrollbar-width: none;
+      }
+      .console-nav::-webkit-scrollbar { display: none; }
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+
+    @media (max-width: 820px) {
+      .nav-item {
+        white-space: nowrap;
+        padding: 8px 12px;
+        flex-shrink: 0;
+      }
+    }
+
+    .nav-item:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(0, 81, 255, 0.08);
+      border-color: rgba(0, 81, 255, 0.25);
+      color: var(--text);
+    }
+
+    .nav-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #3b82f6;
+      background: rgba(0, 81, 255, 0.12);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .nav-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 820px) {
+      .nav-desc { display: none; }
+    }
+
+    /* STAGE WITH RICH GRADIENT + PROCEDURAL NOISE */
+    .console-stage {
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 40px 24px;
+      min-height: 280px;
       position: relative;
       overflow: hidden;
-      padding: 36px 16px;
+      background: 
+        radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0, 81, 255, 0.18) 0%, rgba(59, 130, 246, 0.08) 45%, rgba(0, 0, 0, 0) 80%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.4) 100%);
     }
 
-    /* The Unified Morphing Shell */
+    /* Micro-Grain Procedural SVG Noise Layer */
+    .console-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      mix-blend-mode: overlay;
+      opacity: 0.9;
+      z-index: 0;
+    }
+
     .morph-body {
       position: relative;
       background: var(--hud-bg);
@@ -579,6 +722,8 @@
       box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--hud-border);
       will-change: width, height, border-radius;
       padding: 1px;
+      max-width: 100%;
+      z-index: 1;
     }
 
     .morph-inner {
@@ -604,7 +749,6 @@
       opacity: 0;
     }
 
-    /* Rim Glow Layers */
     .ai-glow-layer {
       position: absolute;
       pointer-events: none;
@@ -660,7 +804,6 @@
       }
     }
 
-    /* Native Clean HUD Typography & Layout */
     .hud-box {
       width: 100%;
       display: flex;
@@ -670,8 +813,8 @@
     .hud-input-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
+      gap: 10px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -683,13 +826,15 @@
     }
 
     .hud-query-text {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 500;
       color: var(--text);
       display: flex;
       align-items: center;
       flex: 1;
       letter-spacing: -0.2px;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     .hud-cursor {
@@ -707,8 +852,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 12px 18px;
+      gap: 12px;
+      padding: 10px 16px;
       background: var(--hud-row-hover);
     }
 
@@ -717,34 +862,36 @@
       align-items: center;
       gap: 10px;
       min-width: 0;
+      flex: 1;
     }
 
     .hud-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--text);
+      white-space: nowrap;
     }
 
     .hud-path {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-dim);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 240px;
     }
 
     .hud-action {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-muted);
       flex-shrink: 0;
     }
 
-    /* Staggered Rising Characters */
     .char-rise {
       display: inline-block;
       opacity: 0;
@@ -760,41 +907,6 @@
         transform: translateY(0);
         filter: blur(0);
       }
-    }
-
-    /* Feature Selector Tabs */
-    .morph-nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .morph-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 13px;
-      border-radius: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 12.5px;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .morph-tab:hover {
-      color: var(--text);
-      border-color: var(--border-focus);
-    }
-
-    .morph-tab.active {
-      background: rgba(0, 81, 255, 0.12);
-      border-color: rgba(0, 81, 255, 0.4);
-      color: #3b82f6;
     }
 
     #morphProbe {
@@ -819,9 +931,10 @@
     }
 
     .contact h2 {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
       margin-bottom: 8px;
     }
 
@@ -940,7 +1053,7 @@
     .success-view b { font-size: 14px; font-weight: 600; }
     .success-view span { font-size: 13px; color: var(--text-muted); }
 
-    /* Links Section (Previously Footer) */
+    /* Links Section */
     .site-links-section {
       width: 100%;
       max-width: 980px;
@@ -1075,7 +1188,7 @@
       color: var(--text);
     }
 
-    /* Fixed Dia Footer: Pushes whole content and rises up */
+    /* Fixed Dia Footer */
     .dia-overscroll-container {
       position: fixed;
       bottom: 0;
@@ -1121,6 +1234,11 @@
 </head>
 <body>
 
+  <!-- Preloader Word Cascade Canvas Engine (FINDER) -->
+  <div id="siteLoader">
+    <canvas id="loaderCanvas"></canvas>
+  </div>
+
   <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
     <svg id="iconMoon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <svg id="iconSun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -1131,18 +1249,17 @@
       <div class="hero-decorations" id="heroDecorations" aria-hidden="true"></div>
 
       <div class="hero-content">
-
-        <div class="logo-heading motion-item" style="--delay: 0.08s;">
+        <div class="logo-heading motion-item" style="--delay: 0.05s;">
           <img src="logo.png" alt="Finder logo">
         </div>
 
-        <h1 class="motion-item" style="--delay: 0.16s;">Search everything.<br>Instantly.</h1>
+        <h1 class="motion-item" style="--delay: 0.12s;">Search everything.<br>Instantly.</h1>
 
-        <p class="subtitle motion-item" style="--delay: 0.24s;">
-          Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web. Completely offline, native, and private.
+        <p class="subtitle motion-item" style="--delay: 0.20s;">
+          Press <kbd>Ctrl+Space</kbd> and search apps, files, folders, math, and the web.
         </p>
 
-        <div class="action-row motion-item" style="--delay: 0.32s;">
+        <div class="action-row motion-item" style="--delay: 0.28s;">
           <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.4_x64-setup.exe">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1156,11 +1273,11 @@
           </a>
         </div>
 
-        <div class="meta motion-item" style="--delay: 0.40s;">v0.2.4 • Windows 10/11 </div>
+        <div class="meta motion-item" style="--delay: 0.36s;">v0.2.4 • Windows 10/11 </div>
       </div>
 
       <!-- Video Block -->
-      <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.50s;">
+      <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.44s;">
         <div class="demo-skeleton"></div>
         <video id="demoVideo" muted loop playsinline autoplay></video>
         <button class="big-play" id="bigPlay" aria-label="Play">
@@ -1188,33 +1305,69 @@
       </div>
     </main>
 
-    <!-- Clean Morphing HUD Showcase Section -->
+    <!-- Capabilities Console with Procedural Noise Gradient -->
     <section class="morph-showcase motion-scroll" id="capabilities">
-      <div class="section-label">Capabilities</div>
-      <h2>One Box. Every Command.</h2>
-      <p class="showcase-sub">Watch how Finder morphs dynamically to handle apps, deep paths, calculation, and web search instantly.</p>
+      <div class="section-label">Engine & Capabilities</div>
+      <h2>Engineered for pure speed.</h2>
+      <p class="showcase-sub">Explore what Finder does in real time. One keystroke opens apps, reveals deep files, solves math, or searches the web.</p>
 
-      <div class="morph-stage">
-        <div id="morphProbe" aria-hidden="true"></div>
+      <div class="capabilities-console">
+        <!-- Command Selector Navigation -->
+        <div class="console-nav" id="consoleNav">
+          <button class="nav-item active" data-index="0">
+            <div class="nav-head">
+              <span class="nav-badge">1</span>
+              <span>Find Any App</span>
+            </div>
+            <div class="nav-desc">Type a few letters and launch instantly without start menu hunting.</div>
+          </button>
 
-        <!-- The Single Morphing Body -->
-        <div class="morph-body" id="morphBody" data-playing="false">
-          <div id="glowLayersContainer"></div>
-          <div class="morph-inner">
-            <div class="morph-content-wrap" id="morphContent">
-              <!-- Dynamically rendered HUD content -->
+          <button class="nav-item" data-index="1">
+            <div class="nav-head">
+              <span class="nav-badge">2</span>
+              <span>Deep File Search</span>
+            </div>
+            <div class="nav-desc">Type the tail of any path to locate nested files in milliseconds.</div>
+          </button>
+
+          <button class="nav-item" data-index="2">
+            <div class="nav-head">
+              <span class="nav-badge">3</span>
+              <span>Go Anywhere Directly</span>
+            </div>
+            <div class="nav-desc">Paste full paths, network folders, or jump using ~ and %TEMP%.</div>
+          </button>
+
+          <button class="nav-item" data-index="3">
+            <div class="nav-head">
+              <span class="nav-badge">4</span>
+              <span>Calculator Built In</span>
+            </div>
+            <div class="nav-desc">Type math like (3+4)*9 or 12*7 and press Enter to copy the answer.</div>
+          </button>
+
+          <button class="nav-item" data-index="4">
+            <div class="nav-head">
+              <span class="nav-badge">5</span>
+              <span>Search the Web</span>
+            </div>
+            <div class="nav-desc">Type @ then your query to search Bing directly from your keyboard.</div>
+          </button>
+        </div>
+
+        <!-- Live Morph Stage with Noise Layer -->
+        <div class="console-stage">
+          <div id="morphProbe" aria-hidden="true"></div>
+
+          <div class="morph-body" id="morphBody" data-playing="false">
+            <div id="glowLayersContainer"></div>
+            <div class="morph-inner">
+              <div class="morph-content-wrap" id="morphContent">
+                <!-- Dynamically rendered HUD content -->
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Feature Selector Tabs -->
-      <div class="morph-nav" id="morphNav">
-        <button class="morph-tab active" data-index="0">1. App Search</button>
-        <button class="morph-tab" data-index="1">2. Deep Path</button>
-        <button class="morph-tab" data-index="2">3. Direct Jump</button>
-        <button class="morph-tab" data-index="3">4. Calculator</button>
-        <button class="morph-tab" data-index="4">5. Web Query</button>
       </div>
     </section>
 
@@ -1466,7 +1619,125 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    /* Viewport scroll observer */
+    /* Preloader Animation Engine */
+    (function () {
+      const loader = document.getElementById('siteLoader');
+      const canvas = document.getElementById('loaderCanvas');
+      if (!loader || !canvas) return;
+
+      const REF_W = 600;
+      const FPS = 10;
+      const FRAMES = 25;
+      const ROW_Y = [76.5, 97, 117, 137.5, 158, 178, 198.5, 219, 239, 259.5];
+      const DASH_H = 16;
+      const AXIS = 300;
+      const CONTENT_MID = 168;
+
+      const WAVE = [
+        0.001, 0.003, 0.009, 0.028, 0.07, 0.148, 0.334, 0.674, 0.872, 0.95, 0.985,
+        0.998, 0.998, 0.985, 0.95, 0.873, 0.676, 0.33, 0.129, 0.052, 0.016, 0.003,
+        0.001, 0.0, 0.001
+      ];
+
+      const WORD_FINDER = [
+        [[50, 110, 0], [140, 160, 1], [190, 210, 2], [240, 260, 2], [290, 340, 3], [370, 425, 4], [455, 520, 5]],
+        [[50, 110, 0], [140, 160, 1], [190, 215, 2], [240, 260, 2], [290, 348, 3], [370, 425, 4], [455, 525, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 220, 2], [240, 260, 2], [290, 310, 3], [340, 355, 3], [370, 390, 4], [455, 475, 5], [510, 530, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 225, 2], [240, 260, 2], [290, 310, 3], [345, 358, 3], [370, 390, 4], [455, 475, 5], [515, 532, 5]],
+        [[50, 105, 0], [140, 160, 1], [190, 230, 2], [240, 260, 2], [290, 310, 3], [345, 358, 3], [370, 420, 4], [455, 520, 5]],
+        [[50, 105, 0], [140, 160, 1], [190, 210, 2], [235, 260, 2], [290, 310, 3], [345, 358, 3], [370, 420, 4], [455, 520, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 210, 2], [240, 260, 2], [290, 310, 3], [345, 358, 3], [370, 390, 4], [455, 475, 5], [490, 510, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 210, 2], [240, 260, 2], [290, 310, 3], [340, 355, 3], [370, 390, 4], [455, 475, 5], [505, 525, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 210, 2], [240, 260, 2], [290, 348, 3], [370, 425, 4], [455, 475, 5], [515, 535, 5]],
+        [[50, 70, 0],  [140, 160, 1], [190, 210, 2], [240, 260, 2], [290, 340, 3], [370, 425, 4], [455, 475, 5], [520, 540, 5]]
+      ];
+
+      const ctx = canvas.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      
+      function resize() {
+        const r = canvas.getBoundingClientRect();
+        canvas.width = Math.round(r.width * dpr);
+        canvas.height = Math.round(r.height * dpr);
+      }
+      resize();
+
+      function delayOf(letter, row) {
+        if (letter <= 1) return 4.8 + 0.52 * row;
+        if (letter >= 4) return 4.5 + 0.40 * (9 - row);
+        return Math.min(4.9 + 0.6 * row, 4.7 + 0.4 * (9 - row));
+      }
+
+      function excursion(frame, delay) {
+        const ph = (((frame - delay + 6.5) % FRAMES) + FRAMES) % FRAMES;
+        const i = Math.floor(ph);
+        const t = ph - i;
+        return WAVE[i] * (1 - t) + WAVE[(i + 1) % FRAMES] * t;
+      }
+
+      let t0 = performance.now();
+      let completedCycles = 0;
+      let isReady = false;
+
+      window.addEventListener('load', () => { isReady = true; });
+      setTimeout(() => { isReady = true; }, 1400);
+
+      function draw() {
+        const now = performance.now();
+        const ticks = Math.floor(((now - t0) / 1000) * FPS);
+        const frame = ticks % FRAMES;
+        const cycle = Math.floor(ticks / FRAMES);
+
+        if (cycle > completedCycles) {
+          completedCycles = cycle;
+          if (isReady) {
+            loader.classList.add('hidden');
+            return;
+          }
+        }
+
+        const W = canvas.width / dpr;
+        const H = canvas.height / dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+
+        const sc = W / REF_W;
+        ctx.translate(0, H / 2 - CONTENT_MID * sc);
+        ctx.scale(sc, sc);
+        ctx.lineCap = "round";
+
+        for (let r = 0; r < 10; r++) {
+          const y = ROW_Y[r];
+          for (const [x0, x1, letter] of WORD_FINDER[r]) {
+            const e = excursion(frame, delayOf(letter, r));
+            const a = AXIS + (x0 - AXIS) * e;
+            const b = AXIS + (x1 - AXIS) * e;
+            const span = b - a;
+
+            ctx.strokeStyle = "#0051ff";
+            ctx.fillStyle = "#0051ff";
+
+            if (span < 0.8) {
+              ctx.beginPath();
+              ctx.arc((a + b) / 2, y, DASH_H / 2, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.lineWidth = DASH_H;
+              ctx.beginPath();
+              ctx.moveTo(a, y);
+              ctx.lineTo(b, y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    })();
+
+    /* Viewport Observer */
     const motionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1566,13 +1837,14 @@
       return markup;
     }
 
-    /* Native Clean HUD Variants */
+    /* 5 Core Feature Definitions for HUD Output */
     const MORPH_VARIANTS = [
       {
         key: "app",
         radius: 12,
+        targetWidth: 440,
         render: () => `
-          <div class="hud-box" style="width: 480px;">
+          <div class="hud-box">
             <div class="hud-input-row">
               <span class="hud-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1593,8 +1865,9 @@
       {
         key: "file",
         radius: 12,
+        targetWidth: 480,
         render: () => `
-          <div class="hud-box" style="width: 530px;">
+          <div class="hud-box">
             <div class="hud-input-row">
               <span class="hud-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1615,8 +1888,9 @@
       {
         key: "path",
         radius: 12,
+        targetWidth: 420,
         render: () => `
-          <div class="hud-box" style="width: 440px;">
+          <div class="hud-box">
             <div class="hud-input-row">
               <span class="hud-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
@@ -1637,8 +1911,9 @@
       {
         key: "calc",
         radius: 12,
+        targetWidth: 390,
         render: () => `
-          <div class="hud-box" style="width: 410px;">
+          <div class="hud-box">
             <div class="hud-input-row">
               <span class="hud-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/></svg>
@@ -1649,7 +1924,7 @@
             <div class="hud-result-row">
               <div class="hud-result-left">
                 <span class="hud-title">63</span>
-                <span class="hud-path">Calculated value</span>
+                <span class="hud-path">Instant calculation</span>
               </div>
               <div class="hud-action"><span class="hud-kbd">Enter</span> Copy</div>
             </div>
@@ -1659,8 +1934,9 @@
       {
         key: "web",
         radius: 12,
+        targetWidth: 450,
         render: () => `
-          <div class="hud-box" style="width: 490px;">
+          <div class="hud-box">
             <div class="hud-input-row">
               <span class="hud-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
@@ -1670,7 +1946,7 @@
             </div>
             <div class="hud-result-row">
               <div class="hud-result-left">
-                <span class="hud-title">Search Bing</span>
+                <span class="hud-title">Search Web</span>
                 <span class="hud-path">https://bing.com/search?q=weather+in+tokyo</span>
               </div>
               <div class="hud-action"><span class="hud-kbd">Enter</span> Search</div>
@@ -1680,13 +1956,13 @@
       }
     ];
 
-    /* Automatic Probe Measurement & Morph Controller */
+    /* Probe Measurement & Console Morph Controller */
     (function () {
       const bodyEl = document.getElementById('morphBody');
       const contentEl = document.getElementById('morphContent');
       const layersEl = document.getElementById('glowLayersContainer');
       const probeEl = document.getElementById('morphProbe');
-      const navButtons = document.querySelectorAll('#morphNav .morph-tab');
+      const navButtons = document.querySelectorAll('#consoleNav .nav-item');
       if (!bodyEl || !contentEl || !probeEl) return;
 
       let currentIndex = 0;
@@ -1699,6 +1975,7 @@
         cachedSizes = MORPH_VARIANTS.map(v => {
           const wrapper = document.createElement('div');
           wrapper.style.display = 'inline-block';
+          wrapper.style.width = Math.min(v.targetWidth, window.innerWidth - 64) + 'px';
           wrapper.innerHTML = v.render();
           probeEl.appendChild(wrapper);
           const rect = wrapper.getBoundingClientRect();
@@ -1740,10 +2017,12 @@
         navButtons.forEach((btn, idx) => btn.classList.toggle('active', idx === currentIndex));
 
         const v = MORPH_VARIANTS[currentIndex];
-        const sz = cachedSizes[currentIndex] || { w: 480, h: 96 };
+        const maxAvailWidth = window.innerWidth <= 600 ? (window.innerWidth - 48) : v.targetWidth;
+        const sz = cachedSizes[currentIndex] || { w: maxAvailWidth, h: 92 };
+        const finalWidth = Math.min(sz.w, maxAvailWidth);
         const radius = v.radius;
 
-        // Beat 1: Light pulse runs along the rim
+        // Beat 1: Light pulse along the rim
         bodyEl.setAttribute('data-playing', 'false');
         requestAnimationFrame(() => requestAnimationFrame(() => {
           bodyEl.setAttribute('data-playing', 'true');
@@ -1754,17 +2033,17 @@
           bodyEl.setAttribute('data-morphing', 'true');
 
           // Beat 3: Body Morphs in the dark
-          bodyEl.style.width = `${sz.w + 2}px`;
+          bodyEl.style.width = `${finalWidth + 2}px`;
           bodyEl.style.height = `${sz.h + 2}px`;
           bodyEl.style.setProperty('--morph-radius', `${radius}px`);
 
           // Update masks after settling
           setTimeout(() => {
-            rebuildGlow(sz.w + 2, sz.h + 2, radius);
+            rebuildGlow(finalWidth + 2, sz.h + 2, radius);
             contentEl.innerHTML = v.render();
             bodyEl.removeAttribute('data-morphing');
           }, 380);
-        }, 1200);
+        }, 1100);
       }
 
       function next() {
@@ -1775,7 +2054,7 @@
 
       function startCycle() {
         clearInterval(cycleTimer);
-        cycleTimer = setInterval(next, 4200);
+        cycleTimer = setInterval(next, 4400);
       }
 
       navButtons.forEach(btn => {
@@ -1788,6 +2067,11 @@
         });
       });
 
+      window.addEventListener('resize', () => {
+        measureVariants();
+        triggerMorph(currentIndex);
+      });
+
       document.fonts.ready.then(() => {
         measureVariants();
         triggerMorph(0);
@@ -1795,7 +2079,7 @@
       });
     })();
 
-    /* Strict Physical Push: Moves entire content block up as Dia expands from the bottom */
+    /* Physical Push for Dia Footer */
     (function () {
       const diaOverscroll = document.getElementById('diaOverscroll');
       const pageWrapper = document.getElementById('pageWrapper');
@@ -1901,12 +2185,12 @@
     }
     syncThemeIcons();
 
-    /* Responsive Squiggles */
+    /* Squiggles */
     (function () {
       const container = document.getElementById('heroDecorations');
       if (!container) return;
 
-      const shapeSrc = 'squiggle.png';
+      const shapeSrc = 'squiggles.png';
 
       const shapes = [
         { top: '4%',  left: '4%',   width: 75,  rot: -35, opacity: 0.85, dur: 7.2, delay: 0, class: '' },
