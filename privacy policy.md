@@ -1,4 +1,4 @@
-# Finder — Privacy Policy
+# Finder - Privacy Policy
 
 **Effective date:** August 15, 2026
 
@@ -21,25 +21,25 @@ Finding nothing in those folders is deleted when you uninstall Finder or manuall
 Finder makes only three kinds of network requests, and **none of them contain your file names or search history**:
 
 1. **Update checks.** On startup and periodically, Finder checks `https://github.com/anshdadhich/Finder/releases/latest/download/latest.json` for a newer version. Only the current version number is sent; the connection goes to GitHub's servers.
-2. **Web search (only when you use it).** When you explicitly use Finder's web search, the query you typed is sent to Bing or DuckDuckGo (the same as typing it into your browser). The result is shown inside Finder. This does not happen automatically — only when you press the web-search key.
+2. **Web search (only when you use it).** When you explicitly use Finder's web search, the query you typed is sent to Bing or DuckDuckGo (the same as typing it into your browser). The result is shown inside Finder. This does not happen automatically - only when you press the web-search key.
 3. **Installer downloads.** When you install or update Finder from GitHub Releases or winget, the installer is downloaded from those servers. Standard download-source information (IP address, user agent) is visible to those services as with any download.
 
 ## 3. What Finder never does
 
-- Never reads, uploads, or transmits file **contents** — only names and paths are indexed.
+- Never reads, uploads, or transmits file **contents** - only names and paths are indexed.
 - Never sends telemetry, crash reports, usage statistics, or analytics anywhere.
 - Never shows you ads and never sells or shares any data with third parties.
 - Never sends your local search terms or history over the network.
 
 ## 4. Permissions and why
 
-- **Runs as administrator.** Finder must be elevated to read the NTFS USN journal (the only reliable way to list files without crawling every folder) and to register its global hotkey. This is a local privilege only — it does not grant any network access beyond section 2.
+- **Runs as administrator.** Finder must be elevated to read the NTFS USN journal (the only reliable way to list files without crawling every folder) and to register its global hotkey. This is a local privilege only - it does not grant any network access beyond section 2.
 - **"Start with Windows"** uses the Windows Task Scheduler to launch Finder at logon. This is a local setting you can disable in Finder's settings at any time.
 
 ## 5. Third-party services
 
-- **GitHub (github.com)** — hosts the releases, update manifest, and the source code. See GitHub's own privacy policy for how they handle download requests.
-- **Bing / DuckDuckGo** — used only for the optional web search feature you trigger manually. Queries go directly to the search engine, and their respective privacy policies apply to those requests.
+- **GitHub (github.com)** - hosts the releases, update manifest, and the source code. See GitHub's own privacy policy for how they handle download requests.
+- **Bing / DuckDuckGo** - used only for the optional web search feature you trigger manually. Queries go directly to the search engine, and their respective privacy policies apply to those requests.
 
 ## 6. Security
 
