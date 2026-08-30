@@ -1,4 +1,4 @@
-# Finder — Terms of Service
+# Finder - Terms of Service
 
 **Effective date:** August 15, 2026
 
@@ -14,11 +14,11 @@ The Software is free to use. You may install and use it on any number of compute
 
 ## 3. The Software is provided "AS IS"
 
-**Finder is provided without warranty of any kind, express or implied — including, without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement.** The Developer does not guarantee that the Software will be error-free, that it will run on every system, or that it will remain available in its current form.
+**Finder is provided without warranty of any kind, express or implied - including, without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement.** The Developer does not guarantee that the Software will be error-free, that it will run on every system, or that it will remain available in its current form.
 
 ## 4. Limitation of liability
 
-**To the maximum extent permitted by law, in no event shall the Developer be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of data, loss of profits, loss of privacy, corruption of files or the NTFS index, system slowdowns, hardware damage, business interruption, or any claim arising out of or in connection with the use or inability to use the Software.** This limitation applies even if the Developer has been advised of the possibility of such damages.
+**To the maximum extent permitted by law, in no event shall the Developer be liable for any indirect, incidental, special, consequential, or punitive damages - including loss of data, loss of profits, loss of privacy, corruption of files or the NTFS index, system slowdowns, hardware damage, business interruption, or any claim arising out of or in connection with the use or inability to use the Software.** This limitation applies even if the Developer has been advised of the possibility of such damages.
 
 Finder only reads file **names** for indexing and does not modify, move, or delete your files. However, you acknowledge that:
 
@@ -52,7 +52,7 @@ We may revise these terms. Material changes will be posted in the repository alo
 
 ## 11. Contact
 
-Questions or concerns: open an issue at https://github.com/anshdadhich/Finder/issues.
+Questions or concerns: open an issue at https://github.com/anshdadhich/finder-releases/issues.
 
 ---
 
