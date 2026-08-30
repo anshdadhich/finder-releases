@@ -1215,6 +1215,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      cursor: pointer;
     }
 
     .site-links-col a:hover {
@@ -1239,6 +1240,7 @@
       color: var(--text-muted);
       text-decoration: none;
       transition: color 0.15s ease;
+      cursor: pointer;
     }
 
     .site-links-bottom a:hover {
@@ -1291,6 +1293,143 @@
     }
 
     .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* =========================================================================
+       LEGAL MARKDOWN READER MODAL
+       ========================================================================= */
+    .legal-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
+    }
+
+    .legal-modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .legal-modal {
+      width: 100%;
+      max-width: 660px;
+      max-height: 82vh;
+      background: var(--surface);
+      border: 1px solid var(--border-focus);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 32px 72px -12px rgba(0, 0, 0, 0.75);
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.24s var(--ease-spring);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .legal-modal-backdrop.active .legal-modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .legal-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+
+    .legal-modal-header h3 {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    .legal-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .legal-modal-close:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .legal-modal-content {
+      padding: 26px 24px;
+      overflow-y: auto;
+      font-size: 13.5px;
+      line-height: 1.68;
+      color: var(--text-muted);
+    }
+
+    .legal-modal-content h1,
+    .legal-modal-content h2,
+    .legal-modal-content h3 {
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      margin-top: 22px;
+      margin-bottom: 10px;
+    }
+
+    .legal-modal-content h1 { font-size: 20px; margin-top: 0; }
+    .legal-modal-content h2 { font-size: 16px; }
+    .legal-modal-content h3 { font-size: 14px; }
+
+    .legal-modal-content p {
+      margin-bottom: 14px;
+    }
+
+    .legal-modal-content ul {
+      margin: 8px 0 16px 20px;
+    }
+
+    .legal-modal-content li {
+      margin-bottom: 6px;
+    }
+
+    .legal-modal-content a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
+
+    .legal-modal-content code {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+    }
+
+    .legal-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 40px 0;
+    }
   </style>
 </head>
 <body>
@@ -1515,12 +1654,46 @@
             </a>
             <a href="#contact">Send Feedback</a>
           </div>
+
+          <!-- Legal Column Added -->
+          <div class="site-links-col">
+            <div class="site-links-col-title">Legal</div>
+            <a href="terms.md" class="legal-trigger" data-file="terms.md" data-title="Terms of Service">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Terms of Service
+            </a>
+            <a href="privacy.md" class="legal-trigger" data-file="privacy.md" data-title="Privacy Policy">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </div>
 
       <div class="site-links-bottom">
-        <span>© 2026 Finder. Built for speed.</span>
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+          <span>© 2026 Finder</span>
+          <span>•</span>
+          <a href="terms.md" class="legal-trigger" data-file="terms.md" data-title="Terms of Service">Terms of Service</a>
+          <span>•</span>
+          <a href="privacy.md" class="legal-trigger" data-file="privacy.md" data-title="Privacy Policy">Privacy</a>
+        </div>
         <span class="site-links-shortcut">Shortcut: <kbd>Ctrl+Space</kbd></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legal Document Reader Modal -->
+  <div class="legal-modal-backdrop" id="legalModalBackdrop" aria-hidden="true">
+    <div class="legal-modal" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+      <div class="legal-modal-header">
+        <h3 id="legalModalTitle">Legal Document</h3>
+        <button class="legal-modal-close" id="legalModalClose" aria-label="Close document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="legal-modal-content" id="legalModalContent">
+        <!-- Markdown rendered here dynamically -->
       </div>
     </div>
   </div>
@@ -2304,7 +2477,6 @@
 
       updateCountView();
 
-      // Fetch live GitHub releases download counts across all release assets
       fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases`)
         .then(res => {
           if (!res.ok) throw new Error('Failed to fetch releases');
@@ -2326,17 +2498,90 @@
             updateCountView();
           }
         })
-        .catch(() => {
-          // If offline or rate limited, keep local cached base
-        });
+        .catch(() => {});
 
-      // Increment whenever a download action is clicked
       downloadButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           userClicks += 1;
           localStorage.setItem(LOCAL_INCREMENT_KEY, userClicks.toString());
           updateCountView();
         });
+      });
+    })();
+
+    /* Legal Markdown Reader */
+    (function () {
+      const modalBackdrop = document.getElementById('legalModalBackdrop');
+      const modalTitle = document.getElementById('legalModalTitle');
+      const modalContent = document.getElementById('legalModalContent');
+      const modalClose = document.getElementById('legalModalClose');
+      const triggers = document.querySelectorAll('.legal-trigger');
+
+      if (!modalBackdrop || !modalContent) return;
+
+      function parseMarkdown(md) {
+        return md
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/\*\*\*(.*?)\*\*\*/gim, '<b><i>$1</i></b>')
+          .replace(/\*\*(.*?)\*\*/gim, '<b>$1</b>')
+          .replace(/\*(.*?)\*/gim, '<i>$1</i>')
+          .replace(/`([^`]+)`/gim, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+          .replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>')
+          .replace(/(<li>.*<\/li>)/gms, '<ul>$1</ul>')
+          .replace(/<\/ul>\s*<ul>/gim, '')
+          .split(/\n\s*\n/)
+          .map(p => {
+            p = p.trim();
+            if (!p) return '';
+            if (/^<(h1|h2|h3|ul|li)/i.test(p)) return p;
+            return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+          })
+          .join('');
+      }
+
+      async function openLegal(file, title) {
+        modalTitle.textContent = title || 'Document';
+        modalContent.innerHTML = '<div class="legal-loading">Loading document…</div>';
+        modalBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        try {
+          const res = await fetch(file);
+          if (!res.ok) throw new Error('File not found');
+          const markdownText = await res.text();
+          modalContent.innerHTML = parseMarkdown(markdownText);
+        } catch (e) {
+          modalContent.innerHTML = `<p style="color:#f87171">Failed to load ${file}. You can also view it directly in the repository.</p>`;
+        }
+      }
+
+      function closeLegal() {
+        modalBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      triggers.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const file = btn.getAttribute('data-file') || btn.getAttribute('href');
+          const title = btn.getAttribute('data-title') || 'Document';
+          openLegal(file, title);
+        });
+      });
+
+      modalClose.addEventListener('click', closeLegal);
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) closeLegal();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalBackdrop.classList.contains('active')) {
+          closeLegal();
+        }
       });
     })();
 
