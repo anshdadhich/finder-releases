@@ -351,7 +351,23 @@
       gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
+    }
+
+    .download-counter {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-dim);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      user-select: none;
+    }
+
+    .download-counter span {
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .btn {
@@ -600,9 +616,7 @@
       text-align: center;
       max-width: 520px;
     }
-/* =========================================================================
-       UNSLOPPED: CAPABILITIES NAVIGATION TABS
-       ========================================================================= */
+
     .capabilities-console {
       width: 100%;
       background: var(--surface);
@@ -721,7 +735,9 @@
 
     @media (max-width: 860px) {
       .nav-desc { display: none; }
-    }    /* Interactive HUD Stage */
+    }
+
+    /* Interactive HUD Stage */
     .console-stage {
       display: flex;
       align-items: center;
@@ -1306,7 +1322,7 @@
         </p>
 
         <div class="action-row motion-item" style="--delay: 0.28s;">
-          <a class="btn btn-primary" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-setup.exe">
+          <a class="btn btn-primary download-btn" id="btnDownloadSetup" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-setup.exe">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -1314,9 +1330,14 @@
             </svg>
             Download for Windows
           </a>
-          <a class="btn btn-ghost" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-portable.zip">
+          <a class="btn btn-ghost download-btn" id="btnDownloadZip" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-portable.zip">
             Download ZIP
           </a>
+        </div>
+
+        <!-- Download Counter Display -->
+        <div class="download-counter motion-item" id="downloadCounter" style="--delay: 0.32s;">
+          <span id="downloadCountVal">0</span> times downloaded
         </div>
 
         <div class="meta motion-item" style="--delay: 0.36s;">v0.2.7 • Windows 10/11 </div>
@@ -1358,8 +1379,7 @@
       <p class="showcase-sub">Explore what Finder executes in real time. Launch apps, query deep paths, evaluate math, or search online without friction.</p>
 
       <div class="capabilities-console">
-        <!-- Navigation List -->
-      <!-- Command Selector Navigation -->
+        <!-- Command Selector Navigation -->
         <div class="console-nav" id="consoleNav">
           <button class="nav-item active" data-index="0">
             <div class="nav-head">
@@ -1470,7 +1490,7 @@
         <div class="site-links-nav">
           <div class="site-links-col">
             <div class="site-links-col-title">Downloads</div>
-            <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-setup.exe">
+            <a class="download-btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-setup.exe">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -1478,7 +1498,7 @@
               </svg>
               Windows Installer
             </a>
-            <a href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-portable.zip">
+            <a class="download-btn" href="https://github.com/anshdadhich/finder-releases/releases/latest/download/Finder_0.2.7_x64-portable.zip">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
               </svg>
@@ -2261,6 +2281,62 @@
         img.style.setProperty('--delay', s.delay + 's');
         img.style.setProperty('--rot-delta', ((Math.random() * 12) - 6).toFixed(1) + 'deg');
         container.appendChild(img);
+      });
+    })();
+
+    /* Download Counter Engine */
+    (function () {
+      const countEl = document.getElementById('downloadCountVal');
+      const downloadButtons = document.querySelectorAll('.download-btn, a[href*="/releases/latest/download/"]');
+      if (!countEl) return;
+
+      const GITHUB_REPO = 'anshdadhich/finder-releases';
+      const STORAGE_KEY = 'finder_downloads_base';
+      const LOCAL_INCREMENT_KEY = 'finder_downloads_user_clicks';
+
+      let baseCount = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+      let userClicks = parseInt(localStorage.getItem(LOCAL_INCREMENT_KEY) || '0', 10);
+
+      function updateCountView() {
+        const total = Math.max(0, baseCount + userClicks);
+        countEl.textContent = Number(total).toLocaleString();
+      }
+
+      updateCountView();
+
+      // Fetch live GitHub releases download counts across all release assets
+      fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases`)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch releases');
+          return res.json();
+        })
+        .then(releases => {
+          if (!Array.isArray(releases)) return;
+          let sum = 0;
+          releases.forEach(rel => {
+            if (Array.isArray(rel.assets)) {
+              rel.assets.forEach(asset => {
+                sum += (asset.download_count || 0);
+              });
+            }
+          });
+          if (sum > 0) {
+            baseCount = sum;
+            localStorage.setItem(STORAGE_KEY, baseCount.toString());
+            updateCountView();
+          }
+        })
+        .catch(() => {
+          // If offline or rate limited, keep local cached base
+        });
+
+      // Increment whenever a download action is clicked
+      downloadButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          userClicks += 1;
+          localStorage.setItem(LOCAL_INCREMENT_KEY, userClicks.toString());
+          updateCountView();
+        });
       });
     })();
 
