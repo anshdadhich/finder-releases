@@ -1385,12 +1385,15 @@
       color: var(--text);
     }
 
-    .legal-modal-content {
-      padding: 26px 24px;
-      overflow-y: auto;
-      font-size: 13.5px;
-      line-height: 1.68;
-      color: var(--text-muted);
+   .legal-modal-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 26px 24px;
+    font-size: 13.5px;
+    line-height: 1.68;
+    color: var(--text-muted);
     }
 
     .legal-modal-content h1,
@@ -2596,6 +2599,9 @@
           openLegal(file, title);
         });
       });
+
+      modalBackdrop.addEventListener('wheel', (e) => e.stopPropagation());
+      modalBackdrop.addEventListener('touchmove', (e) => e.stopPropagation());
 
       modalClose.addEventListener('click', closeLegal);
       modalBackdrop.addEventListener('click', (e) => {
