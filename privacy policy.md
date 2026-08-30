@@ -51,7 +51,7 @@ If Finder ever changes what data it collects, this policy will be updated **befo
 
 ## 8. Contact
 
-For privacy questions: open an issue at https://github.com/anshdadhich/Finder/issues.
+For privacy questions: open an issue at https://github.com/anshdadhich/finder-releases/issues.
 
 ---
 
