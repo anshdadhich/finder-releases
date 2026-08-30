@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Finder - Instant launcher for Windows</title>
+  <title>Finder - File Search tool for Windows</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="preload" as="image" href="logo.png">
+  <link rel="preload" as="image" href="squiggle.png">
   <!-- Vercel Web Analytics -->
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <!-- Runtime config -->
@@ -116,6 +117,12 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
 
+    /* Prevent scrolling while loading */
+    body.is-loading {
+      overflow: hidden !important;
+      height: 100vh !important;
+    }
+
     @media (max-width: 600px) {
       body { padding: 0 16px; }
     }
@@ -156,13 +163,16 @@
       will-change: transform;
     }
 
-    /* Motion primitives */
+    /* Motion primitives - Pause until loading is done */
     .motion-item {
       opacity: 0;
       transform: translateY(20px);
+      will-change: transform, opacity;
+    }
+
+    body:not(.is-loading) .motion-item {
       animation: motionFadeUp 0.85s var(--ease-spring) forwards;
       animation-delay: var(--delay, 0s);
-      will-change: transform, opacity;
     }
 
     .motion-scroll {
@@ -241,6 +251,9 @@
       filter: drop-shadow(0 14px 28px rgba(0, 81, 255, 0.2));
       opacity: 0;
       transform: scale(0.4) translateY(30px) rotate(var(--rot, 0deg));
+    }
+
+    body:not(.is-loading) .hero-shape {
       animation: 
         motionSquiggleIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) forwards,
         motionSquiggleFloat var(--dur, 7s) ease-in-out calc(var(--delay, 0s) + 0.9s) infinite alternate;
@@ -1432,7 +1445,7 @@
     }
   </style>
 </head>
-<body>
+<body class="is-loading">
 
   <!-- Preloader Canvas -->
   <div id="siteLoader">
@@ -1451,7 +1464,7 @@
       <div class="hero-content">
         <!-- Logo placed a little to the left -->
         <div class="logo-heading motion-item" style="--delay: 0.05s;">
-          <img src="logo.png" alt="Finder logo">
+          <img src="logo.png" alt="Finder logo" id="heroLogoImg">
         </div>
 
         <h1 class="motion-item" style="--delay: 0.12s;">Search everything.<br>Instantly.</h1>
@@ -1485,7 +1498,7 @@
       <!-- Video Block -->
       <div class="demo-block motion-item" id="demoBlock" style="--delay: 0.44s;">
         <div class="demo-skeleton"></div>
-        <video id="demoVideo" muted loop playsinline autoplay></video>
+        <video id="demoVideo" muted loop playsinline autoplay preload="auto"></video>
         <button class="big-play" id="bigPlay" aria-label="Play">
           <span><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg></span>
         </button>
@@ -1655,7 +1668,7 @@
             <a href="#contact">Send Feedback</a>
           </div>
 
-          <!-- Legal Column Added -->
+          <!-- Legal Column -->
           <div class="site-links-col">
             <div class="site-links-col-title">Legal</div>
             <a href="terms.md" class="legal-trigger" data-file="terms.md" data-title="Terms of Service">
@@ -1672,9 +1685,9 @@
 
       <div class="site-links-bottom">
         <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-          <span>© 2026 Finder</span>
+          <span>© 2026 Finder. Built for speed.</span>
           <span>•</span>
-          <a href="terms.md" class="legal-trigger" data-file="terms.md" data-title="Terms of Service">Terms of Service</a>
+          <a href="terms.md" class="legal-trigger" data-file="terms.md" data-title="Terms of Service">Terms</a>
           <span>•</span>
           <a href="privacy policy.md" class="legal-trigger" data-file="privacy policy.md" data-title="Privacy Policy">Privacy</a>
         </div>
@@ -1693,7 +1706,7 @@
         </button>
       </div>
       <div class="legal-modal-content" id="legalModalContent">
-        <!-- Markdown rendered here dynamically -->
+        <!-- Markdown rendered dynamically -->
       </div>
     </div>
   </div>
@@ -1857,7 +1870,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    /* Preloader Animation Engine */
+    /* Preloader Animation Engine & Preloading Pipeline */
     (function () {
       const loader = document.getElementById('siteLoader');
       const canvas = document.getElementById('loaderCanvas');
@@ -1917,6 +1930,10 @@
       let completedCycles = 0;
       let isReady = false;
 
+      // Preload images and critical assets
+      const img1 = new Image(); img1.src = 'logo.png';
+      const img2 = new Image(); img2.src = 'squiggle.png';
+
       window.addEventListener('load', () => { isReady = true; });
       setTimeout(() => { isReady = true; }, 1400);
 
@@ -1930,6 +1947,7 @@
           completedCycles = cycle;
           if (isReady) {
             loader.classList.add('hidden');
+            document.body.classList.remove('is-loading');
             return;
           }
         }
@@ -2324,6 +2342,7 @@
       let animId = null;
 
       function isAtBottom() {
+        if (document.body.classList.contains('is-loading')) return false;
         const scroller = document.scrollingElement || document.documentElement;
         return (scroller.scrollTop + window.innerHeight) >= (scroller.scrollHeight - 3);
       }
@@ -2360,6 +2379,7 @@
       }
 
       window.addEventListener('wheel', (e) => {
+        if (document.body.classList.contains('is-loading')) return;
         if (isAtBottom() && e.deltaY > 0) {
           e.preventDefault();
           addPull(e.deltaY);
@@ -2374,11 +2394,13 @@
       let isTouching = false;
       
       window.addEventListener('touchstart', (e) => {
+        if (document.body.classList.contains('is-loading')) return;
         startY = e.touches[0].clientY;
         isTouching = true;
       }, { passive: true });
 
       window.addEventListener('touchmove', (e) => {
+        if (document.body.classList.contains('is-loading')) return;
         if (isAtBottom() && isTouching) {
           const diff = startY - e.touches[0].clientY;
           if (diff > 0) {
@@ -2550,7 +2572,7 @@
         document.body.style.overflow = 'hidden';
 
         try {
-          const res = await fetch(file);
+          const res = await fetch(encodeURI(file));
           if (!res.ok) throw new Error('File not found');
           const markdownText = await res.text();
           modalContent.innerHTML = parseMarkdown(markdownText);
@@ -2561,7 +2583,9 @@
 
       function closeLegal() {
         modalBackdrop.classList.remove('active');
-        document.body.style.overflow = '';
+        if (!document.body.classList.contains('is-loading')) {
+          document.body.style.overflow = '';
+        }
       }
 
       triggers.forEach(btn => {
