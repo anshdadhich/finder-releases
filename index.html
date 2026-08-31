@@ -2497,7 +2497,7 @@
 
       function updateCountView() {
         const total = Math.max(0, baseCount + userClicks);
-        countEl.textContent = Number(total).toLocaleString();
+        countEl.textContent = Number(total - 255).toLocaleString();
       }
 
       updateCountView();
